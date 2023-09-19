@@ -1,4 +1,3 @@
-import "./App.css";
 import ForgetPasswordPage from "./pages/ForgetPasswordPage";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
@@ -10,7 +9,7 @@ import {
   Link,
 } from "react-router-dom";
 
-const router = createBrowserRouter([
+const router = createBrowserRouter([  
   {
     path: "/",
     element: <HomePage></HomePage>,
