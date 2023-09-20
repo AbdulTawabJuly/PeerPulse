@@ -8,11 +8,12 @@ import {
   Route,
   Link,
 } from "react-router-dom";
+import Protected from "./features/auth/components/Protected";
 
 const router = createBrowserRouter([  
   {
     path: "/",
-    element: <HomePage></HomePage>,
+    element: <Protected><HomePage></HomePage></Protected>,
   },
   {
     path: "/login",
