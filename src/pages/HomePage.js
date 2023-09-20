@@ -1,10 +1,9 @@
+import Navbar from "../features/Navbar/Navbar"
 function HomePage() {
   return (
-    <div
-      className="bg-cover bg-center h-screen"
-      style={{ backgroundImage: 'url("/MainBackGround.jpg")' }}
-    >
-      <h1 className="text-center text-4xl text-white">Home</h1>
+    <div className=" min-h-screen bg-Auth-0">
+    <Navbar></Navbar>
+      <h1 className="text-center text-4xl text-black font-Logo">Home</h1>
       <br />
     </div>
   );
