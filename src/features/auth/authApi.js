@@ -13,6 +13,7 @@ export function createUser(userData) {
 
 export function checkUser(loginInfo) {
   return new Promise(async (resolve, reject) => {
+    console.log({loginInfoApi:loginInfo});
     try {
       const response = await fetch("http://localhost:8080/api/auth/login", {
         method: "POST",
@@ -20,7 +21,7 @@ export function checkUser(loginInfo) {
         headers: { "content-type": "aplication/json" },
       });
       const data = await response.json();
-      console.log({ data });
+      console.log({ ResponseDataApi:data });
       resolve({ data });
     } catch (err) {
       reject({ err });

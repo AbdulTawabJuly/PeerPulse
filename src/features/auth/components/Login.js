@@ -33,6 +33,7 @@ function Login() {
           <form
             noValidate
             onSubmit={handleSubmit((data) => {
+              console.log({LoginData:data})
               dispatch(
                 checkUserAsync({ email: data.email, password: data.password })
               );
