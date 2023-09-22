@@ -1,18 +1,22 @@
 import { useForm } from "react-hook-form";
+import MoonLoader from "react-spinners/MoonLoader";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Navigate } from "react-router-dom";
-import { checkUserAsync, selectErrors, selectLoggedInUser } from "../authSlice";
+import { checkUserAsync, selectErrors, selectLoggedInUser, selectStatus } from "../authSlice";
 
 function Login() {
   const dispatch = useDispatch();
-  const error = useDispatch(selectErrors);
+  const error = useSelector(selectErrors);
   const user = useSelector(selectLoggedInUser);
+  const status = useSelector(selectStatus);
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm();
+
+
 
   return (
     <>
@@ -27,13 +31,13 @@ function Login() {
           <h2 className=" -mt-20 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 font-signature">
             Sign In to your Account
           </h2>
+          {error ? <h4 className="text-red-700 text-center pt-4">{error}</h4> : null}
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form
             noValidate
             onSubmit={handleSubmit((data) => {
-              console.log({LoginData:data})
               dispatch(
                 checkUserAsync({ email: data.email, password: data.password })
               );
@@ -104,7 +108,7 @@ function Login() {
                 type="submit"
                 className="flex w-full justify-center rounded-md  bg-AuthBtn-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm  hover:bg-AuthBtnHover-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
-                Sign In
+                {status === "loading" ? <MoonLoader color="white" size={20}/> : "Sign In"}
               </button>
             </div>
           </form>
