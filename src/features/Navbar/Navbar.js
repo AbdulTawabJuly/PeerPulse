@@ -32,7 +32,7 @@ export default function Navbar() {
                 <div className="flex flex-shrink-0 items-center">
                   {
                     <Link to="/">
-                      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 ">
+                      <div className="mx-auto ml-0 pl-0 max-w-7xl px-4 py-6 sm:px-6 lg:px-8 ">
                         <h1 className="text-3xl font-Logo font-bold tracking-tight text-white">
                           PeerPulse
                         </h1>
