@@ -3,7 +3,7 @@ import axios from "axios";
 import { selectLoggedInUser } from "../auth/authSlice";
 import { useSelector } from "react-redux";
 const Modal = () => {
-  const [isModalVisible, setModalVisible] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);  // Test
   const user = useSelector(selectLoggedInUser);
   const [newRoomName, setNewRoomName] = useState("");
   const [Check, setCheck] = useState(true);
