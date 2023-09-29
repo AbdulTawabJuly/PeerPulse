@@ -5,16 +5,18 @@ import {  useSelector } from "react-redux";
 import { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
-import RoomCard from "../features/rooms/RoomCard";
-import SideBar from "../features/rooms/sideBar";
-import AddRoom from '../features/rooms/AddRoom'
+import RoomCard from "../features/rooms/components/RoomCard";
+import SideBar from "../features/rooms/components/sideBar";
+import AddRoom from '../features/rooms/components/AddRoom';
+import JoinPrivateRoom from "../features/rooms/components/JoinPrivateRoom";
+import { Navigate } from "react-router-dom";
 function HomePage() {
   const user = useSelector(selectLoggedInUser);
   const status = useSelector(selectStatus);
   const [searchedItem, setSearchedItem] = useState("");
   const [rooms, SetRooms] = useState([]);
   const [searchResult,SetSearchResults]=useState(false);
-
+  
 
 
   const SearchRooms = async (name) => {
@@ -45,7 +47,9 @@ function HomePage() {
   }, [searchedItem]);
 
   return (
+    
     <div className=" min-h-screen bg-Auth-0">
+     
       <Navbar></Navbar>
 
       <SideBar/>
@@ -94,7 +98,7 @@ function HomePage() {
      </div>
      )
      }
-      
+      <JoinPrivateRoom/>
       <AddRoom/>
       
       
