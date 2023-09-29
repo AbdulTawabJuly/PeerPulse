@@ -3,6 +3,7 @@ import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import HomePage from "./pages/HomePage"
 import PageNotFound from "./pages/PageNotFound"
+import RoomPage from "./pages/RoomPage"
 import {
   createBrowserRouter,
   RouterProvider,
@@ -10,6 +11,7 @@ import {
   Link,
 } from "react-router-dom";
 import Protected from "./features/auth/components/Protected";
+import TimeUp from "./features/rooms/components/TimeUp";
 
 const router = createBrowserRouter([  
   {
@@ -29,9 +31,18 @@ const router = createBrowserRouter([
     element: <ForgetPasswordPage></ForgetPasswordPage>,
   },
   {
+     path:"/room/:id",
+     element: <RoomPage></RoomPage>,
+  },
+  {
+    path:"/TimeUp",
+    element:<TimeUp></TimeUp>
+  },
+  {
     path: "*",
     element: <PageNotFound></PageNotFound>,
   },
+
 ]);
 
 function App() {
