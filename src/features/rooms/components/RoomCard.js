@@ -1,5 +1,6 @@
 import React from 'react'
 import { useState,useEffect } from 'react';
+import { Link } from 'react-router-dom';
 function RoomCard({RoomDetails}) {
     const givenDate = new Date(RoomDetails.startingTime);
     const currentTime = Date.now();
@@ -21,15 +22,15 @@ useEffect(() => {
       else{
         setTimeLeft(timeWeHave+' mins');
       }
-
-    }, 10);  
+}, 10);  
     
     return () => clearInterval(intervalId);
     
   }, [RoomDetails]);
-
+       const roomNavigation="/room/"+RoomDetails._id;
         return (
-
+    
+      <Link to={roomNavigation} >
         <div className="m-2 w-64 h-36 flex flex-col bg-red-200 justify-between shadow-lg p-3 rounded-xl hover:scale-105 hover:shadow-xl hover:cursor-pointer">
             <div className='flex justify-around items-center'>
                 <p className='font-bold text-sm'>{RoomDetails.name}</p>
@@ -46,7 +47,7 @@ useEffect(() => {
             </div>
         </div>
 
-
+        </Link>
     )
 }
 
