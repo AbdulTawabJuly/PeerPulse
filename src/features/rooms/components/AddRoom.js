@@ -1,3 +1,5 @@
+
+//fuck github
 import React, { useState } from "react";
 import axios from "axios";
 import { selectLoggedInUser } from "../../auth/authSlice";
@@ -37,6 +39,7 @@ const Modal = () => {
   const handlePaidCheck = () => {
     setPaidCheck(!PaidCheck);
   };
+  //github
   return (
     <div>
       <button
