@@ -7,6 +7,8 @@ import { useRef } from "react";
 import axios from "axios";
 import RoomNotFound from "./RoomNotFound";
 import TimeUp from "../features/rooms/components/TimeUp";
+import {io} from 'socket.io-client'
+
 function RoomPage() {
   const [micMute, setMicMute] = useState(true);
   const [isVideoOff, setVideoOff] = useState(true);
@@ -35,6 +37,10 @@ function RoomPage() {
         }
       );
       SetRoomJoined(response.data);
+      const room = response.data._id;
+      const socket = io.connect('http://localhost:8080');
+      socket.emit('join-room',room)
+
     } catch (error) {
       SetError(error);
     }
@@ -68,6 +74,7 @@ function RoomPage() {
   const HandleVideoClick = () => {
     setVideoOff(!isVideoOff);
   };
+
 
   return (
     <>
