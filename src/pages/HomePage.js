@@ -1,4 +1,5 @@
 import { PacmanLoader } from "react-spinners";
+
 import Navbar from "../features/Navbar/Navbar";
 import { selectLoggedInUser, selectStatus } from "../features/auth/authSlice";
 import {  useSelector } from "react-redux";
@@ -10,6 +11,9 @@ import SideBar from "../features/rooms/components/sideBar";
 import AddRoom from '../features/rooms/components/AddRoom';
 import JoinPrivateRoom from "../features/rooms/components/JoinPrivateRoom";
 import { Navigate } from "react-router-dom";
+
+
+
 function HomePage() {
   const user = useSelector(selectLoggedInUser);
   const status = useSelector(selectStatus);

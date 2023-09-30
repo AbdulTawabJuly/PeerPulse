@@ -32,7 +32,7 @@ const router = createBrowserRouter([
   },
   {
      path:"/room/:id",
-     element: <RoomPage></RoomPage>,
+     element: <Protected><RoomPage></RoomPage></Protected>,
   },
   {
     path:"/TimeUp",
