@@ -2,48 +2,26 @@ import { PacmanLoader } from "react-spinners";
 
 import Navbar from "../features/Navbar/Navbar";
 import { selectLoggedInUser, selectStatus } from "../features/auth/authSlice";
-import {  useSelector } from "react-redux";
+import { selectSearchedRooms } from "../features/rooms/RoomSlice";
+import { searchRoom } from "../features/rooms/RoomSlice";
+import {  useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 import { useEffect } from "react";
-import axios from "axios";
 import RoomCard from "../features/rooms/components/RoomCard";
 import SideBar from "../features/rooms/components/sideBar";
 import AddRoom from '../features/rooms/components/AddRoom';
 import JoinPrivateRoom from "../features/rooms/components/JoinPrivateRoom";
-import { Navigate } from "react-router-dom";
-
-
 
 function HomePage() {
   const user = useSelector(selectLoggedInUser);
   const status = useSelector(selectStatus);
   const [searchedItem, setSearchedItem] = useState("");
-  const [rooms, SetRooms] = useState([]);
-  const [searchResult,SetSearchResults]=useState(false);
-  
-
+  const searchedRooms=useSelector(selectSearchedRooms);
+  const dispatch=useDispatch();
 
   const SearchRooms = async (name) => {
-    try {
-      const response = await axios.get(
-        "http://localhost:8080/api/room/search",
-        {
-          params: {
-            RoomName: name,
-          },
-        }
-      );
-      const result = response.data;
-      SetRooms(result);
-      SetSearchResults(false);
-      if(result.length==0)
-      {
-        console.log('No Results');
-        SetSearchResults(true);
-      }
-    } catch (err) {
-      console.log(err);
-    }
+   dispatch(searchRoom(name));
+   console.log(searchedRooms);
   };
 
   useEffect(() => {
@@ -90,11 +68,11 @@ function HomePage() {
       </div>
       <p className="border-b font-mono divide-x-2 w-28 h-10 mx-20 font-bold text-3xl border-AuthBtn-0 text-gray-800">Rooms</p>
       <div className="flex flex-wrap mt-6 mx-16">
-        {rooms.map((room) => (
+        {searchedRooms&&(searchedRooms.map((room) => (
           <RoomCard key={room.id} RoomDetails={room} />
-        ))}
+        )))}
       </div>
-      {searchResult&&(
+      {!searchedRooms&&(
       <div className="flex justify-center items-center h-72">
           <div className="p-6">
                <p>No Results found</p>

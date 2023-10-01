@@ -8,7 +8,9 @@ import axios from "axios";
 import RoomNotFound from "./RoomNotFound";
 import TimeUp from "../features/rooms/components/TimeUp";
 import {io} from 'socket.io-client'
-
+import { UseSelector, useSelector } from "react-redux/es/hooks/useSelector";
+import { selectJoinedRoom } from "../features/rooms/RoomSlice";
+import { selectLoggedInUser } from "../features/auth/authSlice";
 function RoomPage() {
   const [micMute, setMicMute] = useState(true);
   const [isVideoOff, setVideoOff] = useState(true);
@@ -19,6 +21,9 @@ function RoomPage() {
   const [Error, SetError] = useState("");
   const [timeLeft, setTimeLeft] = useState("");
   const [Expired, SetExpired] = useState(false);
+  const user=useSelector(selectLoggedInUser);
+  
+  
   const handleResize = () => {
     if (window.innerWidth < 1098) {
       setIsMobile(true);
@@ -26,13 +31,17 @@ function RoomPage() {
       setIsMobile(false);
     }
   };
+  const handlePopState=()=>{
+    
+  }
   const GetRoomData = async (id) => {
     try {
       const response = await axios.get(
-        "http://localhost:8080/api/room/searchbyid",
+        "http://localhost:8080/api/room/JoinRoom",
         {
           params: {
             RoomID: id,
+            UserID:user.user.id,
           },
         }
       );
@@ -48,8 +57,9 @@ function RoomPage() {
   useEffect(() => {
     handleResize();
     window.addEventListener("resize", handleResize);
+    window.addEventListener('popstate',handlePopState);
     GetRoomData(roomID);
-  }, [roomID]);
+  }, []);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
