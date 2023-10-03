@@ -1,38 +1,48 @@
 
 //fuck github
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { selectLoggedInUser } from "../../auth/authSlice";
 import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { createRoom,selectJoinedRoom,selectRoomError } from "../RoomSlice";
+import { Navigate, useNavigate } from "react-router-dom";
 const Modal = () => {
   const [isAddModalVisible, setAddModalVisible] = useState(false);
-  const [isLockModalVisible, setLockModalVisible] = useState(false);
   const user = useSelector(selectLoggedInUser);
   const [newRoomName, setNewRoomName] = useState("");
   const [PrivateCheck, setPrivateCheck] = useState(true);
   const [PaidCheck, setPaidCheck] = useState(true);
-  const [Response, SetResponse] = useState("");
+  const [roomCreated,setRoomCreated]=useState(false);
+  const [Price,SetPrice]=useState();
+  const RoomToJoin=useSelector(selectJoinedRoom);
+
   const toggleAddModal = () => {
     setAddModalVisible(!isAddModalVisible);
   };
+  const dispatch=useDispatch();
+  const error=useSelector(selectRoomError);
+  const navigate=useNavigate();
 
   const CreateRoom = async (RoomName) => {
-    try {
-      const response = await axios.post(
-        "http://localhost:8080/api/room/create",
-        {
-          Room: RoomName,
-          currentUser: user.user.id,
-          isPublic: PrivateCheck,
-          isPaid: PaidCheck,
-        }
-      );
-      SetResponse("");
-      setNewRoomName("");
-    } catch (err) {
-      SetResponse(err.response.data.error);
-    }
-  };
+   const RoomDetails={
+    roomName:RoomName,
+    priv:PrivateCheck,
+    paid:PaidCheck,
+    user_:user.user.id
+   }
+   dispatch(createRoom(RoomDetails));
+   setRoomCreated(true);
+};
+
+useEffect(()=>{
+  if(roomCreated)
+  {
+     navigate('/room/'+RoomToJoin._id);
+  }
+},[RoomToJoin]);
+
+
   const handlePrivateCheck = () => {
     setPrivateCheck(!PrivateCheck);
   };
@@ -98,9 +108,9 @@ const Modal = () => {
                   </svg>
                 </button>
               </div>
-              {Response && (
+              {error && (
                 <div>
-                  <span className="text-red-400 ml-6">{Response}</span>
+                  <span className="text-red-400 ml-6">{error.message}</span>
                 </div>
               )}
               <div className="p-10 pl-5 space-y-3">
@@ -138,7 +148,7 @@ const Modal = () => {
                     ></input>
 
                     <label className=" ml-2 text-white">Make Paid </label>
-                 
+                    
                 </div>
               </div>
             </div>

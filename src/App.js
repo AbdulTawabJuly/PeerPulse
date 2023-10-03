@@ -12,6 +12,7 @@ import {
 } from "react-router-dom";
 import Protected from "./features/auth/components/Protected";
 import TimeUp from "./features/rooms/components/TimeUp";
+import Member from "./features/rooms/components/Member";
 
 const router = createBrowserRouter([  
   {
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
     path: "*",
     element: <PageNotFound></PageNotFound>,
   },
+  {
+    path:"/members",
+    element:<Member></Member>
+  }
 
 ]);
 
