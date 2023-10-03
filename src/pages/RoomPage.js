@@ -2,23 +2,41 @@ import VideoBox from "../features/rooms/components/VideoBox";
 import Navbar from "../features/Navbar/Navbar";
 import SideToggle from "../features/rooms/components/SideToggle";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useRef } from "react";
 import axios from "axios";
 import RoomNotFound from "./RoomNotFound";
 import TimeUp from "../features/rooms/components/TimeUp";
-import {io} from 'socket.io-client'
+import { io } from "socket.io-client";
+import { useSelector } from "react-redux";
+import { PacmanLoader } from "react-spinners";
 
+import {
+  LeaveRoom,
+  selectJoinedRoom,
+  selectStatus,
+  JoinRoom,
+  GetJoinedRoom,
+} from "../features/rooms/RoomSlice";
+import { selectLoggedInUser } from "../features/auth/authSlice";
+import { useDispatch } from "react-redux";
 function RoomPage() {
   const [micMute, setMicMute] = useState(true);
   const [isVideoOff, setVideoOff] = useState(true);
   const [isMenuOpen, OpenMenu] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  
   const roomID = useParams();
   const [roomJoined, SetRoomJoined] = useState({});
   const [Error, SetError] = useState("");
   const [timeLeft, setTimeLeft] = useState("");
   const [Expired, SetExpired] = useState(false);
+  const [MemberList,SetMemberList]=useState([]);
+  const user = useSelector(selectLoggedInUser);
+  const dispatch = useDispatch();
+  const RoomJoined = useSelector(selectJoinedRoom);
+  const status = useSelector(selectStatus);
+   const navigate=useNavigate();
   const handleResize = () => {
     if (window.innerWidth < 1098) {
       setIsMobile(true);
@@ -26,47 +44,57 @@ function RoomPage() {
       setIsMobile(false);
     }
   };
+
+  const handlePopState = async () => {
+    if (status === "fulfilled") {
+      const RoomDetail = {
+        id: roomID,
+        user_: user.user.id,
+      };
+      await dispatch(LeaveRoom(RoomDetail));
+      while(status==="loading");
+    }
+  };
+
   const GetRoomData = async (id) => {
     try {
-      const response = await axios.get(
-        "http://localhost:8080/api/room/searchbyid",
-        {
-          params: {
-            RoomID: id,
-          },
-        }
-      );
-      SetRoomJoined(response.data);
-      const room = response.data._id;
-      const socket = io.connect('http://localhost:8080');
-      socket.emit('join-room',room)
-
+      const RoomDetail={
+         id:roomID,
+         user_:user.user.id,
+      }
+      await dispatch(JoinRoom(RoomDetail));
+      
     } catch (error) {
       SetError(error);
     }
   };
+
   useEffect(() => {
     handleResize();
     window.addEventListener("resize", handleResize);
+    window.addEventListener("popstate", handlePopState);
     GetRoomData(roomID);
-  }, [roomID]);
+   
+  }, []);
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      const givenDate = new Date(roomJoined.startingTime);
-      const currentTime = Date.now();
-      const timePassed = currentTime - givenDate.getTime();
-      const MinutesWeHave = Math.floor(60 - timePassed / (1000 * 60));
-      const SecondsWeHave = Math.floor((3600 - timePassed / 1000) % 60);
-      if (MinutesWeHave < 0) {
-        SetExpired(true);
-      } else {
-        setTimeLeft(MinutesWeHave + ":" + SecondsWeHave);
-      }
-    }, 100);
+    if (RoomJoined) {
+      const intervalId = setInterval(() => {
+        const givenDate = new Date(RoomJoined.startingTime);
+        const currentTime = Date.now();
+        const timePassed = currentTime - givenDate.getTime();
+        const MinutesWeHave = Math.floor(60 - timePassed / (1000 * 60));
+        const SecondsWeHave = Math.floor((3600 - timePassed / 1000) % 60);
+        if (MinutesWeHave < 0) {
+          SetExpired(true);
+        } else {
+          setTimeLeft(MinutesWeHave + ":" + SecondsWeHave);
+        }
+      }, 100);
 
-    return () => clearInterval(intervalId);
-  }, [roomJoined]);
+      return () => clearInterval(intervalId);
+    }
+  }, [RoomJoined]);
 
   const HandleMicClick = () => {
     setMicMute(!micMute);
@@ -75,10 +103,31 @@ function RoomPage() {
     setVideoOff(!isVideoOff);
   };
 
+  const handleEndCall=async()=>{
+    if (status === "fulfilled") {
+      const RoomDetail = {
+        id: roomID,
+        user_: user.user.id,
+      };
+      await dispatch(LeaveRoom(RoomDetail));
+      if(status==="fulfilled"){
+        navigate("/");
+      }
+    }
+  }
 
   return (
     <>
-      {!Error && !Expired && (
+      {status==="loading"&&(
+        <div className="min-h-screen bg-Auth-0">
+              <Navbar></Navbar>
+        <div className="flex items-center justify-center">
+          <PacmanLoader color="#435334"/>
+        </div>
+        </div>
+       )
+     }
+      {!Expired&&status==="fulfilled" && RoomJoined && (
         <div className="min-h-screen bg-Auth-0">
           <Navbar></Navbar>
           {isMobile && (
@@ -102,7 +151,7 @@ function RoomPage() {
           <div className="flex flex-row justify-around mt-2 lg:space-x-96 md:space-x-96 mb-2">
             <div className="w-1/3 h-12  mb-0 bg-gray-900 p-6 rounded-full flex items-center">
               <p className="lg:text-lg md:text-sm text-xs  font-bold text-white ">
-                Room Name : {roomJoined.name}
+                Room Name : {RoomJoined.name}
               </p>
             </div>
             <div className="  w-32 h-12  mb-0 bg-gray-900 rounded-full p-6 flex items-center flex-row justify-center">
@@ -208,7 +257,7 @@ function RoomPage() {
                 </svg>
               )}
             </button>
-            <button className=" w-20 h-14 flex justify-center rounded-full bg-red-900 hover:scale-105">
+            <button onClick={()=>handleEndCall()} className=" w-20 h-14 flex justify-center rounded-full bg-red-900 hover:scale-105">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="mt-2"
@@ -233,8 +282,9 @@ function RoomPage() {
           </div>
         </div>
       )}
-      {Error && <RoomNotFound></RoomNotFound>}
+      {status==="error" && <RoomNotFound></RoomNotFound>}
       {Expired && <TimeUp />}
+
     </>
   );
 }

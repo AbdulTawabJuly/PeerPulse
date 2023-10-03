@@ -1,5 +1,5 @@
 import React from 'react'
-function VideoIcons()
+function VideoIcons({username})
 {
    return(
     <div className="h-40 w-40 bg-AuthBtn-0 rounded-lg hover:scale-105 ">
@@ -8,7 +8,7 @@ function VideoIcons()
                
           </div>
           <p className="ml-3 truncate w-28 text-white mt-5 mb-3">
-                Name of Participant is this
+                {username}
           </p>
     </div>
 

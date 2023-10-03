@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
 import {io} from 'socket.io-client'
 
 function RoomCard({ RoomDetails }) {
@@ -8,8 +8,7 @@ function RoomCard({ RoomDetails }) {
     const currentTime = Date.now();
     const timePassed = currentTime - givenDate.getTime();
     const [timeLeft, setTimeLeft] = useState(Math.floor(60 - (timePassed / (1000 * 60))));
-
-
+    const navigate=useNavigate();
     useEffect(() => {
         const intervalId = setInterval(() => {
             const givenDate = new Date(RoomDetails.startingTime);
@@ -29,9 +28,11 @@ function RoomCard({ RoomDetails }) {
 
     }, [RoomDetails]);
     const roomNavigation = "/room/" + RoomDetails._id;
-
+     const joinRoom=async()=>{
+            navigate(roomNavigation);
+     }
     return (
-        <Link to={roomNavigation} >
+        <button onClick={()=>joinRoom()} >
             <div className="m-2 w-64 h-36 flex flex-col bg-red-200 justify-between shadow-lg p-3 rounded-xl hover:scale-105 hover:shadow-xl hover:cursor-pointer" id="card">
                 <div className='flex justify-around items-center'>
                     <p className='font-bold text-sm'>{RoomDetails.name}</p>
@@ -48,7 +49,7 @@ function RoomCard({ RoomDetails }) {
                 </div>
             </div>
 
-        </Link>
+        </button>
     )
 }
 
