@@ -35,7 +35,7 @@ function HomePage() {
       <Navbar></Navbar>
 
       <SideBar/>
-      {status==="idle"&&(
+      {searchedRooms&&(
       <>
       <div className=" flex justify-end mr-3 mt-2">
         <div class="relative">
@@ -73,7 +73,7 @@ function HomePage() {
           <RoomCard key={room.id} RoomDetails={room} />
         )))}
       </div>
-      {!searchedRooms&&(
+      {!searchedRooms.length&&(
       <div className="flex justify-center items-center h-72">
           <div className="p-6">
                <p>No Results found</p>
@@ -88,7 +88,9 @@ function HomePage() {
     )}
     
       {status==="loading"&&(
+        <div className="flex items-center justify-center w-full h-0">
           <PacmanLoader color="#435334"/>
+        </div>
        )
      }
     </div>

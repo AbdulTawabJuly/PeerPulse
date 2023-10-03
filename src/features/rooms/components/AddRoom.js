@@ -14,6 +14,7 @@ const Modal = () => {
   const [PrivateCheck, setPrivateCheck] = useState(true);
   const [PaidCheck, setPaidCheck] = useState(true);
   const [roomCreated,setRoomCreated]=useState(false);
+  const [Price,SetPrice]=useState();
   const RoomToJoin=useSelector(selectJoinedRoom);
 
   const toggleAddModal = () => {
@@ -147,7 +148,7 @@ useEffect(()=>{
                     ></input>
 
                     <label className=" ml-2 text-white">Make Paid </label>
-                 
+                    
                 </div>
               </div>
             </div>

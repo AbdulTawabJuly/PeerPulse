@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {  useSelector } from "react-redux";
+import { selectJoinedRoom } from "../RoomSlice";
+import Member from "./Member"
 function SideToggle() {
   const [Members, SetMembers] = useState(true);
   const [Chat, SetChat] = useState(false);
   const [ChatGpt, SetChatGpt] = useState(false);
-
+  const JoinedRoom=useSelector(selectJoinedRoom);
+  const memberList=JoinedRoom.members;
   const HandleMemberClick = () => {
     if(!Members){
     SetMembers(true);
@@ -25,6 +29,7 @@ function SideToggle() {
     SetChatGpt(true);
     }
   };
+ 
   return (
     <div className="h-96 w-96 bg-white border border-gray-600  rounded-lg flex flex-row items-start lg:block md:block">
       <button
@@ -45,7 +50,12 @@ function SideToggle() {
       >
         ChatGPT
       </button>
-      {Members && (<div>Members</div>)}
+      {Members && (<div class="max-h-80 overflow-y-auto">
+
+      {memberList&&(memberList.map((member) => (
+          <Member key={member._id} username={member.email} />
+        )))}
+      </div>)}
       {Chat && (<div>Chat</div>)}
       {ChatGpt&&(<div>ChatGpt</div>)}
     </div>
