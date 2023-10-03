@@ -8,9 +8,10 @@ import axios from "axios";
 import RoomNotFound from "./RoomNotFound";
 import TimeUp from "../features/rooms/components/TimeUp";
 import {io} from 'socket.io-client'
-import { UseSelector, useSelector } from "react-redux/es/hooks/useSelector";
-import { selectJoinedRoom } from "../features/rooms/RoomSlice";
+import {useSelector } from "react-redux";
+import { LeaveRoom, selectJoinedRoom } from "../features/rooms/RoomSlice";
 import { selectLoggedInUser } from "../features/auth/authSlice";
+import {useDispatch} from "react-redux";
 function RoomPage() {
   const [micMute, setMicMute] = useState(true);
   const [isVideoOff, setVideoOff] = useState(true);
@@ -22,8 +23,8 @@ function RoomPage() {
   const [timeLeft, setTimeLeft] = useState("");
   const [Expired, SetExpired] = useState(false);
   const user=useSelector(selectLoggedInUser);
-  
-  
+  const dispatch=useDispatch();
+  const RoomJoined=useSelector(selectJoinedRoom);
   const handleResize = () => {
     if (window.innerWidth < 1098) {
       setIsMobile(true);
@@ -31,25 +32,22 @@ function RoomPage() {
       setIsMobile(false);
     }
   };
-  const handlePopState=()=>{
-    
+  const handlePopState=async()=>{
+
+
+    const RoomDetail={
+      id:roomID,
+      user_:user.user.id,
+    }
+    await dispatch(LeaveRoom(RoomDetail));
   }
   const GetRoomData = async (id) => {
     try {
-      const response = await axios.get(
-        "http://localhost:8080/api/room/JoinRoom",
-        {
-          params: {
-            RoomID: id,
-            UserID:user.user.id,
-          },
-        }
-      );
-      SetRoomJoined(response.data);
-      const room = response.data._id;
+      SetRoomJoined(RoomJoined);
+      console.log(RoomJoined);
+      const room = RoomJoined._id;
       const socket = io.connect('http://localhost:8080');
       socket.emit('join-room',room)
-
     } catch (error) {
       SetError(error);
     }
@@ -62,8 +60,10 @@ function RoomPage() {
   }, []);
 
   useEffect(() => {
+    if(RoomJoined)
+    {
     const intervalId = setInterval(() => {
-      const givenDate = new Date(roomJoined.startingTime);
+      const givenDate = new Date(RoomJoined.startingTime);
       const currentTime = Date.now();
       const timePassed = currentTime - givenDate.getTime();
       const MinutesWeHave = Math.floor(60 - timePassed / (1000 * 60));
@@ -76,7 +76,8 @@ function RoomPage() {
     }, 100);
 
     return () => clearInterval(intervalId);
-  }, [roomJoined]);
+  }
+  }, [RoomJoined]);
 
   const HandleMicClick = () => {
     setMicMute(!micMute);
@@ -88,7 +89,7 @@ function RoomPage() {
 
   return (
     <>
-      {!Error && !Expired && (
+      {!Error && !Expired &&RoomJoined&& (
         <div className="min-h-screen bg-Auth-0">
           <Navbar></Navbar>
           {isMobile && (
@@ -243,7 +244,7 @@ function RoomPage() {
           </div>
         </div>
       )}
-      {Error && <RoomNotFound></RoomNotFound>}
+      {Error&&!RoomJoined && <RoomNotFound></RoomNotFound>}
       {Expired && <TimeUp />}
     </>
   );

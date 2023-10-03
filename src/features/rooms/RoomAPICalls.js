@@ -57,5 +57,54 @@ export function CreateRoom(RoomDetails){
           {
              reject(error.response.data.error);    
           }
+          })
+}
+export function Joinroom(RoomDetails){
+  return new Promise(async(resolve,reject)=>{
+    try{
+      console.log('Im in API call');
+      const response=await axios.get("http://localhost:8080/api/room/JoinRoom",{
+        params:{
+          RoomID:RoomDetails.id,
+          UserID:RoomDetails.user_,
+        }
+    })
+    if(response)
+    {
+      resolve(response);
+    }
+    else{
+      reject(response.error);
+    }
+  }
+    catch(error)
+    {
+      reject(error.response.data.error);    
+    }
+  })
+
+}
+export function Leaveroom(RoomDetails)
+{
+    return new Promise(async(resolve,reject)=>{
+        try{
+            const response=await axios.get("http://localhost:8080/api/room/leave",{
+                params:{
+                RoomID: RoomDetails.id,
+                currentUser: RoomDetails.user_,
+                },
+            });
+            if(response.data)
+            {
+                resolve(response.data);
+            }
+            else{
+                reject(response.error);
+            }
+        }
+        catch(error)
+        {
+           reject(error.response.data.error);
+        }
     })
 }

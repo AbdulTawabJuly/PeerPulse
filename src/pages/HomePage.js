@@ -1,7 +1,8 @@
 import { PacmanLoader } from "react-spinners";
 
 import Navbar from "../features/Navbar/Navbar";
-import { selectLoggedInUser, selectStatus } from "../features/auth/authSlice";
+import { selectLoggedInUser } from "../features/auth/authSlice";
+import { selectStatus } from "../features/rooms/RoomSlice";
 import { selectSearchedRooms } from "../features/rooms/RoomSlice";
 import { searchRoom } from "../features/rooms/RoomSlice";
 import {  useDispatch, useSelector } from "react-redux";
@@ -18,7 +19,6 @@ function HomePage() {
   const [searchedItem, setSearchedItem] = useState("");
   const searchedRooms=useSelector(selectSearchedRooms);
   const dispatch=useDispatch();
-
   const SearchRooms = async (name) => {
    dispatch(searchRoom(name));
    console.log(searchedRooms);
@@ -35,7 +35,8 @@ function HomePage() {
       <Navbar></Navbar>
 
       <SideBar/>
-
+      {status==="idle"&&(
+      <>
       <div className=" flex justify-end mr-3 mt-2">
         <div class="relative">
           <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -83,16 +84,13 @@ function HomePage() {
       <JoinPrivateRoom/>
       <AddRoom/>
       
-      
-
-      {/* <h1 className="text-center text-4xl text-black font-Logo">Home</h1>
-      <br />
-      <div className="flex justify-center items-center">
-        {status === "loading" ? (
+    </>
+    )}
+    
+      {status==="loading"&&(
           <PacmanLoader color="#435334"/>
-        ) : null}
-      </div>
-      {user.user.email && <div className=" text-4xl">{user.user.email}</div>} */}
+       )
+     }
     </div>
   );
 }
