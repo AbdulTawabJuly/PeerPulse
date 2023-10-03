@@ -1,19 +1,13 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
 import {io} from 'socket.io-client'
-import { selectLoggedInUser } from '../../auth/authSlice';
-import { selectStatus } from '../RoomSlice';
-import { JoinRoom } from '../RoomSlice';
+
 function RoomCard({ RoomDetails }) {
     const givenDate = new Date(RoomDetails.startingTime);
     const currentTime = Date.now();
     const timePassed = currentTime - givenDate.getTime();
     const [timeLeft, setTimeLeft] = useState(Math.floor(60 - (timePassed / (1000 * 60))));
-    const dispatch=useDispatch();
-    const user=useSelector(selectLoggedInUser);
-    const status=useSelector(selectStatus);
     const navigate=useNavigate();
     useEffect(() => {
         const intervalId = setInterval(() => {
@@ -35,16 +29,7 @@ function RoomCard({ RoomDetails }) {
     }, [RoomDetails]);
     const roomNavigation = "/room/" + RoomDetails._id;
      const joinRoom=async()=>{
-        
-        const RoomDetail={
-            id:RoomDetails._id,
-            user_:user.user.id,
-        }
-        await dispatch(JoinRoom(RoomDetail));
-        if(status==="idle")
-        {
             navigate(roomNavigation);
-        }
      }
     return (
         <button onClick={()=>joinRoom()} >

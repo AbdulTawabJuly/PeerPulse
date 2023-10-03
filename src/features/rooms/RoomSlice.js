@@ -56,22 +56,26 @@ export const LeaveRoom = createAsyncThunk(
       }
     }
   );
+ export function GetJoinedRoom(){
+  return initialState.joinedRoom;
+ }
 
 export const roomSlice = createSlice({
   name: "room",
   initialState,
-  reducers: {},
+  reducers: {
+  },
   extraReducers: (someShit) => {
     someShit 
       .addCase(searchRoom.pending, (state) => {
         state.status = "loading";
       })
       .addCase(searchRoom.fulfilled, (state, action) => {
-        state.status = "idle";
+        state.status = "fulfilled";
         state.searchedRooms = action.payload;
       })
       .addCase(searchRoom.rejected, (state, action) => {
-        state.status = "idle";
+        state.status = "error";
         state.error = action.error.message;
       })
       .addCase(createRoom.pending, (state) => {
@@ -80,12 +84,12 @@ export const roomSlice = createSlice({
       })
 
       .addCase(createRoom.fulfilled, (state, action) => {
-        state.status = "idle";
+        state.status = "fulfilled";
         state.joinedRoom = action.payload;
         state.error = null;
       })
       .addCase(createRoom.rejected, (state, action) => {
-        state.status = "idle";
+        state.status = "error";
         state.error = action.error;
       })
      
@@ -94,12 +98,12 @@ export const roomSlice = createSlice({
         state.error = null;
       })
       .addCase(LeaveRoom.fulfilled, (state, action) => {
-        state.status = "idle";
+        state.status = "fulfilled";
         state.joinedRoom = null;
         state.error = null;
       })
       .addCase(LeaveRoom.rejected, (state, action) => {
-        state.status = "idle";
+        state.status = "error";
         state.error = action.error;
       })
       .addCase(JoinRoom.pending, (state) => {
@@ -107,12 +111,12 @@ export const roomSlice = createSlice({
         state.error = null;
       })
       .addCase(JoinRoom.fulfilled, (state, action) => {
-        state.status = "EnterRoomNow";
+        state.status = "fulfilled";
         state.joinedRoom = action.payload;
         state.error = null;
       })
       .addCase(JoinRoom.rejected, (state, action) => {
-        state.status = "idle";
+        state.status = "error";
         state.joinedRoom=null;
         state.error = action.error;
       })
