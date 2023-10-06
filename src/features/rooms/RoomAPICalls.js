@@ -62,7 +62,6 @@ export function CreateRoom(RoomDetails){
 export function Joinroom(RoomDetails){
   return new Promise(async(resolve,reject)=>{
     try{
-      console.log('Im in API call');
       const response=await axios.get("http://localhost:8080/api/room/JoinRoom",{
         params:{
           RoomID:RoomDetails.id,
@@ -108,3 +107,24 @@ export function Leaveroom(RoomDetails)
         }
     })
 }
+
+// export function Getroom (RoomDetails) {
+//   return new Promise(async(resolve,reject)=> {
+//     try {
+//       const response = await axios.get('http://localhost:8080/getRoom',{
+//         params: {
+//           RoomID: RoomDetails.id
+//         }
+//       })
+//       if(response.data) {
+//         resolve(response.data);
+//       }
+//       else {
+//         reject(response.error);
+//       }
+//     }
+//     catch(error) {
+//       reject(error.response.data.error);
+//     }
+//   })
+// }
