@@ -12,6 +12,8 @@ import RoomCard from "../features/rooms/components/RoomCard";
 import SideBar from "../features/rooms/components/sideBar";
 import AddRoom from '../features/rooms/components/AddRoom';
 import JoinPrivateRoom from "../features/rooms/components/JoinPrivateRoom";
+import { useSocket } from '../context/socket';
+
 
 function HomePage() {
   const user = useSelector(selectLoggedInUser);
@@ -21,7 +23,6 @@ function HomePage() {
   const dispatch=useDispatch();
   const SearchRooms = async (name) => {
    dispatch(searchRoom(name));
-   console.log(searchedRooms);
   };
 
   useEffect(() => {
