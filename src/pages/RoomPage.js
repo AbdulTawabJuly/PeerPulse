@@ -10,6 +10,8 @@ import TimeUp from "../features/rooms/components/TimeUp";
 import { io } from "socket.io-client";
 import { useSelector } from "react-redux";
 import { PacmanLoader } from "react-spinners";
+import { useSocket } from '../context/socket';
+import { sendMessage, selectMessages, emptyMessages } from "../features/chat/ChatSlice";
 
 import {
   LeaveRoom,
@@ -17,6 +19,7 @@ import {
   selectStatus,
   JoinRoom,
   GetJoinedRoom,
+  getRoom
 } from "../features/rooms/RoomSlice";
 import { selectLoggedInUser } from "../features/auth/authSlice";
 import { useDispatch } from "react-redux";
@@ -25,18 +28,19 @@ function RoomPage() {
   const [isVideoOff, setVideoOff] = useState(true);
   const [isMenuOpen, OpenMenu] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  
+  const { socket, initializeSocket, destroySocket, getSocket } = useSocket();
+
   const roomID = useParams();
   const [roomJoined, SetRoomJoined] = useState({});
   const [Error, SetError] = useState("");
   const [timeLeft, setTimeLeft] = useState("");
   const [Expired, SetExpired] = useState(false);
-  const [MemberList,SetMemberList]=useState([]);
+  const [MemberList, SetMemberList] = useState([]);
   const user = useSelector(selectLoggedInUser);
   const dispatch = useDispatch();
   const RoomJoined = useSelector(selectJoinedRoom);
   const status = useSelector(selectStatus);
-   const navigate=useNavigate();
+  const navigate = useNavigate();
   const handleResize = () => {
     if (window.innerWidth < 1098) {
       setIsMobile(true);
@@ -52,18 +56,18 @@ function RoomPage() {
         user_: user.user.id,
       };
       await dispatch(LeaveRoom(RoomDetail));
-      while(status==="loading");
+      while (status === "loading");
     }
   };
 
   const GetRoomData = async (id) => {
     try {
-      const RoomDetail={
-         id:roomID,
-         user_:user.user.id,
+      const RoomDetail = {
+        id: roomID,
+        user_: user.user.id,
       }
       await dispatch(JoinRoom(RoomDetail));
-      
+
     } catch (error) {
       SetError(error);
     }
@@ -74,7 +78,7 @@ function RoomPage() {
     window.addEventListener("resize", handleResize);
     window.addEventListener("popstate", handlePopState);
     GetRoomData(roomID);
-   
+
   }, []);
 
   useEffect(() => {
@@ -96,6 +100,29 @@ function RoomPage() {
     }
   }, [RoomJoined]);
 
+  const messages = useSelector(selectMessages);
+
+  useEffect(() => {
+
+    initializeSocket(user.user.id);
+    if(messages.length === 0) {
+      const newMsg = {
+        type:'join',
+        user:user.user.email
+      }
+      dispatch(sendMessage(newMsg));
+    }
+  }, [])
+
+  useEffect(() => {
+
+    const newSocket = getSocket();
+    if (newSocket) {
+      newSocket.emit('join-room', roomID.id, user.user.email);
+    }
+
+  }, [getSocket]);
+
   const HandleMicClick = () => {
     setMicMute(!micMute);
   };
@@ -103,14 +130,16 @@ function RoomPage() {
     setVideoOff(!isVideoOff);
   };
 
-  const handleEndCall=async()=>{
+  const handleEndCall = async () => {
     if (status === "fulfilled") {
+      destroySocket();
       const RoomDetail = {
         id: roomID,
         user_: user.user.id,
       };
       await dispatch(LeaveRoom(RoomDetail));
-      if(status==="fulfilled"){
+      dispatch(emptyMessages());
+      if (status === "fulfilled") {
         navigate("/");
       }
     }
@@ -118,16 +147,16 @@ function RoomPage() {
 
   return (
     <>
-      {status==="loading"&&(
+      {status === "loading" && (
         <div className="min-h-screen bg-Auth-0">
-              <Navbar></Navbar>
-        <div className="flex items-center justify-center">
-          <PacmanLoader color="#435334"/>
+          <Navbar></Navbar>
+          <div className="flex items-center justify-center">
+            <PacmanLoader color="#435334" />
+          </div>
         </div>
-        </div>
-       )
-     }
-      {!Expired&&status==="fulfilled" && RoomJoined && (
+      )
+      }
+      {!Expired && status === "fulfilled" && RoomJoined && (
         <div className="min-h-screen bg-Auth-0">
           <Navbar></Navbar>
           {isMobile && (
@@ -257,7 +286,7 @@ function RoomPage() {
                 </svg>
               )}
             </button>
-            <button onClick={()=>handleEndCall()} className=" w-20 h-14 flex justify-center rounded-full bg-red-900 hover:scale-105">
+            <button onClick={() => handleEndCall()} className=" w-20 h-14 flex justify-center rounded-full bg-red-900 hover:scale-105">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="mt-2"
@@ -282,7 +311,7 @@ function RoomPage() {
           </div>
         </div>
       )}
-      {status==="error" && <RoomNotFound></RoomNotFound>}
+      {status === "error" && <RoomNotFound></RoomNotFound>}
       {Expired && <TimeUp />}
 
     </>
