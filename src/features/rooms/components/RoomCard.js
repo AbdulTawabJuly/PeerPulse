@@ -1,14 +1,18 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
 import {  useNavigate } from 'react-router-dom';
-import {io} from 'socket.io-client'
-
+import { selectLoggedInUser } from "../../auth/authSlice";
+import { useSelector, useDispatch } from 'react-redux';
+import { sendMessage, selectMessages } from "../../chat/ChatSlice"; 
+ 
 function RoomCard({ RoomDetails }) {
     const givenDate = new Date(RoomDetails.startingTime);
     const currentTime = Date.now();
     const timePassed = currentTime - givenDate.getTime();
     const [timeLeft, setTimeLeft] = useState(Math.floor(60 - (timePassed / (1000 * 60))));
     const navigate=useNavigate();
+    const dispatch = useDispatch();
+    const user = useSelector(selectLoggedInUser);
     useEffect(() => {
         const intervalId = setInterval(() => {
             const givenDate = new Date(RoomDetails.startingTime);
@@ -29,6 +33,11 @@ function RoomCard({ RoomDetails }) {
     }, [RoomDetails]);
     const roomNavigation = "/room/" + RoomDetails._id;
      const joinRoom=async()=>{
+            const msg = {
+                type:'join',
+                user:user.user.email
+            }
+            dispatch(sendMessage(msg))
             navigate(roomNavigation);
      }
     return (

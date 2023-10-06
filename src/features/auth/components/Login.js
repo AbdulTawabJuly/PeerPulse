@@ -3,20 +3,22 @@ import MoonLoader from "react-spinners/MoonLoader";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Navigate } from "react-router-dom";
 import { checkUserAsync, selectErrors, selectLoggedInUser, selectStatus } from "../authSlice";
+import { useEffect } from "react";
+
 
 function Login() {
   const dispatch = useDispatch();
   const error = useSelector(selectErrors);
   const user = useSelector(selectLoggedInUser);
   const status = useSelector(selectStatus);
+
+
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm();
-
-
 
   return (
     <>

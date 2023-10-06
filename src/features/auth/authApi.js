@@ -1,3 +1,4 @@
+
 export function createUser(userData) {
   return new Promise(async (resolve, reject) => {
     try {
@@ -23,6 +24,7 @@ export function createUser(userData) {
 }
 
 export function checkUser(loginInfo) {
+  
   return new Promise(async (resolve, reject) => {
     try {
       const response = await fetch("http://localhost:8080/api/auth/login", {

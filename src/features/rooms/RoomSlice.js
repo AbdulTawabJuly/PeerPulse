@@ -1,11 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { searchRooms } from "./RoomAPICalls";
 import { CreateRoom } from "./RoomAPICalls";
-import { Leaveroom,Joinroom } from "./RoomAPICalls";
+import { Leaveroom,Joinroom, Getroom } from "./RoomAPICalls";
 import { redirect } from "react-router-dom";
 const initialState = {
   searchedRooms: null,
   joinedRoom: null,
+  messages:null,
   status: "",
   error: null,
 };
@@ -35,7 +36,6 @@ export const JoinRoom = createAsyncThunk(
   "room/JoinRoom",
   async (RoomDetails) => {
     try {
-      console.log('Im in slice');
       const response = await Joinroom(RoomDetails);
       return response.data;
     } catch (error) {
@@ -56,6 +56,20 @@ export const LeaveRoom = createAsyncThunk(
       }
     }
   );
+
+    // export const getRoom = createAsyncThunk(
+    //   "room/get",
+    //   async (RoomDetails) => {
+    //     try {
+    //       const response = await getRoom(RoomDetails);
+    //       return response.data;
+    //     }
+    //     catch (error) {
+    //       throw error;
+    //     }
+    //   }
+    // )
+
  export function GetJoinedRoom(){
   return initialState.joinedRoom;
  }
@@ -120,6 +134,19 @@ export const roomSlice = createSlice({
         state.joinedRoom=null;
         state.error = action.error;
       })
+      // .addCase(getRoom.pending, (state,action)=> {
+      //   state.status = "loading";
+      //   state.error = null;
+      // })
+      // .addCase(getRoom.fulfilled, (state,action )=> {
+      //   state.status = "fulfilled";
+      //   state.joinedRoom = action.paylaod;
+      //   state.error = null;
+      // })
+      // .addCase(getRoom.rejected, (state,action) => {
+      //   state.status = "rejected";
+      //   state.error = action.error;
+      // })
   },
 });
 export const selectSearchedRooms = (state) => state.room.searchedRooms;
