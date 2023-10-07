@@ -105,10 +105,10 @@ function RoomPage() {
   useEffect(() => {
 
     initializeSocket(user.user.id);
-    if(messages.length === 0) {
+    if (messages.length === 0) {
       const newMsg = {
-        type:'join',
-        user:user.user.email
+        type: 'join',
+        user: user.user.email
       }
       dispatch(sendMessage(newMsg));
     }
@@ -119,6 +119,33 @@ function RoomPage() {
     const newSocket = getSocket();
     if (newSocket) {
       newSocket.emit('join-room', roomID.id, user.user.email);
+      
+      newSocket.on("user-joined", (user) => {
+        const newMsg = {
+          type: "join",
+          user: user
+        }
+        dispatch(sendMessage(newMsg));
+      })
+
+      newSocket.on("user-left",(user)=> {
+        const newMsg = {
+          type:"left",
+          user:user
+        }
+        dispatch(sendMessage(newMsg));
+      })
+
+      newSocket.on("recieve-message",(message)=> {
+        console.log("in recieve message of fe");
+        const newMsg = {
+          type:"recieved",
+          user:message.user,
+          content:message.content
+        }
+        dispatch(sendMessage(newMsg));
+      })
+
     }
 
   }, [getSocket]);
@@ -132,6 +159,8 @@ function RoomPage() {
 
   const handleEndCall = async () => {
     if (status === "fulfilled") {
+      const newSocket = getSocket();
+      newSocket.emit("leave-room",user.user.email,roomID.id);
       destroySocket();
       const RoomDetail = {
         id: roomID,
