@@ -5,7 +5,8 @@ import '../../../App.css'
 import { useSelector, useDispatch } from 'react-redux';
 import { selectLoggedInUser } from '../../auth/authSlice';
 import { useSocket } from '../../../context/socket'
-import { sendMessage, selectMessages } from "../../chat/ChatSlice"; 
+import { sendMessage, selectMessages } from "../../chat/ChatSlice";
+import {useParams} from 'react-router-dom';
 
 function Messages() {
 
@@ -13,42 +14,59 @@ function Messages() {
   const user = useSelector(selectLoggedInUser);
   const [message, setMessage] = useState('');
   const messages = useSelector(selectMessages);
-  console.log('messages in Messages component',messages);
+  const { getSocket } = useSocket();
+  const roomID = useParams();
+  const container = useRef();
+  const inputRef = useRef();
+
   const handleChange = (e) => {
     setMessage(e.target.value);
   }
 
+  const dispatch = useDispatch();
+
   const handleClick = () => {
-    newMsg.current?.scrollIntoView();
+    const msg  = {
+      type:'sent',
+      user:user.user.email,
+      content:message
+    }
+    dispatch(sendMessage(msg));
+    setMessage("")
+    const newSocket = getSocket();
+    newSocket.emit("send-message",msg,roomID.id);
+    const div = container.current;
+    div.scrollTop = div.scrollHeight + 80;
+    
   }
 
-  const { getSocket } = useSocket();
-  const dispatch = useDispatch();
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleClick();
+    }
+  };
+
   useEffect(() => {
     const newSocket = getSocket();
     if (newSocket) {
-      newSocket.on("user-joined", (user) => {
-        const newMsg = {
-           type: "join",
-           user: user
-        }
-        dispatch(sendMessage(newMsg));
-      })
+        newSocket.on("recieve-message",(message)=> {
+          newMsg.current?.scrollIntoView({behavior:'smooth', block:'end'});
+        })
     }
+    inputRef.current.focus();
 
   }, [getSocket])
 
   return (
-    <div className='h-96 w-96 relative'>
+    <div className='h-96 w-96 relative ' >
 
-      <div className='chat max-h-64 overflow-y-auto'>
-        {messages && messages.map((msg) => (<Message type={msg.type} user={msg.user} />))}
-        <div ref={newMsg} />
+      <div className='chat max-h-64 overflow-y-auto' ref={container}>
+        {messages && messages.map((msg) => (<Message type={msg.type} user={msg.user} content={msg.content} />))}
       </div>
 
       <div className='input absolute bottom-16 left-2'>
         <div className='h-10 flex justify-between rounded-full bg-gray-100 mx-auto' style={{ width: '360px' }}>
-          <input type='text' placeholder='Type something ...' className='bg-gray-100 ml-4 msg-input truncate' style={{ width: '250px' }} onChange={handleChange} value={message} />
+          <input type='text' placeholder='Type something ...' className='bg-gray-100 ml-4 msg-input truncate' style={{ width: '250px' }} onChange={handleChange} value={message} ref={inputRef} autoFocus onKeyDown={handleKeyDown}/>
           <div>
             <button onClick={handleClick} className='p-2'>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
@@ -65,6 +83,7 @@ function Messages() {
 
         </div>
       </div>
+      <div ref={newMsg} />
     </div>
 
   )

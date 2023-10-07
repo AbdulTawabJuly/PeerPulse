@@ -8,9 +8,9 @@ import { useSocket } from '../../../context/socket'
 import axios from "axios";
 function SideToggle() {
   const { getSocket } = useSocket();
-  const [Members, SetMembers] = useState(true);
+  const [Members, SetMembers] = useState(false);
   const [participants, setParticipants] = useState([]);
-  const [Chat, SetChat] = useState(false);
+  const [Chat, SetChat] = useState(true);
   const [ChatGpt, SetChatGpt] = useState(false);
   const JoinedRoom = useSelector(selectJoinedRoom);
   const memberList = JoinedRoom.members;
@@ -70,17 +70,20 @@ function SideToggle() {
     const newSocket = getSocket();
     if (newSocket) {
       newSocket.on("user-joined", (user) => {
-        console.log('another user joined', user);
         getUpdatedRoom(JoinedRoom._id)
           .then((updatedRoom)=> {
-            console.log("memers: ",updatedRoom.members);
             setParticipants(updatedRoom.members);
           })
       })
-      
+      newSocket.on("user-left",(user) => {
+        getUpdatedRoom(JoinedRoom._id)
+          .then((updatedRoom)=> {
+            setParticipants(updatedRoom.members);
+          })
+      })
+
       getUpdatedRoom(JoinedRoom._id)
           .then((updatedRoom)=> {
-            console.log("memers: ",updatedRoom.members);
             setParticipants(updatedRoom.members);
           })
     }
@@ -90,22 +93,22 @@ function SideToggle() {
   return (
     <div className="h-96 w-96 bg-white border border-gray-600  rounded-lg flex flex-row items-start lg:block md:block">
       <button
-        onClick={() => HandleMemberClick()}
-        className="p-3 w-1/3 bg-AuthBtn-0 rounded-tl-lg text-white hover:scale-105 border border-white"
-      >
-        Members
-      </button>
-      <button
         onClick={() => HandleChatClick()}
-        className="p-3 w-1/3 bg-AuthBtn-0 text-white hover:scale-105 border border-white"
+        className="p-3 w-1/3 bg-AuthBtn-0 rounded-tl-lg text-white hover:scale-105 border border-white"
       >
         Chat
       </button>
       <button
         onClick={() => HandleChatGptClick()}
+        className="p-3 w-1/3 bg-AuthBtn-0 text-white hover:scale-105 border border-white"
+      >
+        GPT
+      </button>
+      <button
+        onClick={() => HandleMemberClick()}
         className="p-3 w-1/3 bg-AuthBtn-0 rounded-tr-lg text-white hover:scale-105 border border-white"
       >
-        ChatGPT
+        Members
       </button>
       {Members && (<div class="max-h-80 overflow-y-auto">
 
