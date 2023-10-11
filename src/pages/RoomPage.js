@@ -23,6 +23,7 @@ import {
 } from "../features/rooms/RoomSlice";
 import { selectLoggedInUser } from "../features/auth/authSlice";
 import { useDispatch } from "react-redux";
+import VideoRoom from "../features/rooms/components/VideoRoom";
 function RoomPage() {
   const [micMute, setMicMute] = useState(true);
   const [isVideoOff, setVideoOff] = useState(true);
@@ -236,7 +237,8 @@ function RoomPage() {
           </div>
 
           <div className="flex flex-row justify-around items-center mb-2 h-full">
-            <VideoBox></VideoBox>
+            {isVideoOff && <VideoBox></VideoBox>}
+            {!isVideoOff && <VideoRoom></VideoRoom>}
             {!isMobile && <SideToggle></SideToggle>}
             {isMenuOpen && (
               <div className="fixed top-12 left-8">
