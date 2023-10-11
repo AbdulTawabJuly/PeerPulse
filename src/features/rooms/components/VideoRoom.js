@@ -3,9 +3,26 @@ import AgoraRTC from "agora-rtc-sdk-ng";
 import VideoPlayer from "./VideoPlayer";
 
 function VideoRoom() {
+  //const { RtcTokenBuilder,RtcRole } = require("agora-access-token");
   const APP_ID = "2a6ac8d6740d4c80a8142151c08678ba";
-  const TOKEN ="007eJxTYMi4EXI4eNnlntxnccfNU7PXv1S5/lteyXNPrMaJZt/JwSEKDEaJZonJFilm5iYGKSbJFgaJFoYmRoamhskGFmbmFkmJKkvVUhsCGRnMjNQYGRkgEMRnZggIMGJgAABASB1R"; 
+  //const APP_CERTIFICATE = "fe83029c5c6c4f198960b0e897d777eb";
+
+  const TOKEN ="007eJxTYMi4EXI4eNnlntxnccfNU7PXv1S5/lteyXNPrMaJZt/JwSEKDEaJZonJFilm5iYGKSbJFgaJFoYmRoamhskGFmbmFkmJKkvVUhsCGRnMjNQYGRkgEMRnZggIMGJgAABASB1R";
   const CHANNEL = "PP2";
+  // const uid = Math.floor(Math.random() * 100000);
+  // const role = RtcRole.PUBLISHER;
+  // const expirationTimeInSeconds = 3600;
+  // const currentTimestamp = Math.floor(Date.now() / 1000);
+  // const privilegeExpiredTs = currentTimestamp + expirationTimeInSeconds;
+  // const TOKEN = RtcTokenBuilder.buildTokenWithUid(
+  //   APP_ID,
+  //   APP_CERTIFICATE,
+  //   CHANNEL,
+  //   uid,
+  //   role,
+  //   privilegeExpiredTs
+  // );
+
   const [users, setUsers] = useState([]);
   const [localTracks, setLocalTracks] = useState([]);
   const client = AgoraRTC.createClient({
