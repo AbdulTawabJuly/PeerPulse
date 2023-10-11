@@ -9,6 +9,8 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.5.0",
+    "agora-rtc-sdk-ng": "^4.19.1",
+    "agora-token": "^2.0.3",
     "axios": "^1.5.0",
     "cors": "^2.8.5",
     "react": "^18.2.0",
