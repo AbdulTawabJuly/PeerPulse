@@ -4,6 +4,8 @@ import roomReducer from "../features/rooms/RoomSlice"
 import storage from 'redux-persist/lib/storage'
 import {persistReducer} from 'redux-persist'
 import messagesReducer from "../features/chat/ChatSlice"
+import videoReducer from "../features/VideoCall/videoCallSlice"
+
 
 const persistConfig = {
   key:"root",
@@ -14,7 +16,8 @@ const persistConfig = {
 const reducer = combineReducers({
   auth:authReducer,
   room:roomReducer,
-  messages: messagesReducer
+  messages: messagesReducer,
+  video:videoReducer,
 })
 
 const persistedReducer = persistReducer(persistConfig, reducer);

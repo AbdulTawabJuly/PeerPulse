@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-function VideoPlayer({ user }) {
+function VideoPlayer({ user, Video }) {
   const ref = useRef();
 
   useEffect(() => {
@@ -8,7 +8,12 @@ function VideoPlayer({ user }) {
   }, []);
   return (
     <div className="flex justify-center mt-5">
-      <div ref={ref} className=" h-96 w-96 "></div>
+      {Video && (
+        <div ref={ref} className=" h-96 w-96 "></div>
+      )}
+      {!Video && (
+        <div className=" h-96 w-96 bg-black"></div>
+      )}
     </div>
   );
 }

@@ -10,8 +10,19 @@ import TimeUp from "../features/rooms/components/TimeUp";
 import { io } from "socket.io-client";
 import { useSelector } from "react-redux";
 import { PacmanLoader } from "react-spinners";
-import { useSocket } from '../context/socket';
-import { sendMessage, selectMessages, emptyMessages } from "../features/chat/ChatSlice";
+import { useSocket } from "../context/socket";
+import {
+  sendMessage,
+  selectMessages,
+  emptyMessages,
+} from "../features/chat/ChatSlice";
+import {
+  toggleCamera,
+  toggleMic,
+  JoinStream,
+  LeaveStream,
+  selectJoinedPeople,
+} from "../features/VideoCall/videoCallSlice";
 
 import {
   LeaveRoom,
@@ -19,7 +30,7 @@ import {
   selectStatus,
   JoinRoom,
   GetJoinedRoom,
-  getRoom
+  getRoom,
 } from "../features/rooms/RoomSlice";
 import { selectLoggedInUser } from "../features/auth/authSlice";
 import { useDispatch } from "react-redux";
@@ -27,6 +38,7 @@ import VideoRoom from "../features/rooms/components/VideoRoom";
 function RoomPage() {
   const [micMute, setMicMute] = useState(true);
   const [isVideoOff, setVideoOff] = useState(true);
+  const [joined, setJoined] = useState(false);
   const [isMenuOpen, OpenMenu] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const { socket, initializeSocket, destroySocket, getSocket } = useSocket();
@@ -38,6 +50,7 @@ function RoomPage() {
   const [Expired, SetExpired] = useState(false);
   const [MemberList, SetMemberList] = useState([]);
   const user = useSelector(selectLoggedInUser);
+  const joinedPeople=useSelector(selectJoinedPeople)
   const dispatch = useDispatch();
   const RoomJoined = useSelector(selectJoinedRoom);
   const status = useSelector(selectStatus);
@@ -66,9 +79,8 @@ function RoomPage() {
       const RoomDetail = {
         id: roomID,
         user_: user.user.id,
-      }
+      };
       await dispatch(JoinRoom(RoomDetail));
-
     } catch (error) {
       SetError(error);
     }
@@ -79,7 +91,6 @@ function RoomPage() {
     window.addEventListener("resize", handleResize);
     window.addEventListener("popstate", handlePopState);
     GetRoomData(roomID);
-
   }, []);
 
   useEffect(() => {
@@ -104,76 +115,79 @@ function RoomPage() {
   const messages = useSelector(selectMessages);
 
   useEffect(() => {
-
     initializeSocket(user.user.id);
     if (messages.length === 0) {
       const newMsg = {
-        type: 'join',
-        user: user.user.email
-      }
+        type: "join",
+        user: user.user.email,
+      };
       dispatch(sendMessage(newMsg));
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-
     const newSocket = getSocket();
     if (newSocket) {
-      newSocket.emit('join-room', roomID.id, user.user.email);
-      
+      newSocket.emit("join-room", roomID.id, user.user.email);
+
       newSocket.on("user-joined", (user) => {
         const newMsg = {
           type: "join",
-          user: user
-        }
+          user: user,
+        };
         dispatch(sendMessage(newMsg));
-      })
+      });
 
-      newSocket.on("user-left",(user)=> {
+      newSocket.on("user-left", (user) => {
         const newMsg = {
-          type:"left",
-          user:user
-        }
+          type: "left",
+          user: user,
+        };
         dispatch(sendMessage(newMsg));
-      })
+      });
 
-      newSocket.on("recieve-message",(message)=> {
+      newSocket.on("recieve-message", (message) => {
         console.log("in recieve message of fe");
         const newMsg = {
-          type:"recieved",
-          user:message.user,
-          content:message.content
-        }
+          type: "recieved",
+          user: message.user,
+          content: message.content,
+        };
         dispatch(sendMessage(newMsg));
-      })
-
+      });
     }
-
   }, [getSocket]);
 
   const HandleMicClick = () => {
+    dispatch(toggleMic());
     setMicMute(!micMute);
   };
   const HandleVideoClick = () => {
-    setVideoOff(!isVideoOff);
+    dispatch(toggleCamera());
+    setVideoOff(!isVideoOff)
+  };
+
+  const handleJoin = () => {
+    dispatch(JoinStream());
   };
 
   const handleEndCall = async () => {
     if (status === "fulfilled") {
       const newSocket = getSocket();
-      newSocket.emit("leave-room",user.user.email,roomID.id);
+      newSocket.emit("leave-room", user.user.email, roomID.id);
       destroySocket();
       const RoomDetail = {
         id: roomID,
         user_: user.user.id,
       };
       await dispatch(LeaveRoom(RoomDetail));
+      dispatch(LeaveStream());
       dispatch(emptyMessages());
       if (status === "fulfilled") {
         navigate("/");
       }
     }
-  }
+  };
 
   return (
     <>
@@ -184,8 +198,7 @@ function RoomPage() {
             <PacmanLoader color="#435334" />
           </div>
         </div>
-      )
-      }
+      )}
       {!Expired && status === "fulfilled" && RoomJoined && (
         <div className="min-h-screen bg-Auth-0">
           <Navbar></Navbar>
@@ -237,8 +250,8 @@ function RoomPage() {
           </div>
 
           <div className="flex flex-row justify-around items-center mb-2 h-full">
-            {isVideoOff && <VideoBox></VideoBox>}
-            {!isVideoOff && <VideoRoom></VideoRoom>}
+           {joinedPeople && <VideoRoom></VideoRoom>}
+           {!joinedPeople && <VideoBox></VideoBox>}
             {!isMobile && <SideToggle></SideToggle>}
             {isMenuOpen && (
               <div className="fixed top-12 left-8">
@@ -247,6 +260,22 @@ function RoomPage() {
             )}
           </div>
           <div className="flex flex-row justify-center w-full">
+            <button
+              onClick={() => handleJoin()}
+              className=" w-14 h-14 flex justify-center rounded-full bg-red-900 mr-4 hover:scale-105"
+            >
+              <svg
+                fill="white"
+                viewBox="0 0 26 26"
+                className="bi bi-mic-mute-fill mt-3"
+                xmlns="http://www.w3.org/2000/svg"
+                width="36"
+                height="36"
+              >
+                <path d="M20.25 3.75v4.5m0-4.5h-4.5m4.5 0l-6 6m3 12c-8.284 0-15-6.716-15-15V4.5A2.25 2.25 0 014.5 2.25h1.372c.516 0 .966.351 1.091.852l1.106 4.423c.11.44-.054.902-.417 1.173l-1.293.97a1.062 1.062 0 00-.38 1.21 12.035 12.035 0 007.143 7.143c.441.162.928-.004 1.21-.38l.97-1.293a1.125 1.125 0 011.173-.417l4.423 1.106c.5.125.852.575.852 1.091V19.5a2.25 2.25 0 01-2.25 2.25h-2.25z"></path>
+              </svg>
+            </button>
+
             <button
               onClick={() => HandleMicClick()}
               className=" w-14 h-14 flex justify-center rounded-full bg-red-900 mr-4 hover:scale-105"
@@ -317,7 +346,10 @@ function RoomPage() {
                 </svg>
               )}
             </button>
-            <button onClick={() => handleEndCall()} className=" w-20 h-14 flex justify-center rounded-full bg-red-900 hover:scale-105">
+            <button
+              onClick={() => handleEndCall()}
+              className=" w-20 h-14 flex justify-center rounded-full bg-red-900 hover:scale-105"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="mt-2"
@@ -344,7 +376,6 @@ function RoomPage() {
       )}
       {status === "error" && <RoomNotFound></RoomNotFound>}
       {Expired && <TimeUp />}
-
     </>
   );
 }
