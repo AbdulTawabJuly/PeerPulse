@@ -168,6 +168,7 @@ function RoomPage() {
   };
 
   const handleJoin = () => {
+    console.log("Join Stream of Room PAge Called")
     dispatch(JoinStream());
   };
 
@@ -248,6 +249,10 @@ function RoomPage() {
               </p>
             </div>
           </div>
+
+          {/* {joinedPeople&& <div className="flex flex-row">
+            <VideoRoom></VideoRoom>
+          </div>} */}
 
           <div className="flex flex-row justify-around items-center mb-2 h-full">
            {joinedPeople && <VideoRoom></VideoRoom>}

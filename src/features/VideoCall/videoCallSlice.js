@@ -4,8 +4,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const videoCallSlice = createSlice({
   name: "video",
   initialState: {
-    camera: true,
-    mic: true,
+    camera: false,
+    mic: false,
     joined: false,
   },
   reducers: {
@@ -30,6 +30,8 @@ const videoCallSlice = createSlice({
     },
     LeaveStream: (state, action) => {
       state.joined = false;
+      state.camera=false;
+      state.mic=false;
     },
   },
 });
