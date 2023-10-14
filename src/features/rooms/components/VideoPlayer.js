@@ -1,21 +1,20 @@
-import { useEffect, useRef } from "react";
+import React, { useEffect, useLayoutEffect, useRef } from "react";
 
-function VideoPlayer({ user, Video }) {
+export const VideoPlayer = ({ user, currentVideo, backGroundColor }) => {
   const ref = useRef();
 
   useEffect(() => {
     user.videoTrack.play(ref.current);
   }, []);
+
   return (
-    <div className="flex justify-center mt-5">
-      {Video && (
-        <div ref={ref} className=" h-96 w-96 "></div>
-      )}
-      {!Video && (
-        <div className=" h-96 w-96 bg-black"></div>
+    <div>
+      {currentVideo === true && <div className=" h-80 w-80" ref={ref}></div>}
+      {currentVideo === false && (
+        <div className=" h-80 w-80 bg-black" ref={ref}></div>
       )}
     </div>
   );
-}
+};
 
-export default VideoPlayer;
+//style={{ width: '200px', height: '200px' }}

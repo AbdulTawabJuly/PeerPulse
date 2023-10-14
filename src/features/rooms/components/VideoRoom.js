@@ -1,139 +1,150 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import AgoraRTC from "agora-rtc-sdk-ng";
-import VideoPlayer from "./VideoPlayer";
+import AgoraRTC, { createClient } from "agora-rtc-sdk-ng";
+import { VideoPlayer } from "./VideoPlayer";
 import {
   selectCameraState,
   selectJoinedPeople,
   selectMicState,
 } from "../../VideoCall/videoCallSlice";
+import { useSelector } from "react-redux";
+
 
 const APP_ID = "2a6ac8d6740d4c80a8142151c08678ba";
 const TOKEN =
-  "007eJxTYNg8IWl6SHbl4qBf94oPz13Z9O5k3zaflzKiZx5HnpVLPWmswGCUaJaYbJFiZm5ikGKSbGGQaGFoYmRoaphsYGFmbpGUyHZBI7UhkJGBa74NKyMDBIL4zAwBAUYMDADCaB9W";
+  "007eJxTYPDwWbteraLxvjlj3DbXxw/4DC5uXm6tfuckC+vqbUpN5ucVGIwSzRKTLVLMzE0MUkySLQwSLQxNjAxNDZMNLMzMLZISZ7JrpTYEMjJsjFzEwsgAgSA+M0NAgBEDAwDBAxy6";
 const CHANNEL = "PP2";
 
-const client = AgoraRTC.createClient({
-  mode: "rtc",
-  codec: "vp8",
-});
+AgoraRTC.setLogLevel(4);
 
-function VideoRoom() {
-  //const [localTracks, setLocalTracks] = useState([]);
-  // const [remoteUsers, setRemoteUsers] = useState([]);
-  let localTracks = [];
-  let remoteUsers = [];
-  const [backgroundColor,setBackGroundColor] = useState();
+let agoraCommandQueue = Promise.resolve();
 
-  const currentVideo = useSelector(selectCameraState);
-  const currentMic = useSelector(selectMicState);
-  const joinedPeople = useSelector(selectJoinedPeople);
+const createAgoraClient = ({ onVideoTrack, onUserDisconnected }) => {
+  const client = createClient({
+    mode: "rtc",
+    codec: "vp8",
+  });
 
-  const joinAndDisplayLocalStream = async () => {
-    client.on('user-published', handleUserJoined)
-    
-    client.on('user-left', handleUserLeft)
-    
-    let UID = await client.join(APP_ID, CHANNEL, TOKEN, null)
+  let tracks;
 
-    localTracks = await AgoraRTC.createMicrophoneAndCameraTracks() // this method will prompt the user to hold their audio and video
-
-    let player = `<div class="video-container" id="user-container-${UID}">
-                        <div class="video-player" id="user-${UID}"></div>
-                  </div>`
-    document.getElementById('video-streams').insertAdjacentHTML('beforeend', player)
-
-    localTracks[1].play(`user-${UID}`) // play creates a video element
-    // audio at index 0 and video at index 1
-    await client.publish([localTracks[0], localTracks[1]])
-  };
-  let joinStream = async () => {
-    await joinAndDisplayLocalStream()
-}
-
-  let handleUserJoined = async (user, mediaType) => {
-    remoteUsers[user.uid] = user 
-    await client.subscribe(user, mediaType)
-
-    if (mediaType === 'video'){
-        let player = document.getElementById(`user-container-${user.uid}`) // this will create a new video player and publish it
-        if (player != null){
-            player.remove() // this will remove the duplicates if it is already present
+  const waitForConnectionState = (connectionState) => {
+    return new Promise((resolve) => {
+      const interval = setInterval(() => {
+        if (client.connectionState === connectionState) {
+          clearInterval(interval);
+          resolve();
         }
-
-        player = `<div class="video-container" id="user-container-${user.uid}">
-                        <div class="video-player" id="user-${user.uid}"></div> 
-                 </div>`
-        document.getElementById('video-streams').insertAdjacentHTML('beforeend', player)
-
-        user.videoTrack.play(`user-${user.uid}`) // this will activate the video player
-    }
-
-    if (mediaType === 'audio'){
-        user.audioTrack.play() // this will activate the audio player
-    }
-}
-
-let handleUserLeft = async (user) => { // this is when the user close the tab
-  delete remoteUsers[user.uid]
-  document.getElementById(`user-container-${user.uid}`).remove()
-}
-
-let leaveAndRemoveLocalStream = async () => {
-  for(let i = 0; localTracks.length > i; i++){
-      localTracks[i].stop()
-      localTracks[i].close()
-  }
-
-  await client.leave()
-  document.getElementById('video-streams').innerHTML = ''
-}
-
-
-  const toggleCamera = async (e) => {
-    if (localTracks[1].muted) {
-      await localTracks[1].setMuted(false);
-    } else {
-      await localTracks[1].setMuted(true);
-    }
+      }, 200);
+    });
   };
 
-  const toggleMic=async(e)=>{
-    if (localTracks[0].muted) {
-      await localTracks[0].setMuted(false);
-    } else {
-      await localTracks[0].setMuted(true);
-    }
-  }
+  const connect = async () => {
+    await waitForConnectionState("DISCONNECTED");
 
-  const handleClick = () => {
-    // Toggle between joining and leaving based on the people state.
-    if (joinedPeople) {
-      leaveAndRemoveLocalStream();
-    } else {
-      joinStream();
-    }
+    const uid = await client.join(APP_ID, CHANNEL, TOKEN, null);
+
+    client.on("user-published", (user, mediaType) => {
+      client.subscribe(user, mediaType).then(() => {
+        if (mediaType === "video") {
+          onVideoTrack(user);
+        }
+      });
+    });
+
+    client.on("user-left", (user) => {
+      onUserDisconnected(user);
+    });
+
+    tracks = await AgoraRTC.createMicrophoneAndCameraTracks();
+
+    await client.publish(tracks);
+
+    return {
+      tracks,
+      uid,
+    };
   };
 
-  useEffect(()=>{
-    handleClick();
-  },[joinedPeople])
+  const disconnect = async () => {
+    await waitForConnectionState("CONNECTED");
+    client.removeAllListeners();
+    for (let track of tracks) {
+      track.stop();
+      track.close();
+    }
+    await client.unpublish(tracks);
+    await client.leave();
+  };
 
-  useEffect(()=>{
-    toggleMic();
-  },[currentMic])
+  return {
+    disconnect,
+    connect,
+  };
+};
 
-  useEffect(()=>{
-    toggleCamera();
-  },[currentVideo])
+export const VideoRoom = () => {
+  const [users, setUsers] = useState([]);
+  const [uid, setUid] = useState(null);
+  const currentVideo = useSelector(selectCameraState);
+  const [backgroundColor,setBackGroundColor] = useState("#000");
+
+  useEffect(() => {
+    const onVideoTrack = (user) => {
+      setUsers((previousUsers) => [...previousUsers, user]);
+    };
+
+    const onUserDisconnected = (user) => {
+      setUsers((previousUsers) =>
+        previousUsers.filter((u) => u.uid !== user.uid)
+      );
+    };
+
+    const { connect, disconnect } = createAgoraClient({
+      onVideoTrack,
+      onUserDisconnected,
+    });
+
+    const setup = async () => {
+      const { tracks, uid } = await connect();
+      setUid(uid);
+      setUsers((previousUsers) => [
+        ...previousUsers,
+        {
+          uid,
+          audioTrack: tracks[0],
+          videoTrack: tracks[1],
+        },
+      ]);
+    };
+
+    const cleanup = async () => {
+      await disconnect();
+      setUid(null);
+      setUsers([]);
+    };
+
+    // setup();
+    agoraCommandQueue = agoraCommandQueue.then(setup);
+
+    return () => {
+      // cleanup();
+      agoraCommandQueue = agoraCommandQueue.then(cleanup);
+    };
+  }, []);
 
   return (
-    <div className=" flex justify-center h-80 w-80" id="stream-wrapper" >
-      <div className=" grid h-80 w-80" id="video-streams">
-       
+    <>
+      <div className=" gap-1 flex flex-wrap items-center content-center border-solid border-black border-2">
+      {users.map((user) => (
+            <VideoPlayer key={user.uid} user={user} currentVideo={currentVideo} backgroundColor={backgroundColor}/>
+          ))}
+        {/* <div className="grid grid-cols-2 gap-4">
+         
+        </div> */}
       </div>
-    </div>
+    </>
   );
-}
+};
 
 export default VideoRoom;
+// flex justify-center
+// flex flex-row border-black border-2
