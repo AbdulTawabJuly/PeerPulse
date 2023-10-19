@@ -4,41 +4,43 @@ import { createSlice } from "@reduxjs/toolkit";
 const videoCallSlice = createSlice({
   name: "video",
   initialState: {
-    camera: false,
-    mic: false,
-    joined: false,
+    cameraState: true,
+    micState: true,
+    currentlyJoined: false,
   },
   reducers: {
     toggleCamera: (state, action) => {
-      if (state.camera === true) {
-        state.camera = false;
-      } else {
-        state.camera = true;
-      }
+      // if (state.cameraState === true) {
+      //   state.cameraState = false;
+      // } else {
+      //   state.cameraState = true;
+      // }
+      state.cameraState=!state.cameraState
     },
     toggleMic: (state, action) => {
-      if (state.mic === true) {
-        state.mic = false;
-      } else {
-        state.mic = true;
-      }
+      // if (state.micState === true) {
+      //   state.micState = false;
+      // } else {
+      //   state.micState = true;
+      // }
+      state.micState=!state.micState
     },
     JoinStream: (state, action) => {
-      state.joined = true;
-      state.mic=true;
-      state.camera=true;
+      state.currentlyJoined = true;
+      state.micState=true;
+      state.cameraState=true;
     },
     LeaveStream: (state, action) => {
-      state.joined = false;
-      state.camera=false;
-      state.mic=false;
+      state.currentlyJoined = false;
+      state.cameraState=false;
+      state.micState=false;
     },
   },
 });
 
 export const { toggleCamera, toggleMic, JoinStream, LeaveStream } =
   videoCallSlice.actions;
-export const selectCameraState = (state) => state.video.camera;
-export const selectMicState = (state) => state.video.mic;
-export const selectJoinedPeople = (state) => state.video.joined;
+export const selectCameraState = (state) => state.video.cameraState;
+export const selectMicState = (state) => state.video.micState;
+export const selectCurrentlyJoined = (state) => state.video.currentlyJoined;
 export default videoCallSlice.reducer;

@@ -1,47 +1,47 @@
-
 //fuck github
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { selectLoggedInUser } from "../../auth/authSlice";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { createRoom,selectJoinedRoom,selectRoomError } from "../RoomSlice";
+import { createRoom, selectJoinedRoom, selectRoomError } from "../RoomSlice";
 import { Navigate, useNavigate } from "react-router-dom";
 const Modal = () => {
   const [isAddModalVisible, setAddModalVisible] = useState(false);
   const user = useSelector(selectLoggedInUser);
   const [newRoomName, setNewRoomName] = useState("");
+  const [Amount, setAmount] = useState();
   const [PrivateCheck, setPrivateCheck] = useState(true);
-  const [PaidCheck, setPaidCheck] = useState(true);
-  const [roomCreated,setRoomCreated]=useState(false);
-  const [Price,SetPrice]=useState();
-  const RoomToJoin=useSelector(selectJoinedRoom);
+  const [PaidCheck, setPaidCheck] = useState(false);
+  const [roomCreated, setRoomCreated] = useState(false);
+  const [Price, SetPrice] = useState();
+  const RoomToJoin = useSelector(selectJoinedRoom);
 
   const toggleAddModal = () => {
     setAddModalVisible(!isAddModalVisible);
   };
-  const dispatch=useDispatch();
-  const error=useSelector(selectRoomError);
-  const navigate=useNavigate();
+  const dispatch = useDispatch();
+  const error = useSelector(selectRoomError);
+  const navigate = useNavigate();
 
   const CreateRoom = async (RoomName) => {
-   const RoomDetails={
-    roomName:RoomName,
-    priv:PrivateCheck,
-    paid:PaidCheck,
-    user_:user.user.id
-   }
-   dispatch(createRoom(RoomDetails));
-   setRoomCreated(true);
-};
+    const RoomDetails = {
+      roomName: RoomName,
+      priv: PrivateCheck,
+      paid: PaidCheck,
+      user_: user.user.id,
+      price:Amount,
+    };
+    console.log("Price FrontEnd ",Amount)
+    dispatch(createRoom(RoomDetails));
+    setRoomCreated(true);
+  };
 
-useEffect(()=>{
-  if(roomCreated)
-  {
-     navigate('/room/'+RoomToJoin._id);
-  }
-},[RoomToJoin]);
-
+  useEffect(() => {
+    if (roomCreated) {
+      navigate("/room/" + RoomToJoin._id);
+    }
+  }, [RoomToJoin]);
 
   const handlePrivateCheck = () => {
     setPrivateCheck(!PrivateCheck);
@@ -130,26 +130,30 @@ useEffect(()=>{
                 </div>
 
                 <div className="ml-2 flex flex-row ">
-                 
-                    <input
-                      type="checkbox"
-                      checked={!PrivateCheck}
-                      onChange={handlePrivateCheck}
-                      className="rounded-fullform-checkbox text-gray-700 ml-2"
-                    ></input>
-                    <label className="ml-2 mr-4 text-white">
-                      Make Private{" "}
-                    </label>
-                    <input
-                      type="checkbox"
-                      checked={!PaidCheck}
-                      onChange={handlePaidCheck}
-                      className="rounded-fullform-checkbox text-gray-700 ml-2"
-                    ></input>
+                  <input
+                    type="checkbox"
+                    checked={!PrivateCheck}
+                    onChange={handlePrivateCheck}
+                    className="rounded-fullform-checkbox text-gray-700 ml-2"
+                  ></input>
+                  <label className="ml-2 mr-4 text-white">Make Private </label>
+                  <input
+                    type="checkbox"
+                    checked={PaidCheck}
+                    onChange={handlePaidCheck}
+                    className="rounded-fullform-checkbox text-gray-700 ml-2"
+                  ></input>
+                  <label className=" ml-2 text-white">Make Paid </label>
 
-                    <label className=" ml-2 text-white">Make Paid </label>
-                    
                 </div>
+                {PaidCheck && <div className="flex justify-center">
+                    <input
+                      className="block w-32 h-10  mb-3  pl-6 ml-1 text-sm text-gray-900 border border-gray-300 rounded-lg "
+                      placeholder="Enter Amount "
+                      value={Amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                    ></input>
+                  </div>}
               </div>
             </div>
           </div>
