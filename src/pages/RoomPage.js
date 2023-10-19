@@ -21,7 +21,9 @@ import {
   toggleMic,
   JoinStream,
   LeaveStream,
-  selectJoinedPeople,
+  selectCurrentlyJoined,
+  selectCameraState,
+  selectMicState,
 } from "../features/VideoCall/videoCallSlice";
 
 import {
@@ -34,7 +36,6 @@ import {
 } from "../features/rooms/RoomSlice";
 import { selectLoggedInUser } from "../features/auth/authSlice";
 import { useDispatch } from "react-redux";
-import VideoRoom from "../features/rooms/components/VideoRoom";
 function RoomPage() {
   const [micMute, setMicMute] = useState(true);
   const [isVideoOff, setVideoOff] = useState(true);
@@ -50,7 +51,10 @@ function RoomPage() {
   const [Expired, SetExpired] = useState(false);
   const [MemberList, SetMemberList] = useState([]);
   const user = useSelector(selectLoggedInUser);
-  const joinedPeople=useSelector(selectJoinedPeople)
+  const currentlyJoinedPeople = useSelector(selectCurrentlyJoined);
+  const cameraState = useSelector(selectCameraState);
+  const micState = useSelector(selectMicState);
+
   const dispatch = useDispatch();
   const RoomJoined = useSelector(selectJoinedRoom);
   const status = useSelector(selectStatus);
@@ -164,12 +168,7 @@ function RoomPage() {
   };
   const HandleVideoClick = () => {
     dispatch(toggleCamera());
-    setVideoOff(!isVideoOff)
-  };
-
-  const handleJoin = () => {
-    console.log("Join Stream of Room PAge Called")
-    dispatch(JoinStream());
+    setVideoOff(!isVideoOff);
   };
 
   const handleEndCall = async () => {
@@ -182,7 +181,7 @@ function RoomPage() {
         user_: user.user.id,
       };
       await dispatch(LeaveRoom(RoomDetail));
-      dispatch(LeaveStream());
+      // dispatch(LeaveStream());
       dispatch(emptyMessages());
       if (status === "fulfilled") {
         navigate("/");
@@ -255,8 +254,9 @@ function RoomPage() {
           </div>} */}
 
           <div className="flex flex-row justify-around items-center mb-2 h-full">
-           {joinedPeople && <VideoRoom></VideoRoom>}
-           {!joinedPeople && <VideoBox></VideoBox>}
+            {/* {currentlyJoinedPeople === true && <VideoRoom></VideoRoom>}
+           {!currentlyJoinedPeople=== false && <VideoBox></VideoBox>} */}
+            <VideoBox></VideoBox>
             {!isMobile && <SideToggle></SideToggle>}
             {isMenuOpen && (
               <div className="fixed top-12 left-8">
@@ -265,7 +265,7 @@ function RoomPage() {
             )}
           </div>
           <div className="flex flex-row justify-center w-full">
-            <button
+            {/* <button
               onClick={() => handleJoin()}
               className=" w-14 h-14 flex justify-center rounded-full bg-red-900 mr-4 hover:scale-105"
             >
@@ -279,13 +279,13 @@ function RoomPage() {
               >
                 <path d="M20.25 3.75v4.5m0-4.5h-4.5m4.5 0l-6 6m3 12c-8.284 0-15-6.716-15-15V4.5A2.25 2.25 0 014.5 2.25h1.372c.516 0 .966.351 1.091.852l1.106 4.423c.11.44-.054.902-.417 1.173l-1.293.97a1.062 1.062 0 00-.38 1.21 12.035 12.035 0 007.143 7.143c.441.162.928-.004 1.21-.38l.97-1.293a1.125 1.125 0 011.173-.417l4.423 1.106c.5.125.852.575.852 1.091V19.5a2.25 2.25 0 01-2.25 2.25h-2.25z"></path>
               </svg>
-            </button>
+            </button> */}
 
             <button
               onClick={() => HandleMicClick()}
               className=" w-14 h-14 flex justify-center rounded-full bg-red-900 mr-4 hover:scale-105"
             >
-              {micMute && (
+              {micMute ===true && (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="32"
@@ -298,7 +298,7 @@ function RoomPage() {
                   <path d="M9.486 10.607 5 6.12V8a3 3 0 0 0 4.486 2.607zm-7.84-9.253 12 12 .708-.708-12-12-.708.708z" />
                 </svg>
               )}
-              {!micMute && (
+              {micMute === false && (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="32"
