@@ -1,14 +1,15 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { searchRooms } from "./RoomAPICalls";
 import { CreateRoom } from "./RoomAPICalls";
-import { Leaveroom,Joinroom, Getroom } from "./RoomAPICalls";
+import { Leaveroom, Joinroom, Getroom } from "./RoomAPICalls";
 import { redirect } from "react-router-dom";
 const initialState = {
   searchedRooms: null,
   joinedRoom: null,
-  messages:null,
+  messages: null,
   status: "",
   error: null,
+  currentlyClickedRoom: null,
 };
 export const searchRoom = createAsyncThunk(
   "room/search",
@@ -39,48 +40,50 @@ export const JoinRoom = createAsyncThunk(
       const response = await Joinroom(RoomDetails);
       return response.data;
     } catch (error) {
-
       throw error;
     }
   }
 );
-export const LeaveRoom = createAsyncThunk(
-    "room/leave",
-    async (RoomDetails) => {
-      try {
-        const response = await Leaveroom(RoomDetails);
-        return response;
-      } catch (error) {
+export const LeaveRoom = createAsyncThunk("room/leave", async (RoomDetails) => {
+  try {
+    const response = await Leaveroom(RoomDetails);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+});
 
-        throw error;
-      }
-    }
-  );
+// export const getRoom = createAsyncThunk(
+//   "room/get",
+//   async (RoomDetails) => {
+//     try {
+//       const response = await getRoom(RoomDetails);
+//       return response.data;
+//     }
+//     catch (error) {
+//       throw error;
+//     }
+//   }
+// )
 
-    // export const getRoom = createAsyncThunk(
-    //   "room/get",
-    //   async (RoomDetails) => {
-    //     try {
-    //       const response = await getRoom(RoomDetails);
-    //       return response.data;
-    //     }
-    //     catch (error) {
-    //       throw error;
-    //     }
-    //   }
-    // )
-
- export function GetJoinedRoom(){
+export function GetJoinedRoom() {
   return initialState.joinedRoom;
- }
+}
+
+// export function setCurrentlyClicked( val) {
+//   currentlyClickedRoom = val;
+// }
 
 export const roomSlice = createSlice({
   name: "room",
   initialState,
   reducers: {
+    setCurrentlyClickedPaidRoom:(state,action)=>{
+      state.currentlyClickedRoom=action.payload;
+    }
   },
   extraReducers: (someShit) => {
-    someShit 
+    someShit
       .addCase(searchRoom.pending, (state) => {
         state.status = "loading";
       })
@@ -106,7 +109,7 @@ export const roomSlice = createSlice({
         state.status = "error";
         state.error = action.error;
       })
-     
+
       .addCase(LeaveRoom.pending, (state) => {
         state.status = "loading";
         state.error = null;
@@ -131,26 +134,30 @@ export const roomSlice = createSlice({
       })
       .addCase(JoinRoom.rejected, (state, action) => {
         state.status = "error";
-        state.joinedRoom=null;
+        state.joinedRoom = null;
         state.error = action.error;
-      })
-      // .addCase(getRoom.pending, (state,action)=> {
-      //   state.status = "loading";
-      //   state.error = null;
-      // })
-      // .addCase(getRoom.fulfilled, (state,action )=> {
-      //   state.status = "fulfilled";
-      //   state.joinedRoom = action.paylaod;
-      //   state.error = null;
-      // })
-      // .addCase(getRoom.rejected, (state,action) => {
-      //   state.status = "rejected";
-      //   state.error = action.error;
-      // })
+      });
+    // .addCase(getRoom.pending, (state,action)=> {
+    //   state.status = "loading";
+    //   state.error = null;
+    // })
+    // .addCase(getRoom.fulfilled, (state,action )=> {
+    //   state.status = "fulfilled";
+    //   state.joinedRoom = action.paylaod;
+    //   state.error = null;
+    // })
+    // .addCase(getRoom.rejected, (state,action) => {
+    //   state.status = "rejected";
+    //   state.error = action.error;
+    // })
   },
 });
+
+export const { setCurrentlyClickedPaidRoom } = roomSlice.actions;
 export const selectSearchedRooms = (state) => state.room.searchedRooms;
 export const selectRoomError = (state) => state.room.error;
 export const selectJoinedRoom = (state) => state.room.joinedRoom;
-export const selectStatus=(state)=>state.room.status;
+export const selectStatus = (state) => state.room.status;
+export const selectCurrentlyClickedRoom = (state) => state.room.currentlyClickedRoom;
+
 export default roomSlice.reducer;

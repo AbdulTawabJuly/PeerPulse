@@ -1,11 +1,13 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { selectLoggedInUser } from "../../auth/authSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { sendMessage, selectMessages } from "../../chat/ChatSlice";
+import PaymentPage from "../../../pages/PaymentPage";
 
 function RoomCard({ RoomDetails }) {
+  console.log( RoomDetails._id );
   const givenDate = new Date(RoomDetails.startingTime);
   const isPaid = RoomDetails.isPaid;
   const currentTime = Date.now();
@@ -42,9 +44,8 @@ function RoomCard({ RoomDetails }) {
     navigate(roomNavigation);
   };
 
-  const handlePayment = () => {
-    console.log("Handle Payment");
-  };
+  //const handlePayment = () => {};
+
   return (
     <button onClick={() => (isPaid ? null : joinRoom())}>
       <div
@@ -85,17 +86,19 @@ function RoomCard({ RoomDetails }) {
             ></img>
           )}
           {isPaid && (
-          <div className="flex justify-end">
-            <button
-              onClick={() => handlePayment()}
-              className=" bg-purple-400 hover:bg-purple-500 w-20 h-9 rounded"
+            <Link to="/Payment" state={RoomDetails}
             >
-              Pay
-            </button>
-          </div>
-        )}
+              <div className="flex justify-end">
+                <button
+                  // onClick={() => handlePayment()}
+                  className=" bg-purple-400 hover:bg-purple-500 w-20 h-9 rounded"
+                >
+                  Pay
+                </button>
+              </div>
+            </Link>
+          )}
         </div>
-       
       </div>
     </button>
   );
