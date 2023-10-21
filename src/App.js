@@ -51,7 +51,7 @@ const router = createBrowserRouter([
     element:<PaymentSuccess></PaymentSuccess>
   },
   {
-    path:"/Stripe-Checkout",
+    path:"/Stripe-Checkout/",
     element:<StripeCheckout></StripeCheckout>
   },
   {
