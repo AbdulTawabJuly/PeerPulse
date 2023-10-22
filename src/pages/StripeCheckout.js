@@ -8,10 +8,12 @@ import { useSelector } from "react-redux";
 import { selectCurrentlyClickedRoom } from "../features/rooms/RoomSlice";
 import { useNavigation } from "react-router-dom";
 
-const stripePromise=loadStripe("pk_test_51NoQGmSDkACrq3oOH97IaDGRCc9BtOEfzPsL6qga6XSkwPoFLD35ifp8QuDEpFBgStRAcPlS9K61rTBl8nZ3b4DK007jTkfUub")
+const stripePromise = loadStripe(
+  "pk_test_51NoQGmSDkACrq3oOH97IaDGRCc9BtOEfzPsL6qga6XSkwPoFLD35ifp8QuDEpFBgStRAcPlS9K61rTBl8nZ3b4DK007jTkfUub"
+);
 export default function StripeCheckout() {
   const [clientSecret, setClientSecret] = useState("");
-  const currentlySelectedPaidRoom = useSelector(selectCurrentlyClickedRoom)
+  const currentlySelectedPaidRoom = useSelector(selectCurrentlyClickedRoom);
 
   useEffect(() => {
     // Create PaymentIntent as soon as the page loads
@@ -19,13 +21,16 @@ export default function StripeCheckout() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ items: currentlySelectedPaidRoom.price }),
+      meta: {
+        room_id: currentlySelectedPaidRoom.id,
+      },
     })
       .then((res) => res.json())
       .then((data) => setClientSecret(data.clientSecret));
   }, []);
 
   const appearance = {
-    theme: 'stripe',
+    theme: "stripe",
   };
   const options = {
     clientSecret,
