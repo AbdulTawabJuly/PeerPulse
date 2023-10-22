@@ -14,16 +14,17 @@ const stripePromise = loadStripe(
 export default function StripeCheckout() {
   const [clientSecret, setClientSecret] = useState("");
   const currentlySelectedPaidRoom = useSelector(selectCurrentlyClickedRoom);
+  console.log("Current Price",currentlySelectedPaidRoom.price)
 
   useEffect(() => {
     // Create PaymentIntent as soon as the page loads
     fetch("http://localhost:8080/create-payment-intent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ items: currentlySelectedPaidRoom.price }),
-      meta: {
-        room_id: currentlySelectedPaidRoom.id,
-      },
+      body: JSON.stringify( {totalAmount : currentlySelectedPaidRoom.price} ),
+      // meta: {
+      //   room_id: currentlySelectedPaidRoom.id,
+      // },
     })
       .then((res) => res.json())
       .then((data) => setClientSecret(data.clientSecret));
