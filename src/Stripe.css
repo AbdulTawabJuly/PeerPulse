@@ -22,7 +22,7 @@
 
 /* Buttons and links */
 .Stripe button {
-  background: #5469d4;
+  background: #435334;
   font-family: Arial, sans-serif;
   color: #ffffff;
   border-radius: 4px;
@@ -39,6 +39,7 @@
 
 .Stripe button:hover {
   filter: contrast(115%);
+  background: #9EB384;
 }
 
 .Stripe button:disabled {
