@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { checkUser, createUser } from "./authApi";
+import { checkUser, createUser, resetPasswordRequest } from "./authApi";
 
 const initialState = {
   loggedInUser: null,
   status: "idle",
   error: null,
+  mailSent:false,
 };
 
 export const createUserAsync = createAsyncThunk(
@@ -14,11 +15,9 @@ export const createUserAsync = createAsyncThunk(
       const response = await createUser(userData);
       // The value we return becomes the `fulfilled` action payload
       return response.data;
-    }
-    catch (error) {
+    } catch (error) {
       throw error;
     }
-    
   }
 );
 
@@ -28,14 +27,23 @@ export const checkUserAsync = createAsyncThunk(
     try {
       const response = await checkUser(loginInfo);
       return response.data;
-    }
-    catch (error) {
+    } catch (error) {
       throw error;
     }
   }
 );
 
-
+export const resetPasswordrequestAsync = createAsyncThunk(
+  "user/resetPasswordRequest",
+  async (email) => {
+    try {
+      const response = await resetPasswordRequest(email);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
 
 export const authSlice = createSlice({
   name: "user",
@@ -43,7 +51,7 @@ export const authSlice = createSlice({
   reducers: {
     signOut: (state) => {
       state.loggedInUser = null;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -68,6 +76,13 @@ export const authSlice = createSlice({
       .addCase(checkUserAsync.rejected, (state, action) => {
         state.status = "idle";
         state.error = action.error.message;
+      })
+      .addCase(resetPasswordrequestAsync.pending, (state, action) => {
+        state.status = "loading";
+      })
+      .addCase(resetPasswordrequestAsync.fulfilled, (state, action) => {
+        state.status = "idle";
+        state.mailSent = true;
       });
   },
 });
@@ -75,5 +90,7 @@ export const authSlice = createSlice({
 export const selectLoggedInUser = (state) => state.auth.loggedInUser;
 export const selectErrors = (state) => state.auth.error;
 export const selectStatus = (state) => state.auth.status;
-export const {signOut} = authSlice.actions;
+export const selectMailSent = (state) => state.mailSent;
+
+export const { signOut } = authSlice.actions;
 export default authSlice.reducer;

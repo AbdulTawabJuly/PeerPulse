@@ -52,7 +52,7 @@ export default function Navbar() {
                     </Link>
                   }
                 </div>
-                <div className="hidden mt-6 sm:ml-6 sm:block">
+                {/* <div className="hidden mt-6 sm:ml-6 sm:block">
                   <div className="flex space-x-4">
                     {navigation.map((item) => (
                       <a
@@ -70,7 +70,7 @@ export default function Navbar() {
                       </a>
                     ))}
                   </div>
-                </div>
+                </div> */}
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                 <button
@@ -147,7 +147,7 @@ export default function Navbar() {
             </div>
           </div>
 
-          <Disclosure.Panel className="sm:hidden">
+          {/* <Disclosure.Panel className="sm:hidden">
             <div className="space-y-1 px-2 pb-3 pt-2">
               {navigation.map((item) => (
                 <Disclosure.Button
@@ -166,7 +166,7 @@ export default function Navbar() {
                 </Disclosure.Button>
               ))}
             </div>
-          </Disclosure.Panel>
+          </Disclosure.Panel> */}
         </>
       )}
     </Disclosure>
