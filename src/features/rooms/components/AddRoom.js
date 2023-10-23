@@ -38,7 +38,8 @@ const Modal = () => {
   };
 
   useEffect(() => {
-    if (PaidCheck !== true && roomCreated) {
+    //PaidCheck !== true &&
+    if ( roomCreated) {
       navigate("/room/" + RoomToJoin._id);
     }
   }, [RoomToJoin]);
