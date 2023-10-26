@@ -39,10 +39,10 @@ function HomePage() {
       {searchedRooms&&(
       <>
       <div className=" flex justify-end mr-3 mt-2">
-        <div class="relative">
-          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
             <svg
-              class="w-4 h-4 text-gray-500 "
+              className="w-4 h-4 text-gray-500 "
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

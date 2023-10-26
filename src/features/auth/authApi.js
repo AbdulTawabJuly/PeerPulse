@@ -52,7 +52,7 @@ export function resetPasswordRequest(email){
       const response = await fetch("http://localhost:8080/api/auth/reset-password-request",{
         method:"POST",
         body:JSON.stringify( {email} ),
-        headers:{ "Content-Type":"application/json"}
+        headers:{ "content-Type":"application/json"}
       });
       if(response.ok){
         const data = await response.json();

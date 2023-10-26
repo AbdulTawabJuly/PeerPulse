@@ -13,8 +13,8 @@ export default function PaymentPage() {
 
   return (
     <>
-      <div class="min-h-screen flex justify-center items-center bg-Auth-0">
-        <div class="bg-gray-200 p-4 h-96 w-96 rounded-lg">
+      <div className="min-h-screen flex justify-center items-center bg-Auth-0">
+        <div className="bg-gray-200 p-4 h-96 w-96 rounded-lg">
           <h1 className=" text-4xl font-Logo">Payment</h1>
           <div className=" mt-20">
             <div className="flow-root">

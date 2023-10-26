@@ -90,7 +90,7 @@ export const authSlice = createSlice({
 export const selectLoggedInUser = (state) => state.auth.loggedInUser;
 export const selectErrors = (state) => state.auth.error;
 export const selectStatus = (state) => state.auth.status;
-export const selectMailSent = (state) => state.mailSent;
+export const selectMailSent = (state) => state.auth.mailSent;
 
 export const { signOut } = authSlice.actions;
 export default authSlice.reducer;
