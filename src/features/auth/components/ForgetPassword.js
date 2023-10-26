@@ -9,7 +9,6 @@ export default function ForgetPassword() {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm();
   const dispatch = useDispatch();
@@ -89,5 +88,7 @@ export default function ForgetPassword() {
         </div>
       </div>
     </>
+
+    // <h1>Hello World</h1>
   );
 }

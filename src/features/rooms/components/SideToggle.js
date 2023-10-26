@@ -110,7 +110,7 @@ function SideToggle() {
       >
         Members
       </button>
-      {Members && (<div class="max-h-80 overflow-y-auto">
+      {Members && (<div className="max-h-80 overflow-y-auto">
 
         {participants && (participants.map((member) => (
           <Member key={member._id} username={member.email} />
