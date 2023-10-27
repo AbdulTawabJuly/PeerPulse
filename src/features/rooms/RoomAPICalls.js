@@ -24,9 +24,33 @@ export function searchRooms(name) {
     }
   });
 }
+
+export function sendInvoice({ RoomDetails, user, params }) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/room/send-invoice",
+        {
+          method: "POST",
+          body: JSON.stringify({ RoomDetails, user, params }),
+          headers: { "content-type": "application/json" },
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        resolve({ data });
+      } else {
+        const json = await response.json();
+        reject(json.error);
+      }
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
 export function CreateRoom(RoomDetails) {
   return new Promise(async (resolve, reject) => {
-    console.log("Paid from API ",RoomDetails.paid)
     try {
       const response = await axios.post(
         "http://localhost:8080/api/room/create",
