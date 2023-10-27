@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { searchRooms } from "./RoomAPICalls";
+import { searchRooms, sendInvoice } from "./RoomAPICalls";
 import { CreateRoom } from "./RoomAPICalls";
 import { Leaveroom, Joinroom, Getroom } from "./RoomAPICalls";
 import { redirect } from "react-router-dom";
@@ -22,6 +22,19 @@ export const searchRoom = createAsyncThunk(
     }
   }
 );
+//--------------------------------------------------------------
+export const sendInvoiceAsync = createAsyncThunk(
+  "room/sendInvoice",
+  async ({RoomDetails,user,params}) => {
+    try {
+      const response = await sendInvoice({RoomDetails,user,params});
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+//--------------------------------------------------
 export const createRoom = createAsyncThunk(
   "room/create",
   async (RoomDetails) => {

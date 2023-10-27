@@ -32,7 +32,6 @@ const Modal = () => {
       user_: user.user.id,
       price:Amount,
     };
-    console.log("Price FrontEnd ",Amount)
     dispatch(createRoom(RoomDetails));
     setRoomCreated(true);
   };
