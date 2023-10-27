@@ -6,7 +6,6 @@ import { selectCurrentlyClickedRoom, selectJoinedRoom, setCurrentlyClicked, setC
 export default function PaymentPage() {
   const location = useLocation();
   const RoomDetails = location.state;
-  //console.log(RoomDetails.name);
   const dispatch=useDispatch();
 
   dispatch(setCurrentlyClickedPaidRoom(RoomDetails))

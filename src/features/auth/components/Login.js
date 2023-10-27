@@ -7,6 +7,8 @@ import {
   selectErrors,
   selectLoggedInUser,
   selectStatus,
+  setErrorToNull,
+  setMailSentToFalse,
 } from "../authSlice";
 import { useEffect } from "react";
 
@@ -15,6 +17,9 @@ function Login() {
   const error = useSelector(selectErrors);
   const user = useSelector(selectLoggedInUser);
   const status = useSelector(selectStatus);
+  useEffect(() => {
+    dispatch(setErrorToNull());
+  }, []);
 
   const {
     register,

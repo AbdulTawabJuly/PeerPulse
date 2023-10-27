@@ -2,13 +2,23 @@ import { Link, Navigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { MoonLoader } from "react-spinners";
 import { useDispatch, useSelector } from "react-redux";
-import { selectLoggedInUser ,createUserAsync, selectStatus, selectErrors} from "../authSlice";
+import {
+  selectLoggedInUser,
+  createUserAsync,
+  selectStatus,
+  selectErrors,
+  setErrorToNull,
+} from "../authSlice";
+import { useEffect } from "react";
 
 function SignUp() {
   const dispatch = useDispatch();
   const status = useSelector(selectStatus);
   const error = useSelector(selectErrors);
   const user = useSelector(selectLoggedInUser);
+  useEffect(() => {
+    dispatch(setErrorToNull());
+  }, []);
   const {
     register,
     handleSubmit,
@@ -17,7 +27,7 @@ function SignUp() {
   } = useForm();
   return (
     <>
-      {user && <Navigate to ="/" replace={true}/>}
+      {user && <Navigate to="/" replace={true} />}
       <div className="flex min-h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8 bg-Auth-0 font-signature">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img
@@ -28,7 +38,9 @@ function SignUp() {
           <h2 className="-mt-20 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
             Sign Up to your Account
           </h2>
-          {error ? <h4 className="text-red-700 text-center pt-4">{error}</h4> : null}
+          {error ? (
+            <h4 className="text-red-700 text-center pt-4">{error}</h4>
+          ) : null}
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
@@ -36,7 +48,9 @@ function SignUp() {
             noValidate
             className="space-y-6"
             onSubmit={handleSubmit((data) => {
-             dispatch(createUserAsync({email:data.email,password:data.password}))
+              dispatch(
+                createUserAsync({ email: data.email, password: data.password })
+              );
             })}
           >
             <div>
@@ -129,7 +143,11 @@ function SignUp() {
                 type="submit"
                 className="flex w-full justify-center rounded-md  px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm bg-AuthBtn-0 hover:bg-AuthBtnHover-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
-                {status === "loading" ? <MoonLoader color="white" size={20}/> : "Sign Up"}
+                {status === "loading" ? (
+                  <MoonLoader color="white" size={20} />
+                ) : (
+                  "Sign Up"
+                )}
               </button>
             </div>
           </form>

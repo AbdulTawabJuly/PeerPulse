@@ -1,11 +1,17 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { checkUser, createUser, resetPasswordRequest } from "./authApi";
+import {
+  checkUser,
+  createUser,
+  resetPassword,
+  resetPasswordRequest,
+} from "./authApi";
 
 const initialState = {
   loggedInUser: null,
   status: "idle",
   error: null,
-  mailSent:false,
+  mailSent: false,
+  passwordReset: false,
 };
 
 export const createUserAsync = createAsyncThunk(
@@ -33,14 +39,26 @@ export const checkUserAsync = createAsyncThunk(
   }
 );
 
-export const resetPasswordrequestAsync = createAsyncThunk(
+export const resetPasswordRequestAsync = createAsyncThunk(
   "user/resetPasswordRequest",
   async (email) => {
     try {
       const response = await resetPasswordRequest(email);
       return response.data;
     } catch (error) {
-      console.log(error);
+      throw error;
+    }
+  }
+);
+
+export const resetPasswordAsync = createAsyncThunk(
+  "user/resetPassword",
+  async (data) => {
+    try {
+      const response = await resetPassword(data);
+      return response.data;
+    } catch (error) {
+      throw error;
     }
   }
 );
@@ -51,6 +69,15 @@ export const authSlice = createSlice({
   reducers: {
     signOut: (state) => {
       state.loggedInUser = null;
+    },
+    setMailSentToFalse: (state) => {
+      state.mailSent = false;
+    },
+    setPasswordResetToFalse: (state) => {
+      state.passwordReset = false;
+    },
+    setErrorToNull: (state) => {
+      state.error = null;
     },
   },
   extraReducers: (builder) => {
@@ -77,12 +104,23 @@ export const authSlice = createSlice({
         state.status = "idle";
         state.error = action.error.message;
       })
-      .addCase(resetPasswordrequestAsync.pending, (state, action) => {
+      .addCase(resetPasswordRequestAsync.pending, (state, action) => {
         state.status = "loading";
       })
-      .addCase(resetPasswordrequestAsync.fulfilled, (state, action) => {
+      .addCase(resetPasswordRequestAsync.fulfilled, (state, action) => {
         state.status = "idle";
         state.mailSent = true;
+      })
+      .addCase(resetPasswordAsync.pending, (state, action) => {
+        state.status = "loading";
+      })
+      .addCase(resetPasswordAsync.fulfilled, (state, action) => {
+        state.status = "idle";
+        state.passwordReset = true;
+      })
+      .addCase(resetPasswordAsync.rejected, (state, action) => {
+        state.status = "idle";
+        state.error = action.error.message;
       });
   },
 });
@@ -91,6 +129,12 @@ export const selectLoggedInUser = (state) => state.auth.loggedInUser;
 export const selectErrors = (state) => state.auth.error;
 export const selectStatus = (state) => state.auth.status;
 export const selectMailSent = (state) => state.auth.mailSent;
+export const selectPasswordReset = (state) => state.auth.passwordReset;
 
-export const { signOut } = authSlice.actions;
+export const {
+  signOut,
+  setMailSentToFalse,
+  setPasswordResetToFalse,
+  setErrorToNull,
+} = authSlice.actions;
 export default authSlice.reducer;

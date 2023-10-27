@@ -1,4 +1,3 @@
-
 export function createUser(userData) {
   return new Promise(async (resolve, reject) => {
     try {
@@ -10,21 +9,17 @@ export function createUser(userData) {
       if (response.ok) {
         const data = await response.json();
         resolve({ data });
-      }
-      else {
+      } else {
         const json = await response.json();
         reject(json.error);
       }
+    } catch (err) {
+      reject(err);
     }
-    catch (err) {
-      reject(err)
-    }
-
   });
 }
 
 export function checkUser(loginInfo) {
-  
   return new Promise(async (resolve, reject) => {
     try {
       const response = await fetch("http://localhost:8080/api/auth/login", {
@@ -35,8 +30,7 @@ export function checkUser(loginInfo) {
       if (response.ok) {
         const data = await response.json();
         resolve({ data });
-      }
-      else {
+      } else {
         const json = await response.json();
         reject(json.error);
       }
@@ -46,23 +40,50 @@ export function checkUser(loginInfo) {
   });
 }
 
-export function resetPasswordRequest(email){
-  return new Promise(async (resolve,reject)=>{
-    try{
-      const response = await fetch("http://localhost:8080/api/auth/reset-password-request",{
-        method:"POST",
-        body:JSON.stringify( {email} ),
-        headers:{ "content-Type":"application/json"}
-      });
-      if(response.ok){
+export function resetPasswordRequest(email) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/auth/reset-password-request",
+        {
+          method: "POST",
+          body: JSON.stringify({ email }),
+          headers: { "content-Type": "application/json" },
+        }
+      );
+      if (response.ok) {
         const data = await response.json();
-        resolve({data});
-      }else{
+        resolve({ data });
+      } else {
         const error = await response.text();
         reject(error);
       }
-    }catch(error){
-      reject(error)
+    } catch (error) {
+      reject(error);
     }
-  })
+  });
+}
+
+export function resetPassword(data) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/auth/reset-password",
+        {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: { "content-Type": "application/json" },
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        resolve({ data });
+      } else {
+        const error = await response.text();
+        reject(error);
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
 }

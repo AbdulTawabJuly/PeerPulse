@@ -16,6 +16,7 @@ import TimeUp from "./features/rooms/components/TimeUp";
 import Member from "./features/rooms/components/Member";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import StripeCheckout from "./pages/StripeCheckout";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 const router = createBrowserRouter([  
   {
@@ -53,6 +54,10 @@ const router = createBrowserRouter([
   {
     path:"/stripe-checkout/",
     element:<StripeCheckout></StripeCheckout>
+  },
+  {
+    path:"/reset-password",
+    element:<ResetPasswordPage></ResetPasswordPage>
   },
   {
     path: "*",
