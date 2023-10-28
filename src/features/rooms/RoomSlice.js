@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { searchRooms, sendInvoice } from "./RoomAPICalls";
 import { CreateRoom } from "./RoomAPICalls";
-import { Leaveroom, Joinroom, Getroom } from "./RoomAPICalls";
+import { Leaveroom, Joinroom, Getroom, getToken } from "./RoomAPICalls";
 import { redirect } from "react-router-dom";
 const initialState = {
   searchedRooms: null,
@@ -10,6 +10,7 @@ const initialState = {
   status: "",
   error: null,
   currentlyClickedRoom: null,
+  token:null,
 };
 export const searchRoom = createAsyncThunk(
   "room/search",
@@ -22,19 +23,29 @@ export const searchRoom = createAsyncThunk(
     }
   }
 );
-//--------------------------------------------------------------
+
 export const sendInvoiceAsync = createAsyncThunk(
   "room/sendInvoice",
-  async ({RoomDetails,user,params}) => {
+  async ({ RoomDetails, user, params }) => {
     try {
-      const response = await sendInvoice({RoomDetails,user,params});
+      const response = await sendInvoice({ RoomDetails, user, params });
       return response;
     } catch (error) {
       throw error;
     }
   }
 );
-//--------------------------------------------------
+
+export const getTokenAsync = createAsyncThunk("room/getToken", async () => {
+  try {
+    const response = await getToken();
+    const data = response.data;
+    return data;
+  } catch (error) {
+    throw error;
+  }
+});
+
 export const createRoom = createAsyncThunk(
   "room/create",
   async (RoomDetails) => {
@@ -91,9 +102,9 @@ export const roomSlice = createSlice({
   name: "room",
   initialState,
   reducers: {
-    setCurrentlyClickedPaidRoom:(state,action)=>{
-      state.currentlyClickedRoom=action.payload;
-    }
+    setCurrentlyClickedPaidRoom: (state, action) => {
+      state.currentlyClickedRoom = action.payload;
+    },
   },
   extraReducers: (someShit) => {
     someShit
@@ -149,7 +160,21 @@ export const roomSlice = createSlice({
         state.status = "error";
         state.joinedRoom = null;
         state.error = action.error;
-      });
+      })
+      .addCase(getTokenAsync.pending, (state) => {
+        state.status = "loading";
+        state.token = null;
+      })
+      .addCase(getTokenAsync.fulfilled, (state, action) => {
+        state.status = "fulfilled";
+        state.token = action.payload;
+        state.error = null;
+      })
+      .addCase(getTokenAsync.rejected, (state, action) => {
+        state.status = "error";
+        state.token = null;
+        state.error = action.error;
+      })
     // .addCase(getRoom.pending, (state,action)=> {
     //   state.status = "loading";
     //   state.error = null;
@@ -171,6 +196,8 @@ export const selectSearchedRooms = (state) => state.room.searchedRooms;
 export const selectRoomError = (state) => state.room.error;
 export const selectJoinedRoom = (state) => state.room.joinedRoom;
 export const selectStatus = (state) => state.room.status;
-export const selectCurrentlyClickedRoom = (state) => state.room.currentlyClickedRoom;
+export const selectCurrentlyClickedRoom = (state) =>
+  state.room.currentlyClickedRoom;
+export const selectToken =(state)=> state.room.token
 
 export default roomSlice.reducer;

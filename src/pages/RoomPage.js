@@ -33,6 +33,8 @@ import {
   JoinRoom,
   GetJoinedRoom,
   getRoom,
+  getTokenAsync,
+  selectToken,
 } from "../features/rooms/RoomSlice";
 import { selectLoggedInUser } from "../features/auth/authSlice";
 import { useDispatch } from "react-redux";
@@ -54,6 +56,8 @@ function RoomPage() {
   const currentlyJoinedPeople = useSelector(selectCurrentlyJoined);
   const cameraState = useSelector(selectCameraState);
   const micState = useSelector(selectMicState);
+  const token = useSelector(selectToken);
+  console.log("Token ", token);
 
   const dispatch = useDispatch();
   const RoomJoined = useSelector(selectJoinedRoom);
@@ -95,6 +99,7 @@ function RoomPage() {
     window.addEventListener("resize", handleResize);
     window.addEventListener("popstate", handlePopState);
     GetRoomData(roomID);
+    dispatch(getTokenAsync());
   }, []);
 
   useEffect(() => {
@@ -285,7 +290,7 @@ function RoomPage() {
               onClick={() => HandleMicClick()}
               className=" w-14 h-14 flex justify-center rounded-full bg-red-900 mr-4 hover:scale-105"
             >
-              {micMute ===true && (
+              {micMute === true && (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="32"
