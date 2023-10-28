@@ -49,6 +49,23 @@ export function sendInvoice({ RoomDetails, user, params }) {
   });
 }
 
+export function getToken() {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await fetch("http://localhost:8080/api/room/generate-token");
+      if (response.ok) {
+        const data = await response.json();
+        resolve( {data} );
+      } else {
+        const json = await response.json();
+        reject(json.error);
+      }
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
 export function CreateRoom(RoomDetails) {
   return new Promise(async (resolve, reject) => {
     try {
