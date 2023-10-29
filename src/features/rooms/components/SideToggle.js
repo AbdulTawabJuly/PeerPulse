@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectJoinedRoom } from "../RoomSlice";
 import {selectLoggedInUser} from "../../auth/authSlice";
 import Member from "./Member"
 import Messages from "./Messages";
 import { useSocket } from '../../../context/socket'
+
 import axios from "axios";
 function SideToggle() {
   const { getSocket } = useSocket();
@@ -15,7 +16,7 @@ function SideToggle() {
   const JoinedRoom = useSelector(selectJoinedRoom);
   const memberList = JoinedRoom.members;
   const user = useSelector(selectLoggedInUser);
-
+  
   const HandleMemberClick = () => {
     if (!Members) {
       SetMembers(true);
