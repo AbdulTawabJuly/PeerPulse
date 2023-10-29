@@ -6,41 +6,34 @@ const videoCallSlice = createSlice({
   initialState: {
     cameraState: true,
     micState: true,
-    currentlyJoined: false,
+    client:null,
+    tracks:null,
   },
   reducers: {
     toggleCamera: (state, action) => {
-      // if (state.cameraState === true) {
-      //   state.cameraState = false;
-      // } else {
-      //   state.cameraState = true;
-      // }
-      state.cameraState=!state.cameraState
+      state.cameraState=!state.cameraState;
     },
     toggleMic: (state, action) => {
-      // if (state.micState === true) {
-      //   state.micState = false;
-      // } else {
-      //   state.micState = true;
-      // }
-      state.micState=!state.micState
+      state.micState=!state.micState;
     },
-    JoinStream: (state, action) => {
-      state.currentlyJoined = true;
-      state.micState=true;
-      state.cameraState=true;
+    SetCameraState:(state,action)=>{
+      state.cameraState=action.payload;
     },
-    LeaveStream: (state, action) => {
-      state.currentlyJoined = false;
-      state.cameraState=false;
-      state.micState=false;
+    SetMicState:(state,action)=>{
+      state.micState=action.payload;
     },
+    SetClient:(state,action)=>{
+        state.client=action.payload;
+    },
+    SetTracks:(state,action)=>{
+      state.tracks=action.payload;
+    }
   },
 });
 
-export const { toggleCamera, toggleMic, JoinStream, LeaveStream } =
-  videoCallSlice.actions;
+export const { toggleCamera, toggleMic,SetClient,SetTracks,SetCameraState,SetMicState} =videoCallSlice.actions;
 export const selectCameraState = (state) => state.video.cameraState;
 export const selectMicState = (state) => state.video.micState;
-export const selectCurrentlyJoined = (state) => state.video.currentlyJoined;
+export const selectClient=(state)=>state.video.client;
+export const selectTracks=(state)=>state.video.tracks;
 export default videoCallSlice.reducer;

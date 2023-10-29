@@ -3,8 +3,6 @@ import Navbar from "../features/Navbar/Navbar";
 import SideToggle from "../features/rooms/components/SideToggle";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useRef } from "react";
-import axios from "axios";
 import RoomNotFound from "./RoomNotFound";
 import TimeUp from "../features/rooms/components/TimeUp";
 import { io } from "socket.io-client";
@@ -17,14 +15,17 @@ import {
   emptyMessages,
 } from "../features/chat/ChatSlice";
 import {
-  toggleCamera,
-  toggleMic,
-  JoinStream,
-  LeaveStream,
-  selectCurrentlyJoined,
-  selectCameraState,
-  selectMicState,
+   SetClient,
+   SetTracks,
+   selectCameraState,
+   selectMicState,
+   SetCameraState,
+   toggleCamera,
+   toggleMic,
+   SetMicState
 } from "../features/VideoCall/videoCallSlice";
+
+
 
 import {
   LeaveRoom,
@@ -38,31 +39,39 @@ import {
 } from "../features/rooms/RoomSlice";
 import { selectLoggedInUser } from "../features/auth/authSlice";
 import { useDispatch } from "react-redux";
+
+import AgoraRTC from 'agora-rtc-sdk-ng';
+const APP_ID = 'e3a46af1a70746148c7abd4c4785f262';
+const TOKEN = '007eJxTYFDi3ttvr3fz1HWrNn0NMTlZEekfTetPzds5yfc8R/P9P7sVGFKNE03MEtMME80NzE3MDE0sks0Tk1JMkk3MLUzTjMyM2gLsUhsCGRnEa1wZGKEQxOdkCEhNLQoozSlOZWAAAHpNH3k=';
+const CHANNEL = 'PeerPulse';
+const client = AgoraRTC.createClient({
+  mode: 'rtc',
+  codec: 'vp8',
+});
+
+
 function RoomPage() {
   const [micMute, setMicMute] = useState(true);
   const [isVideoOff, setVideoOff] = useState(true);
-  const [joined, setJoined] = useState(false);
   const [isMenuOpen, OpenMenu] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const { socket, initializeSocket, destroySocket, getSocket } = useSocket();
 
   const roomID = useParams();
-  const [roomJoined, SetRoomJoined] = useState({});
-  const [Error, SetError] = useState("");
   const [timeLeft, setTimeLeft] = useState("");
   const [Expired, SetExpired] = useState(false);
-  const [MemberList, SetMemberList] = useState([]);
   const user = useSelector(selectLoggedInUser);
-  const currentlyJoinedPeople = useSelector(selectCurrentlyJoined);
   const cameraState = useSelector(selectCameraState);
   const micState = useSelector(selectMicState);
-  const token = useSelector(selectToken);
-  console.log("Token ", token);
+  
 
   const dispatch = useDispatch();
   const RoomJoined = useSelector(selectJoinedRoom);
   const status = useSelector(selectStatus);
   const navigate = useNavigate();
+
+  const [users, setUsers] = useState([]);
+  const [localTracks, setLocalTracks] = useState([]);
   const handleResize = () => {
     if (window.innerWidth < 1098) {
       setIsMobile(true);
@@ -94,16 +103,40 @@ function RoomPage() {
     }
   };
 
+  const handleUserJoined = (user) => {
+    setUsers((previousUsers) => [...previousUsers, user]);
+  };
+
+  const handleUserLeft = (user) => {
+    setUsers((previousUsers) =>
+      previousUsers.filter((u) => u.uid !== user.uid)
+    );
+  };
+  const handleUserPublished=async (user, mediaType)=>{
+   
+      await client.subscribe(user, mediaType);
+    
+  }
+  const handleUserUnpublished=()=>{
+  }
+  
+
   useEffect(() => {
     handleResize();
     window.addEventListener("resize", handleResize);
     window.addEventListener("popstate", handlePopState);
+    client.on('user-published', handleUserPublished);
+    client.on('user-unpublished',handleUserUnpublished)
+    client.on('user-joined',handleUserJoined);
+    client.on('user-left', handleUserLeft);
+    dispatch(SetCameraState(!isVideoOff));
+    dispatch(SetMicState(!micMute));
     GetRoomData(roomID);
-    dispatch(getTokenAsync());
   }, []);
 
   useEffect(() => {
     if (RoomJoined) {
+    
       const intervalId = setInterval(() => {
         const givenDate = new Date(RoomJoined.startingTime);
         const currentTime = Date.now();
@@ -116,14 +149,14 @@ function RoomPage() {
           setTimeLeft(MinutesWeHave + ":" + SecondsWeHave);
         }
       }, 100);
-
-      return () => clearInterval(intervalId);
+      return () =>clearInterval(intervalId);
     }
   }, [RoomJoined]);
 
   const messages = useSelector(selectMessages);
 
   useEffect(() => {
+    
     initializeSocket(user.user.id);
     if (messages.length === 0) {
       const newMsg = {
@@ -132,14 +165,57 @@ function RoomPage() {
       };
       dispatch(sendMessage(newMsg));
     }
+   
+    client
+    .join(APP_ID, CHANNEL,TOKEN,user.user.email )
+    .then((uid) =>
+      Promise.all([
+        AgoraRTC.createMicrophoneAndCameraTracks(),
+        uid,
+      ])
+    )
+    .then(([tracks, uid]) => {
+      
+      const [audioTrack, videoTrack] = tracks;
+      setLocalTracks(tracks);
+      setUsers((previousUsers) => [
+        ...previousUsers,
+        {
+          uid,
+          videoTrack,
+          audioTrack,
+        },
+      ]);
+      client.publish(tracks);
+      dispatch(SetClient(client));
+      dispatch(SetTracks(tracks));
+    });
+    return () => {
+
+      for (let localTrack of localTracks) {
+        localTrack.stop();
+        localTrack.close();
+      }
+      client.off('user-published', handleUserPublished);
+      client.off('user-unpublished',handleUserUnpublished);
+      client.off('user-joined',handleUserJoined);
+      client.off('user-left', handleUserLeft);
+      client.leave();
+    };
   }, []);
 
+
+ 
+ 
+
   useEffect(() => {
+   
     const newSocket = getSocket();
     if (newSocket) {
       newSocket.emit("join-room", roomID.id, user.user.email);
-
+      
       newSocket.on("user-joined", (user) => {
+    
         const newMsg = {
           type: "join",
           user: user,
@@ -152,6 +228,7 @@ function RoomPage() {
           type: "left",
           user: user,
         };
+
         dispatch(sendMessage(newMsg));
       });
 
@@ -255,7 +332,8 @@ function RoomPage() {
           </div>
 
           <div className="flex flex-row justify-around items-center mb-2 h-full">
-            <VideoBox></VideoBox>
+            {users.length>0?
+               <VideoBox user={users}></VideoBox>:null}
             {!isMobile && <SideToggle></SideToggle>}
             {isMenuOpen && (
               <div className="fixed top-12 left-8">
