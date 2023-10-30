@@ -42,7 +42,7 @@ import { useDispatch } from "react-redux";
 
 import AgoraRTC from 'agora-rtc-sdk-ng';
 const APP_ID = 'e3a46af1a70746148c7abd4c4785f262';
-const TOKEN = '007eJxTYFDi3ttvr3fz1HWrNn0NMTlZEekfTetPzds5yfc8R/P9P7sVGFKNE03MEtMME80NzE3MDE0sks0Tk1JMkk3MLUzTjMyM2gLsUhsCGRnEa1wZGKEQxOdkCEhNLQoozSlOZWAAAHpNH3k=';
+const TOKEN = '007eJxTYGCpaPB98W2ukKd4bwGf2vHFOpWLOa7+3Oq/aEdLaHW2+k0FhlTjRBOzxDTDRHMDcxMzQxOLZPPEpBSTZBNzC9M0IzOjE5vtUxsCGRn+/BFlZWSAQBCfkyEgNbUooDSnOJWBAQDFNSFV';
 const CHANNEL = 'PeerPulse';
 const client = AgoraRTC.createClient({
   mode: 'rtc',
