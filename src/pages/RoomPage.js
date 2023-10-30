@@ -53,13 +53,17 @@ const client = AgoraRTC.createClient({
 function RoomPage() {
   const [micMute, setMicMute] = useState(true);
   const [isVideoOff, setVideoOff] = useState(true);
+  const [joined, setJoined] = useState(false);
   const [isMenuOpen, OpenMenu] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const { socket, initializeSocket, destroySocket, getSocket } = useSocket();
 
   const roomID = useParams();
+  const [roomJoined, SetRoomJoined] = useState({});
+  const [Error, SetError] = useState("");
   const [timeLeft, setTimeLeft] = useState("");
   const [Expired, SetExpired] = useState(false);
+  const [MemberList, SetMemberList] = useState([]);
   const user = useSelector(selectLoggedInUser);
   const cameraState = useSelector(selectCameraState);
   const micState = useSelector(selectMicState);
@@ -113,11 +117,10 @@ function RoomPage() {
     );
   };
   const handleUserPublished=async (user, mediaType)=>{
-   
       await client.subscribe(user, mediaType);
-    
   }
   const handleUserUnpublished=()=>{
+
   }
   
 

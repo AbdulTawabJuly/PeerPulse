@@ -38,7 +38,7 @@ function VideoIcons({ username, videoTrack,audioTrack}) {
       {
          client.publish(audioTrack);
       }
-      audioTrack.play();
+      audioTrack.play();     
       
     } else if(audioTrack) {
       audioTrack.stop();
