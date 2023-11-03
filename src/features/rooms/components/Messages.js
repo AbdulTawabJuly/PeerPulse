@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import Message from './Message';
 import { useState, useRef, useEffect } from 'react';
 import '../../../App.css'

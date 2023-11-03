@@ -4,9 +4,10 @@ import { selectJoinedRoom } from "../RoomSlice";
 import {selectLoggedInUser} from "../../auth/authSlice";
 import Member from "./Member"
 import Messages from "./Messages";
+import GPT from "./GPTIntegration"
 import { useSocket } from '../../../context/socket'
-
 import axios from "axios";
+
 function SideToggle() {
   const { getSocket } = useSocket();
   const [Members, SetMembers] = useState(false);
@@ -117,8 +118,9 @@ function SideToggle() {
           <Member key={member._id} username={member.email} />
         )))}
       </div>)}
-      {Chat && (<Messages />)}
-      {ChatGpt && (<div>ChatGpt</div>)}
+      <div>{Chat && <Messages />}</div>
+      
+      <div>{ChatGpt && <GPT/>}</div>
     </div>
   );
 }

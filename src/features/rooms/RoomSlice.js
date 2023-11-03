@@ -7,6 +7,7 @@ const initialState = {
   searchedRooms: null,
   joinedRoom: null,
   messages: null,
+  gpt4: null,
   status: "",
   error: null,
   currentlyClickedRoom: null,
