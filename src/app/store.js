@@ -4,6 +4,7 @@ import roomReducer from "../features/rooms/RoomSlice"
 import storage from 'redux-persist/lib/storage'
 import {persistReducer} from 'redux-persist'
 import messagesReducer from "../features/chat/ChatSlice"
+import gptReducer from "../features/GPT/GPTSlice"
 import videoReducer from "../features/VideoCall/videoCallSlice"
 
 
@@ -18,6 +19,7 @@ const reducer = combineReducers({
   room:roomReducer,
   messages: messagesReducer,
   video:videoReducer,
+  gpt: gptReducer,
 })
 
 const persistedReducer = persistReducer(persistConfig, reducer);

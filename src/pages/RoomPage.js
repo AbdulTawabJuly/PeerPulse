@@ -15,6 +15,11 @@ import {
   emptyMessages,
 } from "../features/chat/ChatSlice";
 import {
+  sendgptMessage, 
+  selectGPTMessages,
+  emptygptMessages
+} from  "../features/GPT/GPTSlice";
+import {
    SetClient,
    SetTracks,
    selectCameraState,
@@ -42,7 +47,7 @@ import { useDispatch } from "react-redux";
 
 import AgoraRTC from 'agora-rtc-sdk-ng';
 const APP_ID = 'e3a46af1a70746148c7abd4c4785f262';
-const TOKEN = '007eJxTYGCpaPB98W2ukKd4bwGf2vHFOpWLOa7+3Oq/aEdLaHW2+k0FhlTjRBOzxDTDRHMDcxMzQxOLZPPEpBSTZBNzC9M0IzOjE5vtUxsCGRn+/BFlZWSAQBCfkyEgNbUooDSnOJWBAQDFNSFV';
+const TOKEN = '007eJxTYFhZl7GXX+2sxGsRhYgpr8T1FZ7sWup93WUu73uD80+PS7ErMKQaJ5qYJaYZJpobmJuYGZpYJJsnJqWYJJuYW5imGZkZLdnsnNoQyMgw4eIkZkYGCATxORkCUlOLAkpzilMZGACvbyDc';
 const CHANNEL = 'PeerPulse';
 const client = AgoraRTC.createClient({
   mode: 'rtc',
@@ -157,6 +162,7 @@ function RoomPage() {
   }, [RoomJoined]);
 
   const messages = useSelector(selectMessages);
+  const gpt4 = useSelector(selectGPTMessages);
 
   useEffect(() => {
     
@@ -268,6 +274,7 @@ function RoomPage() {
       await dispatch(LeaveRoom(RoomDetail));
       // dispatch(LeaveStream());
       dispatch(emptyMessages());
+      dispatch(emptygptMessages());
       if (status === "fulfilled") {
         navigate("/");
       }
