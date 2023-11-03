@@ -7,7 +7,7 @@ import { selectCameraState, selectClient,selectMicState,selectTracks } from "../
 function VideoIcons({ username, videoTrack,audioTrack}) {
   const user=useSelector(selectLoggedInUser);
   const [pinned, setPinned] = useState(false);
-  const [localCameraState, setLocalCameraState] = useState(true); // Local camera state
+  const [localCameraState, setLocalCameraState] = useState(true); 
   const [localMicState,setLocalMicState]=useState(true);
   const ref = useRef();
   const client=useSelector(selectClient);
@@ -18,34 +18,39 @@ function VideoIcons({ username, videoTrack,audioTrack}) {
  const cameraState=useSelector(selectCameraState);
  const micState=useSelector(selectMicState);
 
+
   useEffect(() => {
     if (videoTrack&&localCameraState) {
       if(username===user.user.email)
       {
          client.publish(videoTrack);
+        
+        
       }
       videoTrack.play(ref.current);
-      
+
     } else if(videoTrack) {
-      videoTrack.stop();
-      client.unpublish(videoTrack);
+      if(username===user.user.email)
+      {
+        videoTrack.stop();
+        client.unpublish(videoTrack);
+      }
     }
-  }, [videoTrack, localCameraState]);
+  }, [videoTrack, localCameraState,cameraState]);
 
   useEffect(() => {
     if (audioTrack&&localMicState) {
       if(username===user.user.email){
-         client.publish(audioTrack);
-           
+         client.publish(audioTrack); 
       }
-      audioTrack.play();      
-      
-      
-    } else if(audioTrack) {
-      audioTrack.stop();
-      client.unpublish(audioTrack);
+    }       
+     else if(audioTrack) {
+      if(username===user.user.email)
+      {
+        client.unpublish(audioTrack);
+      }
     }
-  }, [audioTrack, localMicState]);
+  }, [audioTrack, localMicState,micState]);
  
   useEffect(()=>{
     if(username===user.user.email)
