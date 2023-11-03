@@ -34,11 +34,12 @@ function VideoIcons({ username, videoTrack,audioTrack}) {
 
   useEffect(() => {
     if (audioTrack&&localMicState) {
-      if(username===user.user.email)
-      {
+      if(username===user.user.email){
          client.publish(audioTrack);
+           
       }
-      audioTrack.play();     
+      audioTrack.play();      
+      
       
     } else if(audioTrack) {
       audioTrack.stop();
