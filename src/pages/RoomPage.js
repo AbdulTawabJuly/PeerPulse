@@ -47,7 +47,7 @@ import { useDispatch } from "react-redux";
 
 import AgoraRTC from 'agora-rtc-sdk-ng';
 const APP_ID = 'e3a46af1a70746148c7abd4c4785f262';
-const TOKEN = '007eJxTYFhZl7GXX+2sxGsRhYgpr8T1FZ7sWup93WUu73uD80+PS7ErMKQaJ5qYJaYZJpobmJuYGZpYJJsnJqWYJJuYW5imGZkZLdnsnNoQyMgw4eIkZkYGCATxORkCUlOLAkpzilMZGACvbyDc';
+const TOKEN = '007eJxTYJDnP9ubrl9vfiKHcw3Po1nz/52Z9321oc4zLgdL9ZCVXNkKDKnGiSZmiWmGieYG5iZmhiYWyeaJSSkmySbmFqZpRmZGqayuqQ2BjAyrslNYGRkgEMTnZAhITS0KKM0pTmVgAABdXx73';
 const CHANNEL = 'PeerPulse';
 const client = AgoraRTC.createClient({
   mode: 'rtc',
@@ -122,7 +122,17 @@ function RoomPage() {
     );
   };
   const handleUserPublished=async (user, mediaType)=>{
+    try{
       await client.subscribe(user, mediaType);
+      if(mediaType==='audio')
+      {
+        user.audioTrack.play();
+      }
+    }
+    catch(error)
+    {
+      console.log(error);
+    }
   }
   const handleUserUnpublished=()=>{
 
