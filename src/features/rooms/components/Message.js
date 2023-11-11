@@ -50,6 +50,33 @@ function Message(msg) {
       </div>
     )
   }
+  else if (msg.type === 'muted') {
+    return (
+      <div className='text-center p-2 bg-red-100 rounded-full w-3/4 mx-auto my-4'>
+         <p className='text-sm italic'>
+          {msg.user} <span className='not-italic pl-1'>has been muted</span>
+        </p>
+      </div>
+    )
+  }
+  else if (msg.type === 'kicked') {
+    return (
+      <div className='text-center p-2 bg-red-100 rounded-full w-3/4 mx-auto my-4'>
+         <p className='text-sm italic'>
+          {msg.user} <span className='not-italic pl-1'>has been kicked</span>
+        </p>
+      </div>
+    )
+  }
+  else if (msg.type === 'banned') {
+    return (
+      <div className='text-center p-2 bg-red-100 rounded-full w-3/4 mx-auto my-4'>
+         <p className='text-sm italic'>
+          {msg.user} <span className='not-italic pl-1'>has been banned</span>
+        </p>
+      </div>
+    )
+  }
 
 }
 

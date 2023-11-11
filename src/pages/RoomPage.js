@@ -15,46 +15,46 @@ import {
   emptyMessages,
 } from "../features/chat/ChatSlice";
 import {
-  sendgptMessage, 
+  sendgptMessage,
   selectGPTMessages,
-  emptygptMessages
-} from  "../features/GPT/GPTSlice";
+  emptygptMessages,
+} from "../features/GPT/GPTSlice";
 import {
-   SetClient,
-   SetTracks,
-   selectCameraState,
-   selectMicState,
-   SetCameraState,
-   toggleCamera,
-   toggleMic,
-   SetMicState
+  SetClient,
+  SetTracks,
+  selectCameraState,
+  selectMicState,
+  SetCameraState,
+  toggleCamera,
+  toggleMic,
+  SetMicState,
 } from "../features/VideoCall/videoCallSlice";
-
-
 
 import {
   LeaveRoom,
   selectJoinedRoom,
   selectStatus,
   JoinRoom,
+  SetCreator,
+  BanUser,
   GetJoinedRoom,
   getRoom,
   getTokenAsync,
   selectToken,
 } from "../features/rooms/RoomSlice";
+
 import { selectLoggedInUser } from "../features/auth/authSlice";
 import { useDispatch } from "react-redux";
 
-import AgoraRTC from 'agora-rtc-sdk-ng';
-const APP_ID = 'e3a46af1a70746148c7abd4c4785f262';
-const TOKEN = '007eJxTYJDnP9ubrl9vfiKHcw3Po1nz/52Z9321oc4zLgdL9ZCVXNkKDKnGiSZmiWmGieYG5iZmhiYWyeaJSSkmySbmFqZpRmZGqayuqQ2BjAyrslNYGRkgEMTnZAhITS0KKM0pTmVgAABdXx73';
-const CHANNEL = 'PeerPulse';
-const client = AgoraRTC.createClient({
-  mode: 'rtc',
-  codec: 'vp8',
-});
-
-
+import AgoraRTC from "agora-rtc-sdk-ng";
+const APP_ID = "e3a46af1a70746148c7abd4c4785f262";
+      const TOKEN =
+        "007eJxTYPCf8Wjv/o+zPHN5ig02cb3SOskmsuXoR6WlviZJJSlXJgkpMKQaJ5qYJaYZJpobmJuYGZpYJJsnJqWYJJuYW5imGZkZ7XbzT20IZGT4oDCHlZEBAkF8ToaA1NSigNKc4lQGBgDc8SDK";
+      const CHANNEL = "PeerPulse";
+        const client = AgoraRTC.createClient({
+          mode: "rtc",
+          codec: "vp8",
+        });
 function RoomPage() {
   const [micMute, setMicMute] = useState(true);
   const [isVideoOff, setVideoOff] = useState(true);
@@ -72,13 +72,11 @@ function RoomPage() {
   const user = useSelector(selectLoggedInUser);
   const cameraState = useSelector(selectCameraState);
   const micState = useSelector(selectMicState);
-  
 
   const dispatch = useDispatch();
   const RoomJoined = useSelector(selectJoinedRoom);
   const status = useSelector(selectStatus);
   const navigate = useNavigate();
-
   const [users, setUsers] = useState([]);
   const [localTracks, setLocalTracks] = useState([]);
   const handleResize = () => {
@@ -96,6 +94,9 @@ function RoomPage() {
         user_: user.user.id,
       };
       await dispatch(LeaveRoom(RoomDetail));
+      dispatch(emptyMessages());
+      dispatch(emptygptMessages());
+      dispatch(SetCreator(false));
       while (status === "loading");
     }
   };
@@ -121,32 +122,23 @@ function RoomPage() {
       previousUsers.filter((u) => u.uid !== user.uid)
     );
   };
-  const handleUserPublished=async (user, mediaType)=>{
-    try{
+  const handleUserPublished = async (user, mediaType) => {
+    try {
       await client.subscribe(user, mediaType);
-      if(mediaType==='audio')
-      {
+      if (mediaType === "audio") {
         user.audioTrack.play();
       }
-    }
-    catch(error)
-    {
+    } catch (error) {
       console.log(error);
     }
-  }
-  const handleUserUnpublished=()=>{
-
-  }
-  
+  };
+  const handleUserUnpublished = () => {};
 
   useEffect(() => {
     handleResize();
     window.addEventListener("resize", handleResize);
     window.addEventListener("popstate", handlePopState);
-    client.on('user-published', handleUserPublished);
-    client.on('user-unpublished',handleUserUnpublished)
-    client.on('user-joined',handleUserJoined);
-    client.on('user-left', handleUserLeft);
+
     dispatch(SetCameraState(!isVideoOff));
     dispatch(SetMicState(!micMute));
     GetRoomData(roomID);
@@ -154,7 +146,38 @@ function RoomPage() {
 
   useEffect(() => {
     if (RoomJoined) {
-    
+      if (RoomJoined.createdBy === user.user.id) {
+        dispatch(SetCreator(true));
+      }
+      
+       
+        client
+          .join(APP_ID, CHANNEL, TOKEN, user.user.email)
+          .then((uid) =>
+            Promise.all([AgoraRTC.createMicrophoneAndCameraTracks(), uid])
+          )
+          .then(([tracks, uid]) => {
+            const [audioTrack, videoTrack] = tracks;
+            setLocalTracks(tracks);
+            setUsers((previousUsers) => [
+              ...previousUsers,
+              {
+                uid,
+                videoTrack,
+                audioTrack,
+              },
+            ]);
+            client.publish(tracks);
+            dispatch(SetClient(client));
+            dispatch(SetTracks(tracks));
+          }).catch((error)=>{
+            console.log(error);
+          });
+          client.on("user-published", handleUserPublished);
+          client.on("user-unpublished", handleUserUnpublished);
+          client.on("user-joined", handleUserJoined);
+          client.on("user-left", handleUserLeft);
+     
       const intervalId = setInterval(() => {
         const givenDate = new Date(RoomJoined.startingTime);
         const currentTime = Date.now();
@@ -167,7 +190,18 @@ function RoomPage() {
           setTimeLeft(MinutesWeHave + ":" + SecondsWeHave);
         }
       }, 100);
-      return () =>clearInterval(intervalId);
+      return () => {
+        for (let localTrack of localTracks) {
+          localTrack.stop();
+          localTrack.close();
+        }
+        client.off("user-published", handleUserPublished);
+        client.off("user-unpublished", handleUserUnpublished);
+        client.off("user-joined", handleUserJoined);
+        client.off("user-left", handleUserLeft);
+        client.leave();
+        clearInterval(intervalId);
+      };
     }
   }, [RoomJoined]);
 
@@ -175,7 +209,6 @@ function RoomPage() {
   const gpt4 = useSelector(selectGPTMessages);
 
   useEffect(() => {
-    
     initializeSocket(user.user.id);
     if (messages.length === 0) {
       const newMsg = {
@@ -184,70 +217,29 @@ function RoomPage() {
       };
       dispatch(sendMessage(newMsg));
     }
-   
-    client
-    .join(APP_ID, CHANNEL,TOKEN,user.user.email )
-    .then((uid) =>
-      Promise.all([
-        AgoraRTC.createMicrophoneAndCameraTracks(),
-        uid,
-      ])
-    )
-    .then(([tracks, uid]) => {
-      
-      const [audioTrack, videoTrack] = tracks;
-      setLocalTracks(tracks);
-      setUsers((previousUsers) => [
-        ...previousUsers,
-        {
-          uid,
-          videoTrack,
-          audioTrack,
-        },
-      ]);
-      client.publish(tracks);
-      dispatch(SetClient(client));
-      dispatch(SetTracks(tracks));
-    });
-    return () => {
 
-      for (let localTrack of localTracks) {
-        localTrack.stop();
-        localTrack.close();
-      }
-      client.off('user-published', handleUserPublished);
-      client.off('user-unpublished',handleUserUnpublished);
-      client.off('user-joined',handleUserJoined);
-      client.off('user-left', handleUserLeft);
-      client.leave();
-    };
+    return () => {};
   }, []);
 
-
- 
- 
-
   useEffect(() => {
-   
     const newSocket = getSocket();
-    if (newSocket) {
+    if (newSocket && RoomJoined) {
       newSocket.emit("join-room", roomID.id, user.user.email);
-      
-      newSocket.on("user-joined", (user) => {
-    
+
+      newSocket.on("user-joined", (users) => {
         const newMsg = {
           type: "join",
-          user: user,
+          user: users,
         };
         dispatch(sendMessage(newMsg));
+        socket.emit("toggle-mic",user.user.email,micState,roomID);
       });
-
+ 
       newSocket.on("user-left", (user) => {
         const newMsg = {
           type: "left",
           user: user,
         };
-
         dispatch(sendMessage(newMsg));
       });
 
@@ -260,17 +252,79 @@ function RoomPage() {
         };
         dispatch(sendMessage(newMsg));
       });
-    }
-  }, [getSocket]);
+      newSocket.on("Mute-User", (user) => {
+        const newMsg = {
+          type: "muted",
+          user: user,
+        };
+        dispatch(sendMessage(newMsg));
+        //handle mute situation here
 
-  const HandleMicClick = () => {
-    dispatch(toggleMic());
-    setMicMute(!micMute);
-  };
-  const HandleVideoClick = () => {
-    dispatch(toggleCamera());
-    setVideoOff(!isVideoOff);
-  };
+      });
+      newSocket.on("Kick-User", (username) => {
+        const newMsg = {
+          type: "kicked",
+          user: username,
+        };
+        dispatch(sendMessage(newMsg));
+
+        if (username === user.user.email) {
+          if (status === "fulfilled") {
+            const newSocket = getSocket();
+            //newSocket.emit("leave-room", user.user.email, roomID.id);
+            destroySocket();
+            const RoomDetail = {
+              id: roomID,
+              user_: user.user.id,
+            };
+            dispatch(LeaveRoom(RoomDetail));
+            // dispatch(LeaveStream());
+            dispatch(emptyMessages());
+            dispatch(emptygptMessages());
+            if (status === "fulfilled") {
+              navigate("/");
+            }
+          }
+        }
+      });
+      newSocket.on("Ban-User", (username) => {
+        const newMsg = {
+          type: "banned",
+          user: username,
+        };
+
+        dispatch(sendMessage(newMsg));
+
+        if (username === user.user.email) {
+          console.log("Im being banned");
+          if (status === "fulfilled") {
+            const newSocket = getSocket();
+            //newSocket.emit("leave-room", user.user.email, roomID.id);
+            destroySocket();
+            const RoomDetail = {
+              id: roomID,
+              user_: user.user.id,
+            };
+            dispatch(BanUser(RoomDetail));
+            dispatch(LeaveRoom(RoomDetail));
+            // dispatch(LeaveStream());
+
+            dispatch(emptyMessages());
+            dispatch(emptygptMessages());
+            if (status === "fulfilled") {
+              navigate("/");
+            }
+          }
+        }
+      });
+      socket.on("Toggle-Mic", (users,micstate) => {
+        if(users===user.user.email){
+          dispatch(toggleMic());
+          setMicMute(!micMute);
+        }
+      });
+    }
+  }, [getSocket, status, RoomJoined]);
 
   const handleEndCall = async () => {
     if (status === "fulfilled") {
@@ -285,10 +339,31 @@ function RoomPage() {
       // dispatch(LeaveStream());
       dispatch(emptyMessages());
       dispatch(emptygptMessages());
+      dispatch(SetCreator(false));
       if (status === "fulfilled") {
         navigate("/");
       }
     }
+  };
+
+  const HandleMicClick = () => {   
+    
+    
+    dispatch(toggleMic());
+    setMicMute(!micMute);
+    
+
+  };
+  useEffect(()=>{
+    if(socket)
+    {
+     const socket=getSocket();
+     socket.emit("toggle-mic",user.user.email,micState,roomID);
+    }
+  },[socket,micState])
+  const HandleVideoClick = () => {
+    dispatch(toggleCamera());
+    setVideoOff(!isVideoOff);
   };
 
   return (
@@ -352,8 +427,7 @@ function RoomPage() {
           </div>
 
           <div className="flex flex-row justify-around items-center mb-2 h-full">
-            {users.length>0?
-               <VideoBox user={users}></VideoBox>:null}
+            {users.length > 0 ? <VideoBox user={users}></VideoBox> : null}
             {!isMobile && <SideToggle></SideToggle>}
             {isMenuOpen && (
               <div className="fixed top-12 left-8">
@@ -362,12 +436,11 @@ function RoomPage() {
             )}
           </div>
           <div className="flex flex-row justify-center w-full">
-          
             <button
               onClick={() => HandleMicClick()}
               className=" w-14 h-14 flex justify-center rounded-full bg-red-900 mr-4 hover:scale-105"
             >
-              {micMute === true && (
+              {micState === false && (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="32"
@@ -380,7 +453,7 @@ function RoomPage() {
                   <path d="M9.486 10.607 5 6.12V8a3 3 0 0 0 4.486 2.607zm-7.84-9.253 12 12 .708-.708-12-12-.708.708z" />
                 </svg>
               )}
-              {micMute === false && (
+              {micState === true && (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="32"

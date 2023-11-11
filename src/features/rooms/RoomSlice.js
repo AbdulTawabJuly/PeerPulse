@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { searchRooms, sendInvoice } from "./RoomAPICalls";
 import { CreateRoom } from "./RoomAPICalls";
-import { Leaveroom, Joinroom, Getroom, getToken } from "./RoomAPICalls";
+import { Leaveroom, Joinroom, Getroom, getToken,Banuser } from "./RoomAPICalls";
 import { redirect } from "react-router-dom";
 const initialState = {
   searchedRooms: null,
@@ -12,6 +12,7 @@ const initialState = {
   error: null,
   currentlyClickedRoom: null,
   token:null,
+  isCreator:false,
 };
 export const searchRoom = createAsyncThunk(
   "room/search",
@@ -77,7 +78,14 @@ export const LeaveRoom = createAsyncThunk("room/leave", async (RoomDetails) => {
     throw error;
   }
 });
-
+export const BanUser = createAsyncThunk("room/banuser", async (RoomDetails) => {
+  try {
+    const response = await Banuser(RoomDetails);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+});
 // export const getRoom = createAsyncThunk(
 //   "room/get",
 //   async (RoomDetails) => {
@@ -106,6 +114,9 @@ export const roomSlice = createSlice({
     setCurrentlyClickedPaidRoom: (state, action) => {
       state.currentlyClickedRoom = action.payload;
     },
+    SetCreator:(state,action)=>{
+      state.isCreator=action.payload;
+    }
   },
   extraReducers: (someShit) => {
     someShit
@@ -148,10 +159,23 @@ export const roomSlice = createSlice({
         state.status = "error";
         state.error = action.error;
       })
+      .addCase(BanUser.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(BanUser.fulfilled, (state, action) => {
+        state.status = "fulfilled";
+        state.error = null;
+      })
+      .addCase(BanUser.rejected, (state, action) => {
+        state.status = "error";
+        state.error = action.error;
+      })
       .addCase(JoinRoom.pending, (state) => {
         state.status = "loading";
         state.error = null;
       })
+      
       .addCase(JoinRoom.fulfilled, (state, action) => {
         state.status = "fulfilled";
         state.joinedRoom = action.payload;
@@ -192,13 +216,14 @@ export const roomSlice = createSlice({
   },
 });
 
-export const { setCurrentlyClickedPaidRoom } = roomSlice.actions;
+export const { setCurrentlyClickedPaidRoom,SetCreator } = roomSlice.actions;
 export const selectSearchedRooms = (state) => state.room.searchedRooms;
 export const selectRoomError = (state) => state.room.error;
 export const selectJoinedRoom = (state) => state.room.joinedRoom;
 export const selectStatus = (state) => state.room.status;
 export const selectCurrentlyClickedRoom = (state) =>
   state.room.currentlyClickedRoom;
-export const selectToken =(state)=> state.room.token
+export const selectToken =(state)=> state.room.token;
+export const selectIsCreator=(state)=>state.room.isCreator;
 
 export default roomSlice.reducer;

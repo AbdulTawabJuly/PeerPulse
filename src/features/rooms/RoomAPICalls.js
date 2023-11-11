@@ -131,6 +131,25 @@ export function Leaveroom(RoomDetails) {
     }
   });
 }
+export function Banuser(RoomDetails) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await axios.get("http://localhost:8080/api/room/banuser", {
+        params: {
+          RoomID: RoomDetails.id,
+          currentUser: RoomDetails.user_,
+        },
+      });
+      if (response.data) {
+        resolve(response.data);
+      } else {
+        reject(response.error);
+      }
+    } catch (error) {
+      reject(error.response.data.error);
+    }
+  });
+}
 
 // export function Getroom (RoomDetails) {
 //   return new Promise(async(resolve,reject)=> {

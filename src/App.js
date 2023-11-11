@@ -66,7 +66,7 @@ const router = createBrowserRouter([
   {
     path:"/members",
     element:<Member></Member>
-  }
+  },
 
 ]);
 
