@@ -74,31 +74,7 @@ function SideToggle() {
 
     const newSocket = getSocket();
     if (newSocket) {
-      newSocket.on("user-joined", (user) => {
 
-        getUpdatedRoom(JoinedRoom._id)
-          .then((updatedRoom)=> {
-            setParticipants(updatedRoom.members);
-          }).then(()=>{console.log("done")});
-      })
-      newSocket.on("user-left",(user) => {
-        getUpdatedRoom(JoinedRoom._id)
-          .then((updatedRoom)=> {
-            setParticipants(updatedRoom.members);
-          }).then(()=>{console.log("done")});
-      })
-      // newSocket.on("Kick-User", (user) => { 
-      //   getUpdatedRoom(JoinedRoom._id)
-      //     .then((updatedRoom)=> {
-      //       setParticipants(updatedRoom.members);
-      //     })
-      // })
-      newSocket.on("Ban-User", (user) => { 
-        getUpdatedRoom(JoinedRoom._id)
-        .then((updatedRoom)=> {
-          setParticipants(updatedRoom.members);
-        })
-      })
       newSocket.on("Toggle-Mic", (users, micstate) => {
       if (micstate) {
       SetMembersWithMicOn(prevMembers => [...prevMembers, users]);
@@ -116,9 +92,6 @@ function SideToggle() {
     }
   
   });
-  
-     
-
     }
   }, [getSocket]);
   useEffect(()=>{
