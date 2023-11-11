@@ -15,6 +15,7 @@ function SideToggle() {
   const [Chat, SetChat] = useState(true);
   const [ChatGpt, SetChatGpt] = useState(false);
   const JoinedRoom = useSelector(selectJoinedRoom);
+  const [membersWithMicOn,SetMembersWithMicOn]=useState([]);
   const memberList = JoinedRoom.members;
   const user = useSelector(selectLoggedInUser);
   
@@ -72,25 +73,53 @@ function SideToggle() {
     const newSocket = getSocket();
     if (newSocket) {
       newSocket.on("user-joined", (user) => {
+
         getUpdatedRoom(JoinedRoom._id)
           .then((updatedRoom)=> {
             setParticipants(updatedRoom.members);
-          })
+          }).then(()=>{console.log("done")});
       })
       newSocket.on("user-left",(user) => {
         getUpdatedRoom(JoinedRoom._id)
           .then((updatedRoom)=> {
             setParticipants(updatedRoom.members);
-          })
+          }).then(()=>{console.log("done")});
       })
-
-      getUpdatedRoom(JoinedRoom._id)
+      newSocket.on("Kick-User", (user) => { 
+        getUpdatedRoom(JoinedRoom._id)
           .then((updatedRoom)=> {
             setParticipants(updatedRoom.members);
-          })
+          }).then(()=>{console.log("done")});
+  })
+  newSocket.on("Toggle-Mic", (users, micstate) => {
+    if (micstate) {
+      SetMembersWithMicOn(prevMembers => [...prevMembers, users]);
+      getUpdatedRoom(JoinedRoom._id)
+      .then((updatedRoom)=> {
+        setParticipants(updatedRoom.members);
+      }).then(()=>{console.log("done")});
+    } else {
+      SetMembersWithMicOn(prevMembers =>
+        prevMembers.filter(member => member !== users));
+      getUpdatedRoom(JoinedRoom._id)
+        .then((updatedRoom)=> {
+          setParticipants(updatedRoom.members);
+        }).then(()=>{console.log("done")}); 
     }
-
+  
+  });
+  
+     
+  getUpdatedRoom(JoinedRoom._id)
+  .then((updatedRoom)=> {
+    setParticipants(updatedRoom.members);
+  }) 
+    }
   }, [getSocket]);
+
+const UpdateMyMembers=(user)=>{
+  setParticipants(participants.filter(participant=>participant["email"]!==user));
+}
 
   return (
     <div className="h-96 w-96 bg-white border border-gray-600  rounded-lg flex flex-row items-start lg:block md:block">
@@ -115,7 +144,7 @@ function SideToggle() {
       {Members && (<div className="max-h-80 overflow-y-auto">
 
         {participants && (participants.map((member) => (
-          <Member key={member._id} username={member.email} />
+          <Member key={member._id} username={member.email} UpdateMembers={UpdateMyMembers} micstate={membersWithMicOn.includes(member.email)}/>
         )))}
       </div>)}
       <div>{Chat && <Messages />}</div>

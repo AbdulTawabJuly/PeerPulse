@@ -15,7 +15,7 @@ function RoomNotFound() {
         </h1>
 
         <p className="mt-6 text-base leading-7 text-gray-600">
-          Sorry, we couldn't find the Room. Make sure you entered the correct ID.
+          Sorry, we couldn't find the Room. Make sure you entered the correct ID. <br/>You might also be getting this message if you are banned from this room.
         </p>
         <div className="mt-10 flex items-center justify-center gap-x-6">
           <Link

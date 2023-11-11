@@ -23,9 +23,7 @@ function VideoIcons({ username, videoTrack,audioTrack}) {
     if (videoTrack&&localCameraState) {
       if(username===user.user.email)
       {
-         client.publish(videoTrack);
-        
-        
+         client.publish(videoTrack);        
       }
       videoTrack.play(ref.current);
 
