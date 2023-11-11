@@ -87,12 +87,12 @@ function SideToggle() {
             setParticipants(updatedRoom.members);
           }).then(()=>{console.log("done")});
       })
-      newSocket.on("Kick-User", (user) => { 
-        getUpdatedRoom(JoinedRoom._id)
-          .then((updatedRoom)=> {
-            setParticipants(updatedRoom.members);
-          })
-      })
+      // newSocket.on("Kick-User", (user) => { 
+      //   getUpdatedRoom(JoinedRoom._id)
+      //     .then((updatedRoom)=> {
+      //       setParticipants(updatedRoom.members);
+      //     })
+      // })
       newSocket.on("Ban-User", (user) => { 
         getUpdatedRoom(JoinedRoom._id)
         .then((updatedRoom)=> {
@@ -126,7 +126,7 @@ function SideToggle() {
     .then((updatedRoom)=> {
       setParticipants(updatedRoom.members);
     }) 
-  },[participants])
+  },[getUpdatedRoom])
 
 const UpdateMyMembers=(user)=>{
   setParticipants(participants.filter(participant=>participant["email"]!==user));
