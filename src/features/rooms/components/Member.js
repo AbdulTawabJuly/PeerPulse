@@ -10,7 +10,7 @@ import { useDispatch } from "react-redux";
 import { selectMicState } from "../../VideoCall/videoCallSlice";
 import { useEffect, useState } from "react";
 function Member({username,micstate}){
-    console.log(username+" "+micstate);
+    
     const isCreator=useSelector(selectIsCreator);
     const user = useSelector(selectLoggedInUser);
     const {getSocket}=useSocket();
