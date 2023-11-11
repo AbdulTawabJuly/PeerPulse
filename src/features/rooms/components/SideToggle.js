@@ -7,6 +7,7 @@ import Messages from "./Messages";
 import GPT from "./GPTIntegration"
 import { useSocket } from '../../../context/socket'
 import axios from "axios";
+import { selectStatus } from "../RoomSlice";
 
 function SideToggle() {
   const { getSocket } = useSocket();
@@ -18,6 +19,7 @@ function SideToggle() {
   const [membersWithMicOn,SetMembersWithMicOn]=useState([]);
   const memberList = JoinedRoom.members;
   const user = useSelector(selectLoggedInUser);
+  const status=useSelector(selectStatus);
   
   const HandleMemberClick = () => {
     if (!Members) {
@@ -89,10 +91,16 @@ function SideToggle() {
         getUpdatedRoom(JoinedRoom._id)
           .then((updatedRoom)=> {
             setParticipants(updatedRoom.members);
-          }).then(()=>{console.log("done")});
-  })
-  newSocket.on("Toggle-Mic", (users, micstate) => {
-    if (micstate) {
+          })
+      })
+      newSocket.on("Ban-User", (user) => { 
+        getUpdatedRoom(JoinedRoom._id)
+        .then((updatedRoom)=> {
+          setParticipants(updatedRoom.members);
+        })
+      })
+      newSocket.on("Toggle-Mic", (users, micstate) => {
+      if (micstate) {
       SetMembersWithMicOn(prevMembers => [...prevMembers, users]);
       getUpdatedRoom(JoinedRoom._id)
       .then((updatedRoom)=> {
@@ -110,12 +118,15 @@ function SideToggle() {
   });
   
      
-  getUpdatedRoom(JoinedRoom._id)
-  .then((updatedRoom)=> {
-    setParticipants(updatedRoom.members);
-  }) 
+
     }
   }, [getSocket]);
+  useEffect(()=>{
+    getUpdatedRoom(JoinedRoom._id)
+    .then((updatedRoom)=> {
+      setParticipants(updatedRoom.members);
+    }) 
+  },[participants])
 
 const UpdateMyMembers=(user)=>{
   setParticipants(participants.filter(participant=>participant["email"]!==user));
