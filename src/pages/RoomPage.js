@@ -281,6 +281,7 @@ function RoomPage() {
             // dispatch(LeaveStream());
             dispatch(emptyMessages());
             dispatch(emptygptMessages());
+            
             if (status === "fulfilled") {
               navigate("/");
             }

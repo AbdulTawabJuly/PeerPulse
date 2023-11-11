@@ -9,7 +9,7 @@ import { sendMessage } from "../../chat/ChatSlice";
 import { useDispatch } from "react-redux";
 import { selectMicState } from "../../VideoCall/videoCallSlice";
 import { useEffect, useState } from "react";
-function Member({username,UpdateMembers,micstate}){
+function Member({username,micstate}){
     console.log(username+" "+micstate);
     const isCreator=useSelector(selectIsCreator);
     const user = useSelector(selectLoggedInUser);
@@ -25,7 +25,7 @@ function Member({username,UpdateMembers,micstate}){
             type:"kicked",
             user:user,
         }  
-        UpdateMembers(user);
+        
         dispatch(sendMessage(newMessage));
         socket.emit("kick-user",user,RoomID);
     }
@@ -34,7 +34,7 @@ function Member({username,UpdateMembers,micstate}){
             type:"banned",
             user:user,
         }  
-        UpdateMembers(user);
+        
         dispatch(sendMessage(newMessage));
         socket.emit("ban-user",user,RoomID);
     }
