@@ -1,6 +1,7 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authReducer from "../features/auth/authSlice";
 import roomReducer from "../features/rooms/RoomSlice"
+import friendReducer from "../features/friends/friendSlice"
 import storage from 'redux-persist/lib/storage'
 import {persistReducer} from 'redux-persist'
 import messagesReducer from "../features/chat/ChatSlice"
@@ -20,6 +21,7 @@ const reducer = combineReducers({
   messages: messagesReducer,
   video:videoReducer,
   gpt: gptReducer,
+  friend: friendReducer,
 })
 
 const persistedReducer = persistReducer(persistConfig, reducer);
