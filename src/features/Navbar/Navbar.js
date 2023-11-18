@@ -1,13 +1,17 @@
-import { Fragment } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
-import {useDispatch} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { signOut } from "../auth/authSlice"
 import { useSocket } from '../../context/socket';
+import { selectLoggedInUser } from "../auth/authSlice";
+import Notification from "../friends/components/Notification"
+import axios from 'axios'
 
 
 const navigation = [{ name: "Room", link: "/rooms", current: true }];
+
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -16,13 +20,58 @@ function classNames(...classes) {
 
 
 export default function Navbar() {
+
   const dispatch = useDispatch();
   function handleLogout() {
-      dispatch(signOut());
+    dispatch(signOut());
+  }
+  const user = useSelector(selectLoggedInUser);
+  const [notifications, setNotifications] = useState([]);
+  const [style, setStyle] = useState('');
+  const emptyNotification = {
+    type: 'info',
+    content: 'You have no new notifications'
   }
 
+  const fetchNotifications = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/friend/getNotifications', {
+        params: {
+          username: user.user.username
+        }
+      });
+      setNotifications(response.data.messages);
+
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    }
+  };
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (notifications) {
+        setStyle('transform rotate-45 transition text-white')
+        setInterval(() => {
+          setStyle('transform -rotate-45 transition text-white')
+          setInterval(() => {
+            setStyle('')
+          }, 200)
+        }, 200)
+      }
+      else {
+        setStyle('');
+      }
+    }, 2000);
+
+  }, []);
+
+  useEffect(() => {
+    fetchNotifications();
+    console.log('length: ',notifications.length)
+  }, [])
+
   return (
-    
+
     <Disclosure as="nav" className=" bg-AuthBtn-0">
       {({ open }) => (
         <>
@@ -73,14 +122,46 @@ export default function Navbar() {
                 </div> */}
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                <button
+                {/* <button
                   type="button"
                   className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                 >
                   <span className="absolute -inset-1.5" />
                   <span className="sr-only">View notifications</span>
                   <BellIcon className="h-6 w-6" aria-hidden="true" />
-                </button>
+                </button> */}
+
+                <Menu as='div' className='relative ml-3'>
+                  <div>
+                    <Menu.Button className={`${style} relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800`}>
+                      <span className="absolute -inset-1.5" />
+                      <span className="sr-only">View notifications</span>
+                      <BellIcon className="h-6 w-6 " aria-hidden="true" />
+                    </Menu.Button>
+                  </div>
+                  <Transition
+                    as={Fragment}
+                    enter="transition ease-out duration-100"
+                    enterFrom="transform opacity-0 scale-95"
+                    enterTo="transform opacity-100 scale-100"
+                    leave="transition ease-in duration-75"
+                    leaveFrom="transform opacity-100 scale-100"
+                    leaveTo="transform opacity-0 scale-95"
+                  >
+                    <Menu.Items className="absolute right-0 z-10 mt-2 w-96 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      {notifications.length!==0 ? notifications.map((notification) => (
+                        <Menu.Item>
+                          <Notification notification={notification} />
+                        </Menu.Item>
+                      )
+                      ) : (<Menu.Item>
+                        <div className='block px-4 py-4 text-sm text-gray-700 border-b-2 border-gray-400'>
+                          <h3>You have no new notifications</h3>
+                        </div>
+                      </Menu.Item>)}
+                    </Menu.Items>
+                  </Transition>
+                </Menu>
 
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative ml-3">
@@ -136,7 +217,7 @@ export default function Navbar() {
                             active ? "bg-gray-100" : "",
                             "block px-4 py-2 text-sm text-gray-700"
                           )}>
-                              Sign out
+                            Sign out
                           </button>
                         )}
                       </Menu.Item>

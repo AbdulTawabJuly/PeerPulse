@@ -1,12 +1,71 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Friend from '../../friends/components/Friend';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { sendReqAsync, selectErrors, selectStatus, setErrorToNull, setLoadingToNull } from '../../friends/friendSlice';
+import { useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
+import MoonLoader from "react-spinners/MoonLoader";
+import { selectLoggedInUser } from "../../auth/authSlice";
 
 const SideBar = () => {
+
    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
    const toggleDrawer = () => {
       setIsDrawerOpen(!isDrawerOpen);
    };
+
+   const LoggedInUser = useSelector(selectLoggedInUser);
+   const errors = useSelector(selectErrors);
+   const status = useSelector(selectStatus);
+
+   const [friend, setFriend] = useState("");
+   const dispatch = useDispatch();
+
+   useEffect(() => {
+      dispatch(setErrorToNull());
+      dispatch(setLoadingToNull())
+   }, [])
+
+   useEffect(() => {
+      if (status === 'fulfilled') {
+         toast.success('Friend req sent', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+         });
+      }
+      else if (status === 'error') {
+         toast.error(errors, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+         });
+      }
+   }, [status])
+
+   const sendReq = async () => {
+      const user = {
+         user: LoggedInUser.user.username,
+         friend: friend,
+      }
+
+      dispatch(sendReqAsync(user));
+      dispatch(setErrorToNull());
+      dispatch(setLoadingToNull());
+      setFriend('');
+   }
 
    return (
       <>
@@ -29,8 +88,13 @@ const SideBar = () => {
                <svg aria-hidden="true" className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
             </button>
             <div className='flex justify-between pt-6'>
-               <input className=' rounded-md' />
-               <button className='rounded-full w-8 h-8 bg-white text-center'>+</button>
+               <input className=' rounded-full outline-none w-40 pl-2' onChange={(e) => setFriend(e.target.value)} value={friend}/>
+               <button className='rounded-full w-8 h-8 bg-white text-center' onClick={sendReq}>{status === "loading" ? (
+                  <MoonLoader color="black" size={20} />
+               ) : (
+                  "+"
+               )}</button>
+               <ToastContainer />
             </div>
 
             <div className="py-4 overflow-y-auto">
