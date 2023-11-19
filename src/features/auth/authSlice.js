@@ -12,6 +12,7 @@ const initialState = {
   error: null,
   mailSent: false,
   passwordReset: false,
+  notifications: []
 };
 
 export const createUserAsync = createAsyncThunk(
@@ -79,6 +80,10 @@ export const authSlice = createSlice({
     setErrorToNull: (state) => {
       state.error = null;
     },
+    setNotifications: (state, action) => {
+      state.notifications = action.payload
+      console.log('state.notificatins',state.notifications);
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -128,6 +133,7 @@ export const authSlice = createSlice({
 export const selectLoggedInUser = (state) => state.auth.loggedInUser;
 export const selectErrors = (state) => state.auth.error;
 export const selectStatus = (state) => state.auth.status;
+export const selectNotifications = (state) => state.auth.notifications;
 export const selectMailSent = (state) => state.auth.mailSent;
 export const selectPasswordReset = (state) => state.auth.passwordReset;
 
@@ -136,5 +142,6 @@ export const {
   setMailSentToFalse,
   setPasswordResetToFalse,
   setErrorToNull,
+  setNotifications
 } = authSlice.actions;
 export default authSlice.reducer;
