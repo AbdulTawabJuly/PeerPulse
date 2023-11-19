@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import Friend from '../../friends/components/Friend';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { sendReqAsync, selectErrors, selectStatus, setErrorToNull, setLoadingToNull } from '../../friends/friendSlice';
+import { sendReqAsync, selectErrors, selectStatus, setErrorToNull, setLoadingToNull, setFriends, selectFriends } from '../../friends/friendSlice';
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
 import MoonLoader from "react-spinners/MoonLoader";
 import { selectLoggedInUser } from "../../auth/authSlice";
+import axios from 'axios'
+import FriendContainer from '../../friends/components/FriendContainer';
 
 const SideBar = () => {
 
@@ -23,37 +25,33 @@ const SideBar = () => {
    const [friend, setFriend] = useState("");
    const dispatch = useDispatch();
 
-   useEffect(() => {
-      dispatch(setErrorToNull());
-      dispatch(setLoadingToNull())
-   }, [])
+   const fetchFriends = async () => {
+      try {
+         const response = await axios.get('http://localhost:8080/api/friend/getFriends', {
+            params: {
+               user_username: LoggedInUser.user.username
+            }
+         });
+         dispatch(setFriends(response.data));
+
+      } catch (error) {
+         console.error('Error fetching notifications:', error);
+      }
+   };
 
    useEffect(() => {
-      if (status === 'fulfilled') {
-         toast.success('Friend req sent', {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-         });
+      dispatch(setErrorToNull());
+      dispatch(setLoadingToNull());
+   }, [])
+
+   const friends = useSelector(selectFriends);
+
+   useEffect(() => {
+      if (isDrawerOpen) {
+         fetchFriends();
       }
-      else if (status === 'error') {
-         toast.error(errors, {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-         });
-      }
-   }, [status])
+   }, [isDrawerOpen])
+
 
    const sendReq = async () => {
       const user = {
@@ -88,25 +86,28 @@ const SideBar = () => {
                <svg aria-hidden="true" className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
             </button>
             <div className='flex justify-between pt-6'>
-               <input className=' rounded-full outline-none w-40 pl-2' onChange={(e) => setFriend(e.target.value)} value={friend}/>
+               <input className=' rounded-full outline-none w-40 pl-2' onChange={(e) => setFriend(e.target.value)} value={friend} />
                <button className='rounded-full w-8 h-8 bg-white text-center' onClick={sendReq}>{status === "loading" ? (
                   <MoonLoader color="black" size={20} />
                ) : (
                   "+"
                )}</button>
-               <ToastContainer />
             </div>
-
-            <div className="py-4 overflow-y-auto">
-               <div className='online'>
-                  <div className='flex gap-3 text-white items-center py-4'>
-                     <h3>Online</h3>
-                     <div className='w-2 h-2 rounded-full bg-green-100'>
+            <div>
+               <div className="py-4 overflow-y-auto">
+                  <div className='online'>
+                     <div className='flex gap-3 text-white items-center py-4'>
+                        <h3>{friend.name}</h3>
+                        <div className='w-2 h-2 rounded-full bg-green-100'>
+                        </div>
                      </div>
+                     {friends.length !== 0 ? friends.map((x) => (
+                        <Friend user={x} />
+                     )): <h2 className='text-white text-center pt-5'>You have no friends. LOL</h2>}
                   </div>
-                  <Friend />
                </div>
             </div>
+
          </div>
       </>
    );

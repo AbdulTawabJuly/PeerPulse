@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import {
     sendReq,
+    addFriend,
+    declineReq
   } from "./friendApi.js";
 
 const initialState = {
@@ -23,27 +25,45 @@ export const sendReqAsync = createAsyncThunk(
     }
   );
 
+  export const addFriendAsync = createAsyncThunk(
+    "friend/addFriend",
+    async(data) => {
+      try {
+        const response = await addFriend(data);
+        return response.data;
+      }
+      catch(error) {
+        throw error;
+      }
+    }
+  )
+
+  export const declineReqAsync = createAsyncThunk(
+    "friend/declineReq",
+    async(data) => {
+      try {
+        const response = await declineReq(data);
+        return response.data;
+      }
+      catch(error) {
+        throw error
+      }
+    }
+  )
+
 const friendSlice = createSlice({
   name: 'friend',
   initialState,
   reducers: {
-    addFriend: (state, action) => {
-      state.friends.push(action.payload);
-    },
-    removeFriend: (state, action) => {
-      state.friends = state.friends.filter((friend) => friend !== action.payload);
-    },
-    blockFriend: (state, action) => {
-      const friendToBlock = action.payload;
-      state.blocked.push(friendToBlock);
-      state.friends = state.friends.filter((friend) => friend !== friendToBlock);
-    },
-    setErrorToNull: (state) => {
-      state.error = null;
-    },
-    setLoadingToNull: (state) => {
-      state.status = "idle";
-    },
+   setErrorToNull:(state)=> {
+    state.error = null
+   },
+   setLoadingToNull: (state)=> {
+    state.status = null
+   },
+   setFriends: (state, action) => {
+    state.friends = action.payload.friends
+   }
   },
   extraReducers: (builder) => {
     builder
@@ -52,19 +72,41 @@ const friendSlice = createSlice({
       })
       .addCase(sendReqAsync.fulfilled, (state,action) => {
         state.status = "fulfilled"
-        state.error = null
-        console.log('state.error after fulfilled: ',action.payload.message);
+        state.error = action.payload.message;
       })
       .addCase(sendReqAsync.rejected, (state,action) => {
         state.status = "error";
         state.error = action.error.message;
-        console.log('state.error after rejected: ',state.error);
       })
+      .addCase(addFriendAsync.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(addFriendAsync.fulfilled, (state,action) => {
+        state.status = "fulfilled"
+        state.error = action.payload.message;
+      })
+      .addCase(addFriendAsync.rejected, (state,action) => {
+        state.status = "error";
+        state.error = action.error.message;
+      })
+      .addCase(declineReqAsync.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(declineReqAsync.fulfilled, (state,action) => {
+        state.status = "fulfilled"
+        state.error = action.payload.message;
+      })
+      .addCase(declineReqAsync.rejected, (state,action) => {
+        state.status = "error";
+        state.error = action.error.message;
+      })
+      
   },
 });
 
 export const selectErrors = (state) => state.friend.error;
 export const selectStatus = (state) => state.friend.status;
-export const { addFriend, removeFriend, blockFriend, setErrorToNull, setLoadingToNull } = friendSlice.actions;
+export const selectFriends = (state) => state.friend.friends;
+export const { setErrorToNull, setLoadingToNull, setFriends } = friendSlice.actions;
 
 export default friendSlice.reducer;
