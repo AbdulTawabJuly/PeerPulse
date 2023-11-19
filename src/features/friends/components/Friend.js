@@ -5,7 +5,7 @@ function Friend(user) {
     <div className='flex justify-between items-center text-white border-b py-4 border-white-500'>
         <div className='flex items-center'>
             <img className='w-10 h-10 rounded-full' alt='img' src='profile.png'></img>
-            <h3 className='pl-4'>Hamza</h3>
+            <h3 className='pl-4'>{user.user.name}</h3>
         </div>
         <div className='flex items-end'>
             <button className=''><svg

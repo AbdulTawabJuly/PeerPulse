@@ -1,13 +1,16 @@
 import { Fragment, useState, useEffect } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { signOut } from "../auth/authSlice"
 import { useSocket } from '../../context/socket';
-import { selectLoggedInUser } from "../auth/authSlice";
+import { selectLoggedInUser, selectNotifications, setNotifications } from "../auth/authSlice";
 import Notification from "../friends/components/Notification"
 import axios from 'axios'
+import { sendReqAsync, selectErrors, selectStatus, setErrorToNull, setLoadingToNull } from '../friends/friendSlice';
 
 
 const navigation = [{ name: "Room", link: "/rooms", current: true }];
@@ -21,17 +24,45 @@ function classNames(...classes) {
 
 export default function Navbar() {
 
+  const errors = useSelector(selectErrors);
+  const status = useSelector(selectStatus);
+
+  useEffect(() => {
+    if (status === 'fulfilled') {
+       toast.success(errors, {
+          position: "bottom-right",
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+       });
+    }
+    else if (status === 'error') {
+       toast.error(errors, {
+          position: "bottom-right",
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+       });
+    }
+ }, [status])
+
   const dispatch = useDispatch();
   function handleLogout() {
     dispatch(signOut());
   }
   const user = useSelector(selectLoggedInUser);
-  const [notifications, setNotifications] = useState([]);
+  // const [notifications, setNotifications] = useState([]);
+  const notifications = useSelector(selectNotifications)
   const [style, setStyle] = useState('');
-  const emptyNotification = {
-    type: 'info',
-    content: 'You have no new notifications'
-  }
+
 
   const fetchNotifications = async () => {
     try {
@@ -40,12 +71,17 @@ export default function Navbar() {
           username: user.user.username
         }
       });
-      setNotifications(response.data.messages);
+      dispatch(setNotifications(response.data.messages));
 
     } catch (error) {
       console.error('Error fetching notifications:', error);
     }
   };
+
+  const handleBellClick = async() => {
+    console.log("handle bell click called");
+    await fetchNotifications();
+  }
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -67,7 +103,6 @@ export default function Navbar() {
 
   useEffect(() => {
     fetchNotifications();
-    console.log('length: ',notifications.length)
   }, [])
 
   return (
@@ -133,7 +168,7 @@ export default function Navbar() {
 
                 <Menu as='div' className='relative ml-3'>
                   <div>
-                    <Menu.Button className={`${style} relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800`}>
+                    <Menu.Button onClick={handleBellClick} className={`${style} relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800`}>
                       <span className="absolute -inset-1.5" />
                       <span className="sr-only">View notifications</span>
                       <BellIcon className="h-6 w-6 " aria-hidden="true" />
@@ -194,7 +229,7 @@ export default function Navbar() {
                               "block px-4 py-2 text-sm text-gray-700"
                             )}
                           >
-                            Your Profile
+                            {user.user.username}
                           </a>
                         )}
                       </Menu.Item>
@@ -226,6 +261,7 @@ export default function Navbar() {
                 </Menu>
               </div>
             </div>
+            <ToastContainer/>
           </div>
 
           {/* <Disclosure.Panel className="sm:hidden">
@@ -251,5 +287,6 @@ export default function Navbar() {
         </>
       )}
     </Disclosure>
+    
   );
 }
