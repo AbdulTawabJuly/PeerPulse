@@ -66,11 +66,7 @@ function Member({ userID,username, micstate,Moderator }) {
     });
   };
   const makeModerator=(user,userID)=>{
-    const newMessage = {
-      type: "moderator",
-      user: user,
-    };
-    dispatch(sendMessage(newMessage));
+
     const RoomDetail = {
       id: RoomID,
       user_: userID,
@@ -93,11 +89,6 @@ function Member({ userID,username, micstate,Moderator }) {
     
   }
   const removeModerator=(user,userID)=>{
-    const newMessage = {
-      type: "unmod",
-      user: user,
-    };
-    dispatch(sendMessage(newMessage));
     const RoomDetail = {
       id: RoomID,
       user_: userID,

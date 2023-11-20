@@ -348,13 +348,6 @@ function RoomPage() {
         }
       });
       newSocket.on("Make-Moderator", (username,userID) => {
-        if (!RoomJoined.moderators.includes(userID)) {
-        const newMsg = {
-          type: "moderator",
-          user: username,
-        };
-
-        dispatch(sendMessage(newMsg));
         
         if (username === user.user.email) {
           if (status === "fulfilled") {
@@ -374,21 +367,11 @@ function RoomPage() {
               }
             }
           }
-        }
       });
       newSocket.on("Remove-Moderator", (username,userID) => {
-        const newMsg = {
-          type: "unmod",
-          user: username,
-        };
-
-        dispatch(sendMessage(newMsg));
         
         if (username === user.user.email) {
-          if (status === "fulfilled") {
-          
-            
-             
+          if (status === "fulfilled") {             
               dispatch(SetModerator(false));
               if (status === "fulfilled") {
                 toast.error(`You have been dismissed as a moderator.`, {
