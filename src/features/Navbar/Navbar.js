@@ -84,7 +84,7 @@ export default function Navbar() {
   }
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
+    /*const intervalId = setInterval(() => {
       if (notifications) {
         setStyle('transform rotate-45 transition text-white')
         setInterval(() => {
@@ -97,7 +97,7 @@ export default function Navbar() {
       else {
         setStyle('');
       }
-    }, 2000);
+    }, 2000);*/
 
   }, []);
 
@@ -184,7 +184,7 @@ export default function Navbar() {
                     leaveTo="transform opacity-0 scale-95"
                   >
                     <Menu.Items className="absolute right-0 z-10 mt-2 w-96 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      {notifications.length!==0 ? notifications.map((notification) => (
+                      {notifications&&notifications.length!==0 ? notifications.map((notification) => (
                         <Menu.Item>
                           <Notification notification={notification} />
                         </Menu.Item>
@@ -261,7 +261,6 @@ export default function Navbar() {
                 </Menu>
               </div>
             </div>
-            <ToastContainer/>
           </div>
 
           {/* <Disclosure.Panel className="sm:hidden">
