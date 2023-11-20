@@ -77,15 +77,6 @@ function Message(msg) {
       </div>
     )
   }
-  else if (msg.type === 'moderator') {
-    return (
-      <div className='text-center p-2 bg-blue-300 rounded-full w-3/4 mx-auto my-4'>
-         <p className='text-sm italic'>
-          {msg.user} <span className='not-italic pl-1'>is now a moderator</span>
-        </p>
-      </div>
-    )
-  }
 }
 
 export default Message
