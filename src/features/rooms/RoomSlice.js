@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { searchRooms, sendInvoice } from "./RoomAPICalls";
+import { Makemoderator, searchRooms, sendInvoice } from "./RoomAPICalls";
 import { CreateRoom } from "./RoomAPICalls";
 import { Leaveroom, Joinroom, Getroom, getToken,Banuser } from "./RoomAPICalls";
 import { redirect } from "react-router-dom";
@@ -13,6 +13,7 @@ const initialState = {
   currentlyClickedRoom: null,
   token:null,
   isCreator:false,
+  isModerator:false,
 };
 export const searchRoom = createAsyncThunk(
   "room/search",
@@ -86,6 +87,7 @@ export const BanUser = createAsyncThunk("room/banuser", async (RoomDetails) => {
     throw error;
   }
 });
+
 // export const getRoom = createAsyncThunk(
 //   "room/get",
 //   async (RoomDetails) => {
@@ -116,7 +118,10 @@ export const roomSlice = createSlice({
     },
     SetCreator:(state,action)=>{
       state.isCreator=action.payload;
-    }
+    },
+    SetModerator:(state,action)=>{
+      state.isModerator=action.payload;
+    },
   },
   extraReducers: (someShit) => {
     someShit
@@ -169,8 +174,9 @@ export const roomSlice = createSlice({
       })
       .addCase(BanUser.rejected, (state, action) => {
         state.status = "error";
-        state.error = action.error;
+        state.error = action.error.message;
       })
+     
       .addCase(JoinRoom.pending, (state) => {
         state.status = "loading";
         state.error = null;
@@ -216,7 +222,7 @@ export const roomSlice = createSlice({
   },
 });
 
-export const { setCurrentlyClickedPaidRoom,SetCreator } = roomSlice.actions;
+export const { setCurrentlyClickedPaidRoom,SetCreator,SetModerator } = roomSlice.actions;
 export const selectSearchedRooms = (state) => state.room.searchedRooms;
 export const selectRoomError = (state) => state.room.error;
 export const selectJoinedRoom = (state) => state.room.joinedRoom;
@@ -225,5 +231,5 @@ export const selectCurrentlyClickedRoom = (state) =>
   state.room.currentlyClickedRoom;
 export const selectToken =(state)=> state.room.token;
 export const selectIsCreator=(state)=>state.room.isCreator;
-
+export const selectIsModerator=(state)=>state.room.isModerator;
 export default roomSlice.reducer;

@@ -5,6 +5,7 @@ import HomePage from "./pages/HomePage"
 import PageNotFound from "./pages/PageNotFound"
 import RoomPage from "./pages/RoomPage"
 import PaymentPage from "./pages/PaymentPage"
+import { ToastContainer } from "react-toastify";
 import {
   createBrowserRouter,
   RouterProvider,
@@ -74,6 +75,7 @@ function App() {
   return (
     <div className="App">
       <RouterProvider router={router} />
+      <ToastContainer/>
     </div>
   );
 }

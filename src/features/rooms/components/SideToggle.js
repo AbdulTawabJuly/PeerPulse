@@ -20,6 +20,7 @@ function SideToggle() {
   const memberList = JoinedRoom.members;
   const user = useSelector(selectLoggedInUser);
   const status=useSelector(selectStatus);
+  const [Moderators,SetModerators]=useState([]);
   
   const HandleMemberClick = () => {
     if (!Members) {
@@ -74,7 +75,7 @@ function SideToggle() {
 
     const newSocket = getSocket();
     if (newSocket) {
-
+      
       newSocket.on("Toggle-Mic", (users, micstate) => {
       if (micstate) {
       SetMembersWithMicOn(prevMembers => [...prevMembers, users]);
@@ -98,6 +99,7 @@ function SideToggle() {
     getUpdatedRoom(JoinedRoom._id)
     .then((updatedRoom)=> {
       setParticipants(updatedRoom.members);
+      SetModerators(updatedRoom.moderators);
     }) 
   },[getUpdatedRoom])
 
@@ -128,7 +130,7 @@ const UpdateMyMembers=(user)=>{
       {Members && (<div className="max-h-80 overflow-y-auto">
 
         {participants && (participants.map((member) => (
-          <Member key={member._id} username={member.email} UpdateMembers={UpdateMyMembers} micstate={membersWithMicOn.includes(member.email)}/>
+          <Member key={member._id} userID={member._id} username={member.email} UpdateMembers={UpdateMyMembers} micstate={membersWithMicOn.includes(member.email)} Moderator={Moderators.includes(member._id)}/>
         )))}
       </div>)}
       <div>{Chat && <Messages />}</div>

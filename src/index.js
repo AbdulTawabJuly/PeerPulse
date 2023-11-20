@@ -18,10 +18,10 @@ root.render(
   <Provider store={store}>
     <PersistGate persistor={persistor}>
       <SocketProvider>
-        <App />
+        <App>
+        </App>
       </SocketProvider>
     </PersistGate>
-
   </Provider>
 );
 

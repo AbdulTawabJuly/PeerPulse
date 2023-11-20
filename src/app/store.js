@@ -7,7 +7,7 @@ import {persistReducer} from 'redux-persist'
 import messagesReducer from "../features/chat/ChatSlice"
 import gptReducer from "../features/GPT/GPTSlice"
 import videoReducer from "../features/VideoCall/videoCallSlice"
-
+import moderatorReducer from "../features/Moderator/ModeratorSlice"
 
 const persistConfig = {
   key:"root",
@@ -22,6 +22,7 @@ const reducer = combineReducers({
   video:videoReducer,
   gpt: gptReducer,
   friend: friendReducer,
+  moderator:moderatorReducer,
 })
 
 const persistedReducer = persistReducer(persistConfig, reducer);
