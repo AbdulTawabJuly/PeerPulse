@@ -43,6 +43,19 @@ const ModeratorSlice = createSlice({
         state.status = "error";
         state.error = action.error.message;
       })
+      .addCase(RemoveModerator.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+        
+      })
+      .addCase(RemoveModerator.fulfilled, (state, action) => {
+        state.status = "fulfilled";
+        state.error=null;
+      })
+      .addCase(RemoveModerator.rejected, (state, action) => {
+        state.status = "error";
+        state.error = action.error.message;
+      })
       
   },
 });
