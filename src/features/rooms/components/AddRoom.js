@@ -4,7 +4,7 @@ import axios from "axios";
 import { selectLoggedInUser } from "../../auth/authSlice";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { createRoom, selectJoinedRoom, selectRoomError } from "../RoomSlice";
+import { createRoom, selectCreatedRoom, selectJoinedRoom, selectRoomError } from "../RoomSlice";
 import { Navigate, useNavigate } from "react-router-dom";
 const Modal = () => {
   const [isAddModalVisible, setAddModalVisible] = useState(false);
@@ -15,7 +15,7 @@ const Modal = () => {
   const [PaidCheck, setPaidCheck] = useState(false);
   const [roomCreated, setRoomCreated] = useState(false);
   const [Price, SetPrice] = useState();
-  const RoomToJoin = useSelector(selectJoinedRoom);
+  const RoomToJoin = useSelector(selectCreatedRoom);
 
   const toggleAddModal = () => {
     setAddModalVisible(!isAddModalVisible);

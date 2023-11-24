@@ -52,13 +52,11 @@ import { useDispatch } from "react-redux";
 
 import AgoraRTC from "agora-rtc-sdk-ng";
 const APP_ID = "e3a46af1a70746148c7abd4c4785f262";
-const TOKEN =
-  "007eJxTYJi2+u7bbz/bK78xRJ7n617Vd39dfEr8CiP/O3vOvyqYd9JDgSHVONHELDHNMNHcwNzEzNDEItk8MSnFJNnE3MI0zcjM6HVxdGpDICPD85INDIxQCOJzMgSkphYFlOYUpzIwAABHjSVy";
-const CHANNEL = "PeerPulse";
 const client = AgoraRTC.createClient({
   mode: "rtc",
   codec: "vp8",
 });
+
 function RoomPage() {
   const [micMute, setMicMute] = useState(true);
   const [isVideoOff, setVideoOff] = useState(true);
@@ -83,6 +81,7 @@ function RoomPage() {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [localTracks, setLocalTracks] = useState([]);
+  
   const handleResize = () => {
     if (window.innerWidth < 1098) {
       setIsMobile(true);
@@ -157,9 +156,10 @@ function RoomPage() {
       if (RoomJoined.moderators.includes(user.user.id)) {
         dispatch(SetModerator(true));
       }
-
+      console.log(RoomJoined.members);
+      const Token=RoomJoined.members.find(member=>member._id===user.user.id).AgoraToken;
       client
-        .join(APP_ID, CHANNEL, TOKEN, user.user.email)
+        .join(APP_ID, RoomJoined._id, Token, user.user.email)
         .then((uid) =>
           Promise.all([AgoraRTC.createMicrophoneAndCameraTracks(), uid])
         )

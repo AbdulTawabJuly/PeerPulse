@@ -5,6 +5,7 @@ import { Leaveroom, Joinroom, Getroom, getToken,Banuser } from "./RoomAPICalls";
 import { redirect } from "react-router-dom";
 const initialState = {
   searchedRooms: null,
+  createdRoom:null,
   joinedRoom: null,
   messages: null,
   gpt4: null,
@@ -143,7 +144,7 @@ export const roomSlice = createSlice({
 
       .addCase(createRoom.fulfilled, (state, action) => {
         state.status = "fulfilled";
-        state.joinedRoom = action.payload;
+        state.createdRoom=action.payload;
         state.error = null;
       })
       .addCase(createRoom.rejected, (state, action) => {
@@ -185,6 +186,7 @@ export const roomSlice = createSlice({
       .addCase(JoinRoom.fulfilled, (state, action) => {
         state.status = "fulfilled";
         state.joinedRoom = action.payload;
+        state.createdRoom = null;
         state.error = null;
       })
       .addCase(JoinRoom.rejected, (state, action) => {
@@ -226,6 +228,7 @@ export const { setCurrentlyClickedPaidRoom,SetCreator,SetModerator } = roomSlice
 export const selectSearchedRooms = (state) => state.room.searchedRooms;
 export const selectRoomError = (state) => state.room.error;
 export const selectJoinedRoom = (state) => state.room.joinedRoom;
+export const selectCreatedRoom = (state) => state.room.createdRoom;
 export const selectStatus = (state) => state.room.status;
 export const selectCurrentlyClickedRoom = (state) =>
   state.room.currentlyClickedRoom;
