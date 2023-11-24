@@ -11,6 +11,7 @@ import { PacmanLoader } from "react-spinners";
 import { useSocket } from "../context/socket";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
+import { useBeforeUnload } from "react-router-dom";
 import {
   sendMessage,
   selectMessages,
@@ -81,7 +82,7 @@ function RoomPage() {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [localTracks, setLocalTracks] = useState([]);
-  
+
   const handleResize = () => {
     if (window.innerWidth < 1098) {
       setIsMobile(true);
@@ -90,8 +91,8 @@ function RoomPage() {
     }
   };
 
-  const handlePopState = async () => {
-    if (status === "fulfilled") {
+  const handlePopState = async (ev) => {
+    if (status === "fulfilled"&&RoomJoined) {  
       const RoomDetail = {
         id: roomID,
         user_: user.user.id,
@@ -103,6 +104,22 @@ function RoomPage() {
       while (status === "loading");
     }
   };
+  useBeforeUnload(()=>{
+    if (status === "fulfilled"&&RoomJoined) {
+      const RoomDetail = {
+        id: roomID,
+        user_: user.user.id,
+      };
+      const newSocket = getSocket();
+      newSocket.emit("leave-room", user.user.email, roomID.id);
+      destroySocket();
+      dispatch(LeaveRoom(RoomDetail));
+      dispatch(emptyMessages());
+      dispatch(emptygptMessages());
+      dispatch(SetCreator(false));
+      while (status === "loading");
+    }
+  })
 
   const GetRoomData = async (id) => {
     try {

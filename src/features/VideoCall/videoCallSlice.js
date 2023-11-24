@@ -1,6 +1,5 @@
 // messagesSlice.js
 import { createSlice } from "@reduxjs/toolkit";
-
 const videoCallSlice = createSlice({
   name: "video",
   initialState: {
@@ -29,6 +28,7 @@ const videoCallSlice = createSlice({
       state.tracks=action.payload;
     }
   },
+
 });
 
 export const { toggleCamera, toggleMic,SetClient,SetTracks,SetCameraState,SetMicState} =videoCallSlice.actions;
