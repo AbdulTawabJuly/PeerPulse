@@ -43,6 +43,15 @@ function SignUp() {
           ) : null}
         </div>
 
+        {/* <div className="flex flex-row justify-center mt-6">
+          <div class=" w-2/6 bg-white rounded-full h-1.5 mb-4">
+            <div
+              class="bg-green-600 h-1.5 rounded-full"
+              style={{ width: "100%" }}
+            ></div>
+          </div>
+        </div> */}
+
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form
             noValidate
