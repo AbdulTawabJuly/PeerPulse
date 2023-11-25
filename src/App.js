@@ -23,11 +23,11 @@ import LandingPage from "./pages/LandingPage";
 
 const router = createBrowserRouter([  
   {
-    path: "/landing-page",
+    path: "/",
     element: <LandingPage></LandingPage>,
   },
   {
-    path: "/",
+    path: "/home",
     element: <Protected><HomePage></HomePage></Protected>,
   },
   {
