@@ -1,3 +1,4 @@
+
 import ForgetPasswordPage from "./pages/ForgetPasswordPage";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
@@ -18,8 +19,13 @@ import Member from "./features/rooms/components/Member";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import StripeCheckout from "./pages/StripeCheckout";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import LandingPage from "./pages/LandingPage";
 
 const router = createBrowserRouter([  
+  {
+    path: "/landing-page",
+    element: <LandingPage></LandingPage>,
+  },
   {
     path: "/",
     element: <Protected><HomePage></HomePage></Protected>,
