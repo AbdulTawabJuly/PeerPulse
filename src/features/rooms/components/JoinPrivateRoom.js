@@ -27,14 +27,14 @@ function JoinPrivateRoom(){
           className="transition-all delay-1000 fixed bottom-20 right-14 mr-10 mb-20 z-50 overflow-x-hidden p-0 mr-0 overflow-y-auto"
         >
           <div className="relative w-full max-w-lg max-h-md">
-            <div className="relative bg-white rounded-lg shadow dark:bg-AuthBtn-0">
-              <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <div className="relative rounded-lg shadow bg-AuthBtn-0">
+              <div className="flex items-start justify-between p-4 border-b rounded-t border-white">
+                <h3 className="text-xl font-semibold text-white">
                   Join Private Room
                 </h3>
                 <button
                   type="button"
-                  className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                  className="text-gray-400 bg-transparent  rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white"
                   onClick={() => setLockModalVisible(false)}
                 >
                   <svg
