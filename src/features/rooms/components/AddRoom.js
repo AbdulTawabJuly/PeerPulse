@@ -81,9 +81,9 @@ const Modal = () => {
           className="transition-all delay-1000 fixed bottom-12 right-16 mr-10 mb-10 z-50 overflow-x-hidden p-0 mr-0 overflow-y-auto"
         >
           <div className="relative w-full max-w-lg max-h-md">
-            <div className="relative bg-white rounded-lg shadow dark:bg-AuthBtn-0">
+            <div className="relative rounded-lg shadow bg-AuthBtn-0">
               <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                <h3 className="text-xl font-semibold text-white">
                   Create Room
                 </h3>
                 <button
