@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage"
 import PageNotFound from "./pages/PageNotFound"
 import RoomPage from "./pages/RoomPage"
 import PaymentPage from "./pages/PaymentPage"
+import Dashboard from "./pages/Dashboard";
 import { ToastContainer } from "react-toastify";
 import {
   createBrowserRouter,
@@ -73,6 +74,10 @@ const router = createBrowserRouter([
   {
     path:"/members",
     element:<Member></Member>
+  },
+  {
+    path:"/profile",
+    element:<Dashboard></Dashboard>
   },
 
 ]);

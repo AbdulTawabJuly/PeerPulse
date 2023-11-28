@@ -318,7 +318,7 @@ function RoomPage() {
                 progress: undefined,
                 theme: "colored",
               });
-              navigate("/");
+              navigate("/home");
             }
           }
         }
@@ -359,7 +359,7 @@ function RoomPage() {
                 progress: undefined,
                 theme: "colored",
               });
-              navigate("/");
+              navigate("/home");
             }
           }
         }
@@ -440,7 +440,7 @@ function RoomPage() {
       dispatch(SetCreator(false));
       dispatch(SetModerator(false));
       if (status === "fulfilled") {
-        navigate("/");
+        navigate("/home");
       }
     }
   };
