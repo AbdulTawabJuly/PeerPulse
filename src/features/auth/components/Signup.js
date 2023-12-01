@@ -46,6 +46,8 @@ function SignUp() {
   const [userinterests, SetUserInterests] = useState([]);
   const [interestError, SetInterestError] = useState("");
   const [newInterest,SetNewInterest]=useState('');
+  const [imageBuffer,SetImage]=useState();
+  const [postImage,SetPostImage]=useState({myFile:""})
   useEffect(() => {
     dispatch(setErrorToNull());
   }, []);
@@ -74,10 +76,12 @@ function SignUp() {
         setError("Age", {});
         setError("Gender", { type: "required", message: "Gender is required" });
         SetIsValid(false);
-      } else {
+      }
+       else {
         setError("Name", {});
         setError("Age", {});
         setError("Gender", {});
+       
         SetPage(2);
       }
     }
@@ -92,6 +96,7 @@ function SignUp() {
       }
     }
   };
+
   const pushInterest = (interest) => {
     const interestIndex = userinterests.indexOf(interest);
 
@@ -107,6 +112,20 @@ function SignUp() {
       SetOpacity("");
     }
   };
+
+  function convertToBase64(file){
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = () => {
+        resolve(fileReader.result)
+      };
+      fileReader.onerror = (error) => {
+        reject(error)
+      }
+    })
+  }
+
   const handleAddNewInterest=()=>{
     SetUserInterests([...userinterests,newInterest]);
     SetProvidedInterests([...providedInterests,newInterest])
@@ -117,6 +136,13 @@ function SignUp() {
       handleAddNewInterest();
     }
   }
+  const HandleUpload=async(e)=>{
+    const file=e.target.files[0];
+    if(file){
+    const base64=await convertToBase64(file);
+    SetImage(base64);
+    }
+   }
   useEffect(() => {
     console.log(userinterests);
   }, [userinterests]);
@@ -166,6 +192,7 @@ function SignUp() {
                   bsUni: BSUni,
                   msUni: MSUni,
                   interest: userinterests,
+                  image:imageBuffer,
                 })
               );
             })}
@@ -253,6 +280,30 @@ function SignUp() {
                     )}
                   </div>
                 </div>
+                <div className="flex items-center justify-between">
+                    <label
+                      htmlFor="Image"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Image
+                    </label>
+                  </div>
+                <div className="mt-2">
+                    <input
+                      id="Image"
+                      {...register("Image", {
+                        required: "Image Required",
+                      })}
+                      type="file"
+                      accept="image/*"
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      onChange={(e) => HandleUpload(e)}
+                    />
+                    {errors.Image && (
+                      <p className="text-red-500">{errors.Image.message}</p>
+                    )}
+                  </div>
+
 
                 <button
                   className="flex w-full justify-center rounded-md  px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm bg-AuthBtn-0 hover:bg-AuthBtnHover-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -625,7 +676,10 @@ function SignUp() {
                     )}
                   </div>
                 </div>
-
+                <div>
+             
+                  
+               </div>
                 <div className="w-full flex flex-row">
                   <button
                     className="flex m-2 w-1/2 justify-center rounded-md  px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm bg-AuthBtn-0 hover:bg-AuthBtnHover-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
