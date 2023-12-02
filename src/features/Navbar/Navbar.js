@@ -107,7 +107,7 @@ export default function Navbar() {
 
   return (
 
-    <Disclosure as="nav" className=" bg-AuthBtn-0">
+    <Disclosure as="nav" className=" bg-AuthBtn-0 w-screen">
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -223,7 +223,7 @@ export default function Navbar() {
                       <Menu.Item>
                         {({ active }) => (
                           <a
-                            href="#"
+                            href={"/profile/"+user.user.id}
                             className={classNames(
                               active ? "bg-gray-100" : "",
                               "block px-4 py-2 text-sm text-gray-700"
@@ -233,19 +233,7 @@ export default function Navbar() {
                           </a>
                         )}
                       </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            href="#"
-                            className={classNames(
-                              active ? "bg-gray-100" : "",
-                              "block px-4 py-2 text-sm text-gray-700"
-                            )}
-                          >
-                            Settings
-                          </a>
-                        )}
-                      </Menu.Item>
+                    
                       <Menu.Item>
                         {({ active }) => (
                           <button onClick={handleLogout} className={classNames(
