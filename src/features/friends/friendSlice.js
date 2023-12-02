@@ -2,7 +2,9 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import {
     sendReq,
     addFriend,
-    declineReq
+    declineReq,
+    removeFriend,
+    blockFriend
   } from "./friendApi.js";
 
 const initialState = {
@@ -44,6 +46,32 @@ export const sendReqAsync = createAsyncThunk(
       try {
         const response = await declineReq(data);
         return response.data;
+      }
+      catch(error) {
+        throw error
+      }
+    }
+  )
+
+  export const removeFriendAsync = createAsyncThunk(
+    "friend/removeFriend",
+    async(data) => {
+      try {
+        const response = await removeFriend(data);
+        return response.data;
+      }
+      catch(error) {
+        throw error
+      }
+    }
+  )
+
+  export const blockFriendAsync = createAsyncThunk(
+    "friend/blockFriend",
+    async(data) => {
+      try {
+        const response = await blockFriend(data)
+        return response.data
       }
       catch(error) {
         throw error
@@ -100,6 +128,28 @@ const friendSlice = createSlice({
         state.status = "error";
         state.error = action.error.message;
       })
+      .addCase(removeFriendAsync.pending, (state) => {
+         state.status = "loading"
+       })
+      .addCase(removeFriendAsync.fulfilled, (state, action) => {
+        state.status = "fulfilled"
+        state.error = action.payload.message
+      })
+      .addCase(removeFriendAsync.rejected, (state, action )=> {
+        state.status = "error"
+        state.error = action.error.message
+      })
+      .addCase(blockFriendAsync.pending, (state) => {
+        state.status = "loading"
+      })
+     .addCase(blockFriendAsync.fulfilled, (state, action) => {
+       state.status = "fulfilled"
+       state.error = action.payload.message
+     })
+     .addCase(blockFriendAsync.rejected, (state, action )=> {
+       state.status = "error"
+       state.error = action.error.message
+     })
       
   },
 });

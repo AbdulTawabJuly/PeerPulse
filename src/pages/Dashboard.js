@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import { removeFriendAsync, blockFriendAsync } from "../features/friends/friendSlice";
+import { setErrorToNull, setLoadingToNull, selectStatus as selectFStatus } from "../features/friends/friendSlice";
+import MoonLoader from "react-spinners/MoonLoader";
 import {
   UpdateUserInfo,
   getUser,
@@ -46,11 +49,12 @@ function Dashboard() {
   const [msUni, SetMSUni] = useState("");
   const [msField, SetMSField] = useState("");
   const [postImage, SetPostImage] = useState("");
-  const [FormErrors,SetFormErrors]=useState("");
+  const [FormErrors, SetFormErrors] = useState("");
   const userID = useParams();
   const usertoShow = useSelector(selectGetUser);
   const error = useSelector(selectErrors);
   const status = useSelector(selectStatus);
+  const fStatus = useSelector(selectFStatus);
 
   const user = useSelector(selectLoggedInUser);
   const dispatch = useDispatch();
@@ -113,37 +117,62 @@ function Dashboard() {
     }
   }, [usertoShow]);
 
-  const HandleUpdateInfo=async()=>{
-       if(!(email&&validator.isEmail(email))){
-         SetFormErrors("Enter a valid Email");
-       }
-       else if(!age){
-        SetFormErrors("Age is Required");
-       }else if(!username){
-        SetFormErrors("Username is required");
-       }else if(!name){
-        SetFormErrors("Name is required");
-       }else if(userinterests.length===0){
-        SetFormErrors("Please select atleast 1 interest");
-       }else if(userinterests.length>5){
-        SetFormErrors("You can select 5 interests at max.");
-       }else{
-        SetFormErrors("");
-        const data={
-          id:user.user.id,
-          name:name,
-          age:age,
-          email:email,
-          username:username,
-          bsField:bsField,
-          bsUni:bsUni,
-          msField:msField,
-          msUni:msUni,
-          interest:userinterests,
-        }
-        //await dispatch(UpdateUserInfo(data));
-       }
+  const HandleUpdateInfo = async () => {
+    if (!(email && validator.isEmail(email))) {
+      SetFormErrors("Enter a valid Email");
+    }
+    else if (!age) {
+      SetFormErrors("Age is Required");
+    } else if (!username) {
+      SetFormErrors("Username is required");
+    } else if (!name) {
+      SetFormErrors("Name is required");
+    } else if (userinterests.length === 0) {
+      SetFormErrors("Please select atleast 1 interest");
+    } else if (userinterests.length > 5) {
+      SetFormErrors("You can select 5 interests at max.");
+    } else {
+      SetFormErrors("");
+      const data = {
+        id: user.user.id,
+        name: name,
+        age: age,
+        email: email,
+        username: username,
+        bsField: bsField,
+        bsUni: bsUni,
+        msField: msField,
+        msUni: msUni,
+        interest: userinterests,
+      }
+      //await dispatch(UpdateUserInfo(data));
+    }
   }
+
+  const handleRemove = async () => {
+    const data = {
+      user: user.user.username,
+      friend: usertoShow.username
+    }
+
+    dispatch(removeFriendAsync(data));
+    dispatch(setErrorToNull());
+    dispatch(setLoadingToNull());
+
+  }
+
+  const handleBlock = async () => {
+    const data = {
+      user: user.user.username,
+      friend: usertoShow.username
+    }
+
+    dispatch(blockFriendAsync(data));
+    dispatch(setErrorToNull());
+    dispatch(setLoadingToNull());
+    
+  }
+
 
   return (
     <>
@@ -153,31 +182,31 @@ function Dashboard() {
           <PacmanLoader color="#435334" />
         </div>
       )}
-      
+
       {usertoShow && status === "fulfilled" && (
         <div className="w-screen h-full flex flex-row text-black bg-Auth-0">
-          
+
           <div className="w-1/4 flex flex-col h-screen items-center py-9 border-r border-black h-[1000px] my-10">
             <img
               src={usertoShow.image}
               className="w-40 h-40 object-contain bg-white rounded-full my-5 mt-0 shadow-2xl ring-4 ring-offset-2 ring-AuthBtn-0 hover:opacity-90 hover:cursor-pointer"
             ></img>
-            {(user&&(user.user.id===userID.id))&&
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="30"
-              height="30"
-              viewBox="0 0 24 24"
-              fill="white"
-              stroke=""
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              className="feather feather-edit-2 bg-AuthBtn-0 rounded-full p-1 absolute top-72 hover:scale-105 hover:opacity-90 hover:cursor-pointer"
-            >
-              <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-            </svg>
-           }
+            {(user && (user.user.id === userID.id)) &&
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="30"
+                height="30"
+                viewBox="0 0 24 24"
+                fill="white"
+                stroke=""
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                className="feather feather-edit-2 bg-AuthBtn-0 rounded-full p-1 absolute top-72 hover:scale-105 hover:opacity-90 hover:cursor-pointer"
+              >
+                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+              </svg>
+            }
             <div className="mb-8">
               {user && user.user.id === userID.id && (
                 <div className="w-full text-center flex justify-center items-center ">
@@ -220,17 +249,28 @@ function Dashboard() {
           </div>
           {PersonalInfo && (
             <div className="w-3/4 h-full mx-10">
-              
-                {
-                (user&&(user.user.id===userID.id))&&
-                
-                <div className={FormErrors?"w-full flex flex-row items-center justify-between":"w-full flex justify-end"}>
-                {
-                  user&&FormErrors&&<p className="text-red-500">{FormErrors}</p>
-                }
-                <button className="bg-AuthBtn-0 p-2 rounded-lg text-white font-bold mt-3 hover:opacity-70" onClick={()=>HandleUpdateInfo()}>
+
+              {
+                (user && (user.user.id === userID.id)) &&
+
+                <div className={FormErrors ? "w-full flex flex-row items-center justify-between" : "w-full flex justify-end"}>
+                  {
+                    user && FormErrors && <p className="text-red-500">{FormErrors}</p>
+                  }
+                  <button className="bg-AuthBtn-0 p-2 rounded-lg text-white font-bold mt-3 hover:opacity-70" onClick={() => HandleUpdateInfo()}>
                     Update Info
-                </button>
+                  </button>
+                </div>
+              }
+              {
+                (user && (user.user.id !== userID.id)) &&
+                <div>
+                  <button className="bg-AuthBtn-0 p-2 rounded-lg text-white font-bold mt-3 mx-2 hover:opacity-70" onClick={() => handleRemove()}>
+                    Remove
+                  </button>
+                  <button className="bg-AuthBtn-0 p-2 rounded-lg text-white font-bold mt-3 mx-2 hover:opacity-70" onClick={() => handleBlock()}>
+                    Block
+                  </button>
                 </div>
               }
               <div className="w-full shadow-2xl rounded-lg">
@@ -266,7 +306,7 @@ function Dashboard() {
                         />
                       </div>
                     )}
-                    {((user && user.user.id !==userID.id) || !user) && (
+                    {((user && user.user.id !== userID.id) || !user) && (
                       <p className="text-lg font-Raleway ml-2">
                         {usertoShow.email}
                       </p>
@@ -381,7 +421,7 @@ function Dashboard() {
                               />
                             </div>
                           )}
-                        {((user && user.user.id !==userID.id) || !user) &&
+                        {((user && user.user.id !== userID.id) || !user) &&
                           usertoShow.msUni && (
                             <span className=" text-lg font-Raleway ml-2">
                               {usertoShow.msUni}
@@ -454,29 +494,29 @@ function Dashboard() {
                     </div>
                   </div>
                 )}
-              <div className="mb-7 ml-4">
-                {((user && user.user.id !== userID.id) || !user) &&
-                
-                 usertoShow.interest.map((interest, index) => (
-                    <div
-                      key={index}
-                      className="bg-AuthBtn-0 w-full h-full p-2 m-1 text-white border border-black rounded-lg text-[1rem] hover:cursor-pointer hover:opacity-70 inline"
-                    >
-                      {interest}
-                    </div>
-                  ))
-                
-                 }
+                <div className="mb-7 ml-4">
+                  {((user && user.user.id !== userID.id) || !user) &&
+
+                    usertoShow.interest.map((interest, index) => (
+                      <div
+                        key={index}
+                        className="bg-AuthBtn-0 w-full h-full p-2 m-1 text-white border border-black rounded-lg text-[1rem] hover:cursor-pointer hover:opacity-70 inline"
+                      >
+                        {interest}
+                      </div>
+                    ))
+
+                  }
+                </div>
               </div>
-              </div>
-            
+
             </div>
-            
+
           )}
           {MyRooms && <div></div>}
         </div>
       )}
-    {error && <UserNotFound></UserNotFound>}
+      {error && <UserNotFound></UserNotFound>}
     </>
   );
 }
