@@ -13,7 +13,7 @@ import { selectIsModerator } from "../RoomSlice";
 import { selectStatus } from "../RoomSlice";
 import { selectModStatus } from "../../Moderator/ModeratorSlice";
 import { RemoveModerator,MakeModerator } from "../../Moderator/ModeratorSlice";
-function Member({ userID,username, micstate,Moderator }) {
+function Member({ userID,username, image,micstate,Moderator }) {
   const isCreator = useSelector(selectIsCreator);
   const isModerator = useSelector(selectIsModerator);
   const user = useSelector(selectLoggedInUser);
@@ -113,8 +113,8 @@ function Member({ userID,username, micstate,Moderator }) {
   return (
     <div className="flex flex-row items-center p-3 px-0 w-full border-b border-gray-600">
       <img
-        className="w-10 h-10 border border-black rounded-full mx-3"
-        src="../profile.png"
+        className="w-10 h-10 border border-black rounded-full mx-3 object-contain "
+        src={image}
         alt="img"
       ></img>
       <p className="w-full truncate">{username}</p>

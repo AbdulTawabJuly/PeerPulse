@@ -4,6 +4,7 @@ import { faThumbtack } from "@fortawesome/free-solid-svg-icons";
 import { selectLoggedInUser } from "../../auth/authSlice";
 import { useSelector } from "react-redux";
 import { selectCameraState, selectClient,selectMicState,selectTracks } from "../../VideoCall/videoCallSlice";
+import { selectJoinedRoom } from "../RoomSlice";
 function VideoIcons({ username, videoTrack,audioTrack}) {
   const user=useSelector(selectLoggedInUser);
   const [pinned, setPinned] = useState(false);
@@ -17,7 +18,7 @@ function VideoIcons({ username, videoTrack,audioTrack}) {
   };
  const cameraState=useSelector(selectCameraState);
  const micState=useSelector(selectMicState);
-
+ const RoomJoined=useSelector(selectJoinedRoom);
 
   useEffect(() => {
     if (videoTrack&&localCameraState) {
@@ -73,8 +74,8 @@ function VideoIcons({ username, videoTrack,audioTrack}) {
           </div>
           <div className="flex w-full h-full justify-center items-center pb-6">
              <img
-                className="rounded-full w-20 h-20 "
-                src="../profile.png"
+                className="rounded-full w-20 h-20 object-contain bg-white"
+                src={(RoomJoined.members.find((obj) => obj.email === username))?.image??"../profile.png"}
                 alt="img"
              ></img>
           </div>

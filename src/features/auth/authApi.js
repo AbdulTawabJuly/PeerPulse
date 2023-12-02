@@ -124,7 +124,7 @@ export function updateUserInfo(data){
 
     }
     catch(error){
-           reject(error.response.data.error);
+        reject(error.response.data.error);
     }
   })
 }

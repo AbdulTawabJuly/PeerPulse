@@ -42,6 +42,10 @@ function RoomCard({ RoomDetails }) {
     dispatch(sendMessage(msg));
     navigate(roomNavigation);
   };
+  const handleProfileClick=(e)=>{
+    e.stopPropagation();
+    navigate("/profile/"+RoomDetails.createdBy._id);
+  }
 
   //const handlePayment = () => {};
 
@@ -79,8 +83,9 @@ function RoomCard({ RoomDetails }) {
           </span>
           {!isPaid && (
             <img
-              className="w-7 h-7 border border-black rounded-full"
-              src="./logo192.png"
+              onClick={(e)=>handleProfileClick(e)}
+              className="w-7 h-7 border border-black rounded-full object-contain bg-black"
+              src={RoomDetails.createdBy.image}
               alt="img"
             ></img>
           )}

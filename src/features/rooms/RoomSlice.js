@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { Makemoderator, searchRooms, sendInvoice } from "./RoomAPICalls";
 import { CreateRoom } from "./RoomAPICalls";
-import { Leaveroom, Joinroom, Getroom, getToken,Banuser } from "./RoomAPICalls";
+import { Leaveroom, Joinroom, Getroom, getToken,Banuser,getRoomsofUser } from "./RoomAPICalls";
 import { redirect } from "react-router-dom";
 const initialState = {
   searchedRooms: null,
@@ -15,6 +15,8 @@ const initialState = {
   token:null,
   isCreator:false,
   isModerator:false,
+  profilerooms:null,
+  profileroomserror:null,
 };
 export const searchRoom = createAsyncThunk(
   "room/search",
@@ -88,6 +90,15 @@ export const BanUser = createAsyncThunk("room/banuser", async (RoomDetails) => {
     throw error;
   }
 });
+export const GetRoomsofUser=createAsyncThunk("room/getroomsofuser",async(user)=>{
+try{
+  const response=await getRoomsofUser(user);
+  return response;
+}catch(error){
+  throw error;
+}
+
+})
 
 // export const getRoom = createAsyncThunk(
 //   "room/get",
@@ -208,6 +219,20 @@ export const roomSlice = createSlice({
         state.token = null;
         state.error = action.error;
       })
+      .addCase(GetRoomsofUser.pending, (state) => {
+        state.status = "loading";
+        state.profilerooms = null;
+      })
+      .addCase(GetRoomsofUser.fulfilled, (state, action) => {
+        state.status = "fulfilled";
+        state.profilerooms = action.payload;
+        state.profileroomserror = null;
+      })
+      .addCase(GetRoomsofUser.rejected, (state, action) => {
+        state.status = "error";
+        state.profilerooms = null;
+        state.profileroomserror = action.error;
+      })
     // .addCase(getRoom.pending, (state,action)=> {
     //   state.status = "loading";
     //   state.error = null;
@@ -235,4 +260,6 @@ export const selectCurrentlyClickedRoom = (state) =>
 export const selectToken =(state)=> state.room.token;
 export const selectIsCreator=(state)=>state.room.isCreator;
 export const selectIsModerator=(state)=>state.room.isModerator;
+export const selectProfileRooms=(state)=>state.room.profilerooms;
+export const selectProfileRoomsError=(state)=>state.room.profileroomserror;
 export default roomSlice.reducer;

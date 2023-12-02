@@ -130,7 +130,7 @@ const UpdateMyMembers=(user)=>{
       {Members && (<div className="max-h-80 overflow-y-auto">
 
         {participants && (participants.map((member) => (
-          <Member key={member._id} userID={member._id} username={member.email} UpdateMembers={UpdateMyMembers} micstate={membersWithMicOn.includes(member.email)} Moderator={Moderators.includes(member._id)}/>
+          <Member key={member._id} userID={member._id} username={member.email} image={member.image} UpdateMembers={UpdateMyMembers} micstate={membersWithMicOn.includes(member.email)} Moderator={Moderators.includes(member._id)}/>
         )))}
       </div>)}
       <div>{Chat && <Messages />}</div>
