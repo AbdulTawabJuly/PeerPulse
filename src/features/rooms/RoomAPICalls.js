@@ -151,6 +151,24 @@ export function Banuser(RoomDetails) {
   });
 }
 
+export function getRoomsofUser(user){
+  return new Promise(async(resolve,reject)=>{
+    try {
+      const response = await axios.get("http://localhost:8080/api/room/get-rooms", {
+        params: {
+          user:user,
+        },
+      });
+      if (response.data) {
+        resolve(response.data);
+      } else {
+        reject(response.error);
+      }
+    } catch (error) {
+      reject(error.response.data.error);
+    }
+  })
+}
 
 
 

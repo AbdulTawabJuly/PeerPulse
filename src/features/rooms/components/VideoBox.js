@@ -25,6 +25,7 @@ const getUpdatedRoom = async (room) => {
 };
 
 function VideoBox({user}) {
+
   const { getSocket } = useSocket();
   const [participants, setParticipants] = useState([]);
  // const TOKEN = useSelector(selectToken);  // This can be used for AGORA video call functionality
@@ -56,7 +57,7 @@ function VideoBox({user}) {
       <div className="flex flex-wrap lg:w-7/12 md:w-8/12 w-full space-x-1 space-y-1 justify-center items-center">
         {user &&
            user.map((u) => (
-            <VideoIcons key={u.uid} username={u.uid} videoTrack={u.videoTrack} audioTrack={u.audioTrack} />
+            <VideoIcons key={u.uid} username={u.uid}  videoTrack={u.videoTrack} audioTrack={u.audioTrack} />
           ))}
       </div>
     </>

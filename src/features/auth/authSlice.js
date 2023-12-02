@@ -16,6 +16,8 @@ const initialState = {
   passwordReset: false,
   notifications: [],
   getuser:null,
+  getusererror:null,
+  updateerror:null,
 };
 
 export const createUserAsync = createAsyncThunk(
@@ -162,42 +164,45 @@ export const authSlice = createSlice({
         state.status = "idle";
         state.passwordReset = true;
         state.error=null;
-
       })
       .addCase(resetPasswordAsync.rejected, (state, action) => {
         state.status = "idle";
         state.error = action.error.message;
-
       })
       .addCase(getUser.pending, (state, action) => {
         state.status = "loading";
         state.getuser=null;
-        state.error=null;
+        state.getusererror=null;
+        state.updateerror=null;
 
       })
       .addCase(getUser.fulfilled, (state, action) => {
         state.status = "fulfilled";
         state.getuser = action.payload;
-        state.error=null;
+        state.getusererror=null;
+        state.updateerror=null;
 
       })
       .addCase(getUser.rejected, (state, action) => {
         state.status = "error";
         state.getuser=null;
-        state.error = action.error;
+
+        state.getusererror = action.error;
+        state.updateerror=null;
+
       })
       .addCase(UpdateUserInfo.pending, (state, action) => {
         state.status = "loading";
-        state.error=null;
+        state.updateerror=null;
 
       })
       .addCase(UpdateUserInfo.fulfilled, (state, action) => {
         state.status = "fulfilled";
-        state.error=null;
+        state.updateerror="Information updated successfully.";
       })
       .addCase(UpdateUserInfo.rejected, (state, action) => {
-        state.status = "error";
-        state.error = action.error;
+        state.status = "fulfilled";
+        state.updateerror = action.error;
       });
   },
 })
@@ -209,6 +214,8 @@ export const selectNotifications = (state) => state.auth.notifications;
 export const selectMailSent = (state) => state.auth.mailSent;
 export const selectPasswordReset = (state) => state.auth.passwordReset;
 export const selectGetUser=(state)=>state.auth.getuser;
+export const selectUpdateError=(state)=>state.auth.updateerror;
+export const selectGetUserError=(state)=>state.auth.getusererror;
 
 export const {
   signOut,

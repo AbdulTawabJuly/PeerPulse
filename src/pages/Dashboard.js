@@ -9,14 +9,18 @@ import {
   getUser,
   selectErrors,
   selectGetUser,
+  selectGetUserError,
   selectLoggedInUser,
   selectStatus,
+  selectUpdateError,
 } from "../features/auth/authSlice";
 import Navbar from "../features/Navbar/Navbar";
 import { PacmanLoader } from "react-spinners";
 import RoomNotFound from "./RoomNotFound";
 import UserNotFound from "./UserNotFound";
 import validator from "validator";
+import { GetRoomsofUser, selectProfileRooms, selectProfileRoomsError } from "../features/rooms/RoomSlice";
+import RoomCard from "../features/rooms/components/RoomCard";
 function Dashboard() {
   const [PersonalInfo, SetPersonalInfo] = useState(true);
   const [MyRooms, SetMyRooms] = useState(false);
@@ -53,8 +57,12 @@ function Dashboard() {
   const userID = useParams();
   const usertoShow = useSelector(selectGetUser);
   const error = useSelector(selectErrors);
+  const getusererror=useSelector(selectGetUserError);
+  const updateusererror=useSelector(selectUpdateError);
   const status = useSelector(selectStatus);
   const fStatus = useSelector(selectFStatus);
+  const rooms=useSelector(selectProfileRooms);
+  const roomsError=useSelector(selectProfileRoomsError);
 
   const user = useSelector(selectLoggedInUser);
   const dispatch = useDispatch();
@@ -62,9 +70,12 @@ function Dashboard() {
     SetPersonalInfo(true);
     SetMyRooms(false);
   };
-  const HandleRoomClick = () => {
+  const HandleRoomClick = async() => {
     SetMyRooms(true);
     SetPersonalInfo(false);
+    await dispatch(GetRoomsofUser(userID.id));
+    console.log(rooms);
+    console.log(roomsError);
   };
 
   const handleAddNewInterest = () => {
@@ -145,7 +156,7 @@ function Dashboard() {
         msUni: msUni,
         interest: userinterests,
       }
-      //await dispatch(UpdateUserInfo(data));
+      await dispatch(UpdateUserInfo(data));
     }
   }
 
@@ -184,9 +195,9 @@ function Dashboard() {
       )}
 
       {usertoShow && status === "fulfilled" && (
-        <div className="w-screen h-full flex flex-row text-black bg-Auth-0">
+        <div className="w-full h-full flex flex-row text-black bg-Auth-0">
 
-          <div className="w-1/4 flex flex-col h-screen items-center py-9 border-r border-black h-[1000px] my-10">
+          <div className="w-1/4 flex flex-col items-center py-9 border-r border-black h-[rem1] my-10 pb-20">
             <img
               src={usertoShow.image}
               className="w-40 h-40 object-contain bg-white rounded-full my-5 mt-0 shadow-2xl ring-4 ring-offset-2 ring-AuthBtn-0 hover:opacity-90 hover:cursor-pointer"
@@ -207,7 +218,8 @@ function Dashboard() {
                 <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
               </svg>
             }
-            <div className="mb-8">
+            
+            <div className="mb-4">
               {user && user.user.id === userID.id && (
                 <div className="w-full text-center flex justify-center items-center ">
                   <input
@@ -223,6 +235,18 @@ function Dashboard() {
                 </p>
               )}
             </div>
+            {
+                (user && (user.user.id !== userID.id)) &&
+                <div className="mb-4">
+                  
+                  <button className="bg-AuthBtn-0 p-2 rounded-lg text-white font-bold mx-2 border-1 border-black hover:opacity-70" onClick={() => handleBlock()}>
+                    Block
+                  </button>
+                  <button className="bg-AuthBtn-0 p-2 rounded-lg text-white font-bold mx-2 border-1 border-black hover:opacity-70" onClick={() => handleRemove()}>
+                    Remove
+                  </button>
+                </div>
+              }
             <div className="w-full">
               <button
                 className={
@@ -243,36 +267,32 @@ function Dashboard() {
                 }
                 onClick={() => HandleRoomClick()}
               >
-                <p className="text-lg font-Raleway">My Rooms</p>
+                <p className="text-lg font-Raleway">Rooms</p>
               </button>
             </div>
           </div>
           {PersonalInfo && (
-            <div className="w-3/4 h-full mx-10">
+            <div className="w-3/4 h-full mx-10 ">
 
               {
                 (user && (user.user.id === userID.id)) &&
 
-                <div className={FormErrors ? "w-full flex flex-row items-center justify-between" : "w-full flex justify-end"}>
+                <div className={FormErrors||updateusererror ? "w-full flex flex-row items-center justify-between" : "w-full flex justify-end"}>
                   {
-                    user && FormErrors && <p className="text-red-500">{FormErrors}</p>
+                    user && FormErrors && <p className="text-red-500">{FormErrors}</p>         
+                  }
+                  {
+                    updateusererror&&(updateusererror!=="Information updated successfully.")&&<p className="text-red-500 font-bold text-lg">{updateusererror.message}</p>
+                  }
+                  {
+                    updateusererror==="Information updated successfully."&&<p className="text-green-800 font-bold text-lg">Information updated successfully.</p>
                   }
                   <button className="bg-AuthBtn-0 p-2 rounded-lg text-white font-bold mt-3 hover:opacity-70" onClick={() => HandleUpdateInfo()}>
                     Update Info
                   </button>
                 </div>
               }
-              {
-                (user && (user.user.id !== userID.id)) &&
-                <div>
-                  <button className="bg-AuthBtn-0 p-2 rounded-lg text-white font-bold mt-3 mx-2 hover:opacity-70" onClick={() => handleRemove()}>
-                    Remove
-                  </button>
-                  <button className="bg-AuthBtn-0 p-2 rounded-lg text-white font-bold mt-3 mx-2 hover:opacity-70" onClick={() => handleBlock()}>
-                    Block
-                  </button>
-                </div>
-              }
+             
               <div className="w-full shadow-2xl rounded-lg">
                 <h1 className="font-Raleway text-2xl font-bold my-8 bg-AuthBtn-0 rounded-t-lg py-3 pl-5 text-white">
                   Personal Info:
@@ -298,9 +318,9 @@ function Dashboard() {
                   <p className="flex items-center">
                     <span className="font-bold inline">Email : </span>
                     {user && user.user.id === userID.id && (
-                      <div className="w-1/3 ml-2">
+                      <div className="w-1/3 ml-3">
                         <input
-                          className="inline-block w-full text-center text-2xl bg-Auth-0 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6"
+                          className="ml-8 inline-block w-full text-center text-2xl bg-Auth-0 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6"
                           value={email}
                           onChange={(e) => SetEmail(e.target.value)}
                         />
@@ -315,9 +335,9 @@ function Dashboard() {
                   <p className="flex items-center">
                     <span className="font-bold inline">Age : </span>
                     {user && user.user.id === userID.id && (
-                      <div className="w-1/3 ml-2">
+                      <div className="w-1/3 ml-12">
                         <input
-                          className="inline-block w-full text-center text-2xl bg-Auth-0 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6"
+                          className="ml-1 inline-block w-full text-center text-2xl bg-Auth-0 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6"
                           value={age}
                           onChange={(e) => SetAge(e.target.value)}
                         />
@@ -513,10 +533,18 @@ function Dashboard() {
             </div>
 
           )}
-          {MyRooms && <div></div>}
+          {MyRooms && 
+          <div className="flex flex-wrap items-start m-10">
+          {rooms &&
+            rooms.map((room) => (
+              <RoomCard key={room._id} RoomDetails={room} />
+            ))}
+        </div>
+        
+          }
         </div>
       )}
-      {error && <UserNotFound></UserNotFound>}
+      {getusererror && <UserNotFound></UserNotFound>}
     </>
   );
 }
