@@ -76,7 +76,7 @@ const router = createBrowserRouter([
     element:<Member></Member>
   },
   {
-    path:"/profile",
+    path:"/profile/:id",
     element:<Dashboard></Dashboard>
   },
 

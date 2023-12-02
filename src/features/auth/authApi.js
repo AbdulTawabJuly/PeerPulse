@@ -1,3 +1,4 @@
+import axios from "axios";
 export function createUser(userData) {
   return new Promise(async (resolve, reject) => {
     try {
@@ -86,4 +87,44 @@ export function resetPassword(data) {
       reject(error);
     }
   });
+}
+export function GetUser(data){
+  return new Promise(async(resolve,reject)=>{
+    try{
+      const response=await axios.get("http://localhost:8080/api/auth/getuser",{
+        params:{
+          id:data.id,
+        }
+      });
+      if(response){
+        resolve(response.data);
+      }else{
+        reject(response.error);
+      }
+
+    }
+    catch(error){
+           reject(error.response.data.error);
+    }
+  })
+}
+export function updateUserInfo(data){
+  return new Promise(async(resolve,reject)=>{
+    try{
+      const response=await axios.get("http://localhost:8080/api/auth/update-user",{
+        params:{
+          data,
+        }
+      });
+      if(response){
+        resolve(response.data);
+      }else{
+        reject(response.error);
+      }
+
+    }
+    catch(error){
+           reject(error.response.data.error);
+    }
+  })
 }
