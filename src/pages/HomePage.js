@@ -2,7 +2,7 @@ import { PacmanLoader } from "react-spinners";
 
 import Navbar from "../features/Navbar/Navbar";
 import { selectLoggedInUser } from "../features/auth/authSlice";
-import { selectStatus } from "../features/rooms/RoomSlice";
+import { SearchSuggRooms, selectStatus, selectsuggestedRooms, selectsuggestedRoomsError } from "../features/rooms/RoomSlice";
 import { selectSearchedRooms } from "../features/rooms/RoomSlice";
 import { searchRoom } from "../features/rooms/RoomSlice";
 import {  useDispatch, useSelector } from "react-redux";
@@ -14,7 +14,6 @@ import AddRoom from '../features/rooms/components/AddRoom';
 import JoinPrivateRoom from "../features/rooms/components/JoinPrivateRoom";
 import { useSocket } from '../context/socket';
 
-
 function HomePage() {
   const user = useSelector(selectLoggedInUser);
   const status = useSelector(selectStatus);
@@ -24,11 +23,28 @@ function HomePage() {
   const SearchRooms = async (name) => {
    dispatch(searchRoom(name));
   };
+  const suggestedrooms=useSelector(selectsuggestedRooms);
+  const suggestedroomserror=useSelector(selectsuggestedRoomsError);
+  const SearchSuggestedRooms=async(user)=>{
+    await dispatch(SearchSuggRooms(user));
+  }
 
   useEffect(() => {
     SearchRooms(searchedItem);
   }, [searchedItem]);
+  useEffect(()=>{
+    SearchSuggestedRooms(user.user.id);
+  },[])
+useEffect(()=>{
+   console.log(suggestedrooms);
+},[suggestedrooms])
 
+  const settings = {
+    dots: true,
+    infinite: false,
+    slidesToShow: 1,
+    slidesToScroll: 0,
+  };
   return (
     
     <div className=" min-h-screen bg-Auth-0">
@@ -68,11 +84,26 @@ function HomePage() {
           ></input>
         </div>
       </div>
-      <p className="border-b font-mono divide-x-2 w-28 h-10 mx-20 font-bold text-3xl border-AuthBtn-0 text-gray-800">Rooms</p>
-      <div className="flex flex-wrap mt-6 mx-16">
-        {searchedRooms&&(searchedRooms.map((room) => (
+      {suggestedrooms&&suggestedrooms.length>0&&
+        <>
+      <p className="border-b font-Raleway divide-x-2 w-56 h-10 mx-20 font-bold text-2xl border-AuthBtn-0 text-gray-800">Suggested Rooms</p>
+      <div className="flex flex-wrap mt-6 mx-16 my-5">
+      {suggestedrooms&&(suggestedrooms.map((room) => (
           <RoomCard key={room.id} RoomDetails={room} />
-        )))}
+        )))} 
+        </div>
+        </>
+      }
+      {
+      searchedRooms&&
+      <p className="border-b font-Raleway divide-x-2 w-24 h-10 mx-20 font-bold text-2xl border-AuthBtn-0 text-gray-800">Rooms</p>
+      }
+      <div className="flex flex-wrap mt-6 mx-16 pb-20">
+     
+      {searchedRooms&&(searchedRooms.filter(room => !suggestedrooms?.some(suggestedrooms => suggestedrooms?._id === room._id))
+.map((room) => (
+          <RoomCard key={room.id} RoomDetails={room} />
+        )))}   
       </div>
       {!searchedRooms.length&&(
       <div className="flex justify-center items-center h-72">

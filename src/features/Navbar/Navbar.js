@@ -3,7 +3,7 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { signOut } from "../auth/authSlice"
 import { useSocket } from '../../context/socket';
@@ -11,7 +11,9 @@ import { selectLoggedInUser, selectNotifications, setNotifications } from "../au
 import Notification from "../friends/components/Notification"
 import axios from 'axios'
 import { sendReqAsync, selectErrors, selectStatus, setErrorToNull, setLoadingToNull } from '../friends/friendSlice';
-
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { LeaveRoom } from "../rooms/RoomSlice";
 
 const navigation = [{ name: "Room", link: "/rooms", current: true }];
 
@@ -26,7 +28,8 @@ export default function Navbar() {
 
   const errors = useSelector(selectErrors);
   const status = useSelector(selectStatus);
-
+  const navigate=useNavigate();
+  const location=useLocation();
   useEffect(() => {
     if (status === 'fulfilled') {
        toast.success(errors, {
@@ -104,7 +107,18 @@ export default function Navbar() {
   useEffect(() => {
     fetchNotifications();
   }, [])
-
+  const roomID=useParams();
+const handleprofileclick=()=>{
+  const shouldReplace=location.pathname.startsWith('/room/');
+  if(shouldReplace){
+    const RoomDetail = {
+      id: roomID,
+      user_: user.user.id,
+    };
+  dispatch(LeaveRoom(RoomDetail));
+  }
+  navigate('/profile/'+user.user.id,{replace:shouldReplace});
+}
   return (
 
     <Disclosure as="nav" className=" bg-AuthBtn-0 w-full">
@@ -223,7 +237,8 @@ export default function Navbar() {
                       <Menu.Item>
                         {({ active }) => (
                           <a
-                            href={"/profile/"+user.user.id}
+                            onClick={()=>handleprofileclick()}
+                            
                             className={classNames(
                               active ? "bg-gray-100" : "",
                               "block px-4 py-2 text-sm text-gray-700"
