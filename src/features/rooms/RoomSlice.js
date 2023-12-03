@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { Makemoderator, searchRooms, sendInvoice } from "./RoomAPICalls";
 import { CreateRoom } from "./RoomAPICalls";
-import { Leaveroom, Joinroom, Getroom, getToken,Banuser,getRoomsofUser } from "./RoomAPICalls";
+import { Leaveroom, Joinroom, Getroom, getToken,Banuser,getRoomsofUser,searchSuggRooms } from "./RoomAPICalls";
 import { redirect } from "react-router-dom";
 const initialState = {
   searchedRooms: null,
@@ -17,6 +17,8 @@ const initialState = {
   isModerator:false,
   profilerooms:null,
   profileroomserror:null,
+  suggestedRooms:null,
+  suggestedRoomsError:null,
 };
 export const searchRoom = createAsyncThunk(
   "room/search",
@@ -98,6 +100,15 @@ try{
   throw error;
 }
 
+})
+
+export const SearchSuggRooms=createAsyncThunk("room/getsuggrooms",async(user)=>{
+  try{
+    const response=await searchSuggRooms(user);
+    return response;
+  }catch(error){
+    throw error;
+  }
 })
 
 // export const getRoom = createAsyncThunk(
@@ -233,6 +244,20 @@ export const roomSlice = createSlice({
         state.profilerooms = null;
         state.profileroomserror = action.error;
       })
+      .addCase(SearchSuggRooms.pending, (state) => {
+        state.status = "loading";
+        state.suggestedRooms = null;
+      })
+      .addCase(SearchSuggRooms.fulfilled, (state, action) => {
+        state.status = "fulfilled";
+        state.suggestedRooms = action.payload;
+        state.suggestedRoomsError = null;
+      })
+      .addCase(SearchSuggRooms.rejected, (state, action) => {
+        state.status = "error";
+        state.suggestedRooms = null;
+        state.suggestedRoomsError = action.error;
+      })
     // .addCase(getRoom.pending, (state,action)=> {
     //   state.status = "loading";
     //   state.error = null;
@@ -262,4 +287,6 @@ export const selectIsCreator=(state)=>state.room.isCreator;
 export const selectIsModerator=(state)=>state.room.isModerator;
 export const selectProfileRooms=(state)=>state.room.profilerooms;
 export const selectProfileRoomsError=(state)=>state.room.profileroomserror;
+export const selectsuggestedRooms=(state)=>state.room.suggestedRooms;
+export const selectsuggestedRoomsError=(state)=>state.room.suggestedRoomsError;
 export default roomSlice.reducer;
