@@ -85,7 +85,7 @@ function RoomCard({ RoomDetails }) {
             <img
               onClick={(e)=>handleProfileClick(e)}
               className="w-7 h-7 border border-black rounded-full object-contain bg-black"
-              src={RoomDetails.createdBy.image}
+              src={RoomDetails?.createdBy?.image}
               alt="img"
             ></img>
           )}
