@@ -266,6 +266,7 @@ function RoomPage() {
           user: user,
         };
         dispatch(sendMessage(newMsg));
+        console.log("user left message dispatched in client");
       });
 
       newSocket.on("recieve-message", (message) => {
@@ -274,9 +275,11 @@ function RoomPage() {
           type: "recieved",
           user: message.user,
           content: message.content,
+          file:message.file
         };
         dispatch(sendMessage(newMsg));
       });
+
       newSocket.on("Mute-User", (user) => {
         const newMsg = {
           type: "muted",
@@ -428,6 +431,7 @@ function RoomPage() {
     if (status === "fulfilled") {
       const newSocket = getSocket();
       newSocket.emit("leave-room", user.user.email, roomID.id);
+      console.log("leave room emitted");
       destroySocket();
       const RoomDetail = {
         id: roomID,
