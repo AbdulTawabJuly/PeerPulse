@@ -223,39 +223,40 @@ const HandleUpload=async(e)=>{
 
       {usertoShow && status === "fulfilled" && (
         <div className="w-full h-full flex md:flex-row lg:flex-row flex-col text-black bg-Auth-0">
-          <div className=" md:w-1/4 lg:w-1/4 w-full flex flex-col items-center  border-r border-black h-[rem1] mt-10 py-10">
+          <div className=" md:w-1/4 lg:w-1/4 w-full flex flex-col items-center  border-r border-black h-[rem1] mt-10 py-20">
             <img
               src={uploadedimage?uploadedimage:usertoShow.image}
-              className="w-40 h-40 object-contain bg-white rounded-full my-2 mt-0 shadow-2xl ring-4 ring-offset-2 ring-AuthBtn-0 hover:opacity-90 hover:cursor-pointer"
+              className="w-40 h-40 object-contain bg-white rounded-full mt-0 shadow-2xl ring-4 ring-offset-2 ring-AuthBtn-0 hover:opacity-90 hover:cursor-pointer"
             ></img>
             {user && user.user.id === userID.id && (
-              <>
-                <label for="fileInput" class=" cursor-pointer">
-                  <input
+            <div class="w-full pb-5">
+            <label htmlFor="fileInput" className="cursor-pointer absolute top-72 lg:left-32 md:left-32 left-1/2">
+                <input
                     type="file"
                     id="fileInput"
-                    class=" w-full h-full opacity-0 cursor-pointer"
+                    className="w-full h-full opacity-0 cursor-pointer"
                     accept="image/*"
-                    onChange={(e)=>HandleUpload(e)}
-                  />
-                  <div class="bg-AuthBtn-0 text-white absolute md:absolute lg:top-72 md:72 lg:left-32 md:left-32  w-10 h-10 rounded-full flex items-center justify-center">
+                    onChange={(e) => HandleUpload(e)}
+                />
+                <div className="bg-AuthBtn-0 text-white w-10 h-10 rounded-full flex items-center justify-center">
                     <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="30"
-                      height="30"
-                      viewBox="0 0 24 24"
-                      fill="white"
-                      stroke=""
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="feather feather-edit-2 p-1 hover:scale-105 hover:opacity-90 hover:cursor-pointer"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="30"
+                        height="30"
+                        viewBox="0 0 24 24"
+                        fill="white"
+                        stroke=""
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="feather feather-edit-2 p-1 hover:scale-105 hover:opacity-90 hover:cursor-pointer"
                     >
-                      <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                     </svg>
-                  </div>
-                </label>
-              </>
+                </div>
+            </label>
+        </div>
+        
             )}
 
             <div className="mb-4">
@@ -583,7 +584,7 @@ const HandleUpload=async(e)=>{
             </div>
           )}
           {MyRooms && (
-            <div className="flex flex-wrap items-start m-10">
+            <div className="w-3/4 flex flex-wrap items-start m-10">
               {rooms &&
                 rooms.map((room) => (
                   <RoomCard key={room._id} RoomDetails={room} />
