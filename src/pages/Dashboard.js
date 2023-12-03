@@ -1,8 +1,15 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { removeFriendAsync, blockFriendAsync } from "../features/friends/friendSlice";
-import { setErrorToNull, setLoadingToNull, selectStatus as selectFStatus } from "../features/friends/friendSlice";
+import {
+  removeFriendAsync,
+  blockFriendAsync,
+} from "../features/friends/friendSlice";
+import {
+  setErrorToNull,
+  setLoadingToNull,
+  selectStatus as selectFStatus,
+} from "../features/friends/friendSlice";
 import MoonLoader from "react-spinners/MoonLoader";
 import {
   UpdateUserInfo,
@@ -19,7 +26,11 @@ import { PacmanLoader } from "react-spinners";
 import RoomNotFound from "./RoomNotFound";
 import UserNotFound from "./UserNotFound";
 import validator from "validator";
-import { GetRoomsofUser, selectProfileRooms, selectProfileRoomsError } from "../features/rooms/RoomSlice";
+import {
+  GetRoomsofUser,
+  selectProfileRooms,
+  selectProfileRoomsError,
+} from "../features/rooms/RoomSlice";
 import RoomCard from "../features/rooms/components/RoomCard";
 function Dashboard() {
   const [PersonalInfo, SetPersonalInfo] = useState(true);
@@ -57,20 +68,20 @@ function Dashboard() {
   const userID = useParams();
   const usertoShow = useSelector(selectGetUser);
   const error = useSelector(selectErrors);
-  const getusererror=useSelector(selectGetUserError);
-  const updateusererror=useSelector(selectUpdateError);
+  const getusererror = useSelector(selectGetUserError);
+  const updateusererror = useSelector(selectUpdateError);
   const status = useSelector(selectStatus);
   const fStatus = useSelector(selectFStatus);
-  const rooms=useSelector(selectProfileRooms);
-  const roomsError=useSelector(selectProfileRoomsError);
-
+  const rooms = useSelector(selectProfileRooms);
+  const roomsError = useSelector(selectProfileRoomsError);
+  const [uploadedimage,SetUploadedImage]=useState();
   const user = useSelector(selectLoggedInUser);
   const dispatch = useDispatch();
   const HandlePersonalClick = () => {
     SetPersonalInfo(true);
     SetMyRooms(false);
   };
-  const HandleRoomClick = async() => {
+  const HandleRoomClick = async () => {
     SetMyRooms(true);
     SetPersonalInfo(false);
     await dispatch(GetRoomsofUser(userID.id));
@@ -131,8 +142,7 @@ function Dashboard() {
   const HandleUpdateInfo = async () => {
     if (!(email && validator.isEmail(email))) {
       SetFormErrors("Enter a valid Email");
-    }
-    else if (!age) {
+    } else if (!age) {
       SetFormErrors("Age is Required");
     } else if (!username) {
       SetFormErrors("Username is required");
@@ -155,36 +165,53 @@ function Dashboard() {
         msField: msField,
         msUni: msUni,
         interest: userinterests,
-      }
+        image:uploadedimage,
+      };
       await dispatch(UpdateUserInfo(data));
     }
-  }
+  };
 
   const handleRemove = async () => {
     const data = {
       user: user.user.username,
-      friend: usertoShow.username
-    }
+      friend: usertoShow.username,
+    };
 
     dispatch(removeFriendAsync(data));
     dispatch(setErrorToNull());
     dispatch(setLoadingToNull());
+  };
 
+  function convertToBase64(file){
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = () => {
+        resolve(fileReader.result)
+      };
+      fileReader.onerror = (error) => {
+        reject(error)
+      }
+    })
   }
 
   const handleBlock = async () => {
     const data = {
       user: user.user.username,
-      friend: usertoShow.username
-    }
+      friend: usertoShow.username,
+    };
 
     dispatch(blockFriendAsync(data));
     dispatch(setErrorToNull());
     dispatch(setLoadingToNull());
-    
+  };
+const HandleUpload=async(e)=>{
+  const file=e.target.files[0];
+  if(file){
+    const base64=await convertToBase64(file);
+    SetUploadedImage(base64);
   }
-
-
+}
   return (
     <>
       {user && <Navbar />}
@@ -195,30 +222,42 @@ function Dashboard() {
       )}
 
       {usertoShow && status === "fulfilled" && (
-        <div className="w-full h-full flex flex-row text-black bg-Auth-0">
-
-          <div className="w-1/4 flex flex-col items-center py-9 border-r border-black h-[rem1] my-10 pb-20">
+        <div className="w-full h-full flex md:flex-row lg:flex-row flex-col text-black bg-Auth-0">
+          <div className=" md:w-1/4 lg:w-1/4 w-full flex flex-col items-center  border-r border-black h-[rem1] mt-10 py-10">
             <img
-              src={usertoShow.image}
-              className="w-40 h-40 object-contain bg-white rounded-full my-5 mt-0 shadow-2xl ring-4 ring-offset-2 ring-AuthBtn-0 hover:opacity-90 hover:cursor-pointer"
+              src={uploadedimage?uploadedimage:usertoShow.image}
+              className="w-40 h-40 object-contain bg-white rounded-full my-2 mt-0 shadow-2xl ring-4 ring-offset-2 ring-AuthBtn-0 hover:opacity-90 hover:cursor-pointer"
             ></img>
-            {(user && (user.user.id === userID.id)) &&
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="30"
-                height="30"
-                viewBox="0 0 24 24"
-                fill="white"
-                stroke=""
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                className="feather feather-edit-2 bg-AuthBtn-0 rounded-full p-1 absolute top-72 hover:scale-105 hover:opacity-90 hover:cursor-pointer"
-              >
-                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-              </svg>
-            }
-            
+            {user && user.user.id === userID.id && (
+              <>
+                <label for="fileInput" class=" cursor-pointer">
+                  <input
+                    type="file"
+                    id="fileInput"
+                    class=" w-full h-full opacity-0 cursor-pointer"
+                    accept="image/*"
+                    onChange={(e)=>HandleUpload(e)}
+                  />
+                  <div class="bg-AuthBtn-0 text-white absolute md:absolute lg:top-72 md:72 lg:left-32 md:left-32  w-10 h-10 rounded-full flex items-center justify-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="30"
+                      height="30"
+                      viewBox="0 0 24 24"
+                      fill="white"
+                      stroke=""
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="feather feather-edit-2 p-1 hover:scale-105 hover:opacity-90 hover:cursor-pointer"
+                    >
+                      <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                    </svg>
+                  </div>
+                </label>
+              </>
+            )}
+
             <div className="mb-4">
               {user && user.user.id === userID.id && (
                 <div className="w-full text-center flex justify-center items-center ">
@@ -235,18 +274,22 @@ function Dashboard() {
                 </p>
               )}
             </div>
-            {
-                (user && (user.user.id !== userID.id)) &&
-                <div className="mb-4">
-                  
-                  <button className="bg-AuthBtn-0 p-2 rounded-lg text-white font-bold mx-2 border-1 border-black hover:opacity-70" onClick={() => handleBlock()}>
-                    Block
-                  </button>
-                  <button className="bg-AuthBtn-0 p-2 rounded-lg text-white font-bold mx-2 border-1 border-black hover:opacity-70" onClick={() => handleRemove()}>
-                    Remove
-                  </button>
-                </div>
-              }
+            {user && user.user.id !== userID.id && (
+              <div className="mb-4">
+                <button
+                  className="bg-AuthBtn-0 p-2 rounded-lg text-white font-bold mx-2 border-1 border-black hover:opacity-70"
+                  onClick={() => handleBlock()}
+                >
+                  Block
+                </button>
+                <button
+                  className="bg-AuthBtn-0 p-2 rounded-lg text-white font-bold mx-2 border-1 border-black hover:opacity-70"
+                  onClick={() => handleRemove()}
+                >
+                  Remove
+                </button>
+              </div>
+            )}
             <div className="w-full">
               <button
                 className={
@@ -273,26 +316,37 @@ function Dashboard() {
           </div>
           {PersonalInfo && (
             <div className="w-3/4 h-full mx-10 ">
-
-              {
-                (user && (user.user.id === userID.id)) &&
-
-                <div className={FormErrors||updateusererror ? "w-full flex flex-row items-center justify-between" : "w-full flex justify-end"}>
-                  {
-                    user && FormErrors && <p className="text-red-500">{FormErrors}</p>         
+              {user && user.user.id === userID.id && (
+                <div
+                  className={
+                    FormErrors || updateusererror
+                      ? "w-full flex flex-row items-center justify-between"
+                      : "w-full flex justify-end"
                   }
-                  {
-                    updateusererror&&(updateusererror!=="Information updated successfully.")&&<p className="text-red-500 font-bold text-lg">{updateusererror.message}</p>
-                  }
-                  {
-                    updateusererror==="Information updated successfully."&&<p className="text-green-800 font-bold text-lg">Information updated successfully.</p>
-                  }
-                  <button className="bg-AuthBtn-0 p-2 rounded-lg text-white font-bold mt-3 hover:opacity-70" onClick={() => HandleUpdateInfo()}>
+                >
+                  {user && FormErrors && (
+                    <p className="text-red-500">{FormErrors}</p>
+                  )}
+                  {updateusererror &&
+                    updateusererror !== "Information updated successfully." && (
+                      <p className="text-red-500 font-bold text-lg">
+                        {updateusererror.message}
+                      </p>
+                    )}
+                  {updateusererror === "Information updated successfully." && (
+                    <p className="text-green-800 font-bold text-lg">
+                      Information updated successfully.
+                    </p>
+                  )}
+                  <button
+                    className="bg-AuthBtn-0 p-2 rounded-lg text-white font-bold mt-3 hover:opacity-70"
+                    onClick={() => HandleUpdateInfo()}
+                  >
                     Update Info
                   </button>
                 </div>
-              }
-             
+              )}
+
               <div className="w-full shadow-2xl rounded-lg">
                 <h1 className="font-Raleway text-2xl font-bold my-8 bg-AuthBtn-0 rounded-t-lg py-3 pl-5 text-white">
                   Personal Info:
@@ -516,7 +570,6 @@ function Dashboard() {
                 )}
                 <div className="mb-7 ml-4">
                   {((user && user.user.id !== userID.id) || !user) &&
-
                     usertoShow.interest.map((interest, index) => (
                       <div
                         key={index}
@@ -524,24 +577,19 @@ function Dashboard() {
                       >
                         {interest}
                       </div>
-                    ))
-
-                  }
+                    ))}
                 </div>
               </div>
-
             </div>
-
           )}
-          {MyRooms && 
-          <div className="flex flex-wrap items-start m-10">
-          {rooms &&
-            rooms.map((room) => (
-              <RoomCard key={room._id} RoomDetails={room} />
-            ))}
-        </div>
-        
-          }
+          {MyRooms && (
+            <div className="flex flex-wrap items-start m-10">
+              {rooms &&
+                rooms.map((room) => (
+                  <RoomCard key={room._id} RoomDetails={room} />
+                ))}
+            </div>
+          )}
         </div>
       )}
       {getusererror && <UserNotFound></UserNotFound>}

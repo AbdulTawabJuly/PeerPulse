@@ -111,10 +111,10 @@ export function GetUser(data){
 export function updateUserInfo(data){
   return new Promise(async(resolve,reject)=>{
     try{
-      const response=await axios.get("http://localhost:8080/api/auth/update-user",{
-        params:{
+      const response=await axios.post("http://localhost:8080/api/auth/update-user",{
+        
           data,
-        }
+        
       });
       if(response){
         resolve(response.data);
