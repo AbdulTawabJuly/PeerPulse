@@ -50,7 +50,7 @@ import { MakeModerator,RemoveModerator } from "../features/Moderator/ModeratorSl
 
 import { selectLoggedInUser } from "../features/auth/authSlice";
 import { useDispatch } from "react-redux";
-
+import LoadingScreen from 'react-loading-screen';
 import AgoraRTC from "agora-rtc-sdk-ng";
 const APP_ID = "e3a46af1a70746148c7abd4c4785f262";
 const client = AgoraRTC.createClient({
@@ -75,6 +75,8 @@ function RoomPage() {
   const user = useSelector(selectLoggedInUser);
   const cameraState = useSelector(selectCameraState);
   const micState = useSelector(selectMicState);
+  const [Loading,SetLoading]=useState(false);
+
 
   const dispatch = useDispatch();
   const RoomJoined = useSelector(selectJoinedRoom);
@@ -133,6 +135,9 @@ function RoomPage() {
     }
   };
 
+  useEffect(()=>{
+  },[Loading])
+
   const handleUserJoined = (user) => {
     setUsers((previousUsers) => [...previousUsers, user]);
   };
@@ -174,7 +179,9 @@ function RoomPage() {
         dispatch(SetModerator(true));
       }
       console.log(RoomJoined.members);
+      
       const Token=RoomJoined.members.find(member=>member._id===user.user.id).AgoraToken;
+      SetLoading(true);
       client
         .join(APP_ID, RoomJoined._id, Token, user.user.email)
         .then((uid) =>
@@ -197,6 +204,8 @@ function RoomPage() {
         })
         .catch((error) => {
           console.log(error);
+        }).finally(()=>{
+          SetLoading(false);
         });
       client.on("user-published", handleUserPublished);
       client.on("user-unpublished", handleUserUnpublished);
@@ -466,6 +475,17 @@ function RoomPage() {
 
   return (
     <>
+      {
+        (!RoomJoined||Loading)&& <LoadingScreen
+        loading={true}
+        bgColor='#000000'
+        spinnerColor='gray'
+        textColor='gray'
+        text='Joining Room...'
+        className="opactity-70"
+      > 
+      </LoadingScreen>
+      }
       {status === "loading" && (
         <div className="min-h-screen bg-Auth-0">
           <Navbar></Navbar>
