@@ -179,8 +179,12 @@ function RoomPage() {
         dispatch(SetModerator(true));
       }
       console.log(RoomJoined.members);
-      
-      const Token=RoomJoined.members.find(member=>member._id===user.user.id).AgoraToken;
+      let Token;
+      try{
+      Token=RoomJoined.members.find(member=>member._id===user.user.id).AgoraToken;
+      }catch(error){
+        alert('There was an error connecting. Please try again in some time.')
+      }
       SetLoading(true);
       client
         .join(APP_ID, RoomJoined._id, Token, user.user.email)
@@ -203,7 +207,7 @@ function RoomPage() {
           dispatch(SetTracks(tracks));
         })
         .catch((error) => {
-          console.log(error);
+          alert('An error occured while connecting .Please try again.');
         }).finally(()=>{
           SetLoading(false);
         });
@@ -476,7 +480,7 @@ function RoomPage() {
   return (
     <>
       {
-        (!RoomJoined||Loading)&& <LoadingScreen
+        (Loading)&& <LoadingScreen
         loading={true}
         bgColor='black'
         spinnerColor='white'
