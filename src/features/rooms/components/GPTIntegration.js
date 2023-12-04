@@ -8,7 +8,7 @@ import { useSocket } from "../../../context/socket";
 import { sendgptMessage, selectGPTMessages } from "../../GPT/GPTSlice";
 import { useParams } from "react-router-dom";
 import OpenAI from 'openai';
-const apii= "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"
+const apii= "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"
 const openAi = new OpenAI({
   apiKey: apii,
   dangerouslyAllowBrowser: true, // Enable browser-like environment
@@ -24,7 +24,7 @@ function gptcall(prop) {
     .then(chatCompletion => {
       const msg = {
         type: 'recieved',
-        user: 'Daddy',
+        user: 'GPT',
         content: chatCompletion.choices[0].message.content
       };
       return msg; // Return the 'msg' object
