@@ -478,12 +478,12 @@ function RoomPage() {
       {
         (!RoomJoined||Loading)&& <LoadingScreen
         loading={true}
-        bgColor='#000000'
-        spinnerColor='gray'
-        textColor='gray'
+        bgColor='black'
+        spinnerColor='white'
+        textColor='white'
         text='Joining Room...'
-        className="opactity-70"
       > 
+      
       </LoadingScreen>
       }
       {status === "loading" && (
