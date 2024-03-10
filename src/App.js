@@ -21,8 +21,10 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import StripeCheckout from "./pages/StripeCheckout";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import LandingPage from "./pages/LandingPage";
+import LibraryPage from "./pages/LibraryPage";
 
-const router = createBrowserRouter([  
+
+const router = createBrowserRouter([
   {
     path: "/",
     element: <LandingPage></LandingPage>,
@@ -44,41 +46,45 @@ const router = createBrowserRouter([
     element: <ForgetPasswordPage></ForgetPasswordPage>,
   },
   {
-     path:"/room/:id",
-     element: <Protected><RoomPage></RoomPage></Protected>,
+    path: "/room/:id",
+    element: <Protected><RoomPage></RoomPage></Protected>,
   },
   {
-    path:"/TimeUp",
-    element:<TimeUp></TimeUp>
+    path: "/TimeUp",
+    element: <TimeUp></TimeUp>
   },
   {
-    path:"/Payment",
-    element:<PaymentPage></PaymentPage>
+    path: "/Payment",
+    element: <PaymentPage></PaymentPage>
   },
   {
-    path:"/Payment-Success/:id",
-    element:<PaymentSuccess></PaymentSuccess>
+    path: "/Payment-Success/:id",
+    element: <PaymentSuccess></PaymentSuccess>
   },
   {
-    path:"/stripe-checkout/",
-    element:<StripeCheckout></StripeCheckout>
+    path: "/stripe-checkout/",
+    element: <StripeCheckout></StripeCheckout>
   },
   {
-    path:"/reset-password",
-    element:<ResetPasswordPage></ResetPasswordPage>
+    path: "/reset-password",
+    element: <ResetPasswordPage></ResetPasswordPage>
   },
   {
     path: "*",
     element: <PageNotFound></PageNotFound>,
   },
   {
-    path:"/members",
-    element:<Member></Member>
+    path: "/members",
+    element: <Member></Member>
   },
   {
-    path:"/profile/:id",
-    element:<Dashboard></Dashboard>
+    path: "/profile/:id",
+    element: <Dashboard></Dashboard>
   },
+  {
+    path: "/virtual-library",
+    element: <LibraryPage />
+  }
 
 ]);
 
@@ -86,7 +92,7 @@ function App() {
   return (
     <div className="App">
       <RouterProvider router={router} />
-      <ToastContainer/>
+      <ToastContainer />
     </div>
   );
 }
