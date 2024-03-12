@@ -3,10 +3,10 @@ import TrendingContributers from "../features/virtualLibrary/components/Trending
 
 function LibraryPage() {
   return (
-    <>
+    <div className="bg-Primary-0" style={{ minHeight: "100vh" }}>
       <Navbar />
       <TrendingContributers />
-    </>
+    </div>
   )
 }
 
