@@ -62,7 +62,7 @@ const router = createBrowserRouter([
     element: <PaymentSuccess></PaymentSuccess>
   },
   {
-    path: "/stripe-checkout/",
+    path: "/stripe-checkouts",
     element: <StripeCheckout></StripeCheckout>
   },
   {
@@ -82,7 +82,7 @@ const router = createBrowserRouter([
     element: <Dashboard></Dashboard>
   },
   {
-    path: "/virtual-library",
+    path: "/library",
     element: <LibraryPage />
   }
 
