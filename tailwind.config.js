@@ -24,6 +24,7 @@ module.exports = {
       GVBold: ["Great Vibes Bold"],
       Raleway: ["Raleway"],
       Logo: ["Fredericka the Great"],
+      body: ['Roboto']
     },
   },
 
