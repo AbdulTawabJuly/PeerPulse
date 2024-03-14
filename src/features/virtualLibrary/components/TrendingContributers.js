@@ -10,7 +10,6 @@ const TrendingContributers = () => {
         <div>
           <button className="rounded rounded-md px-3 py-1 bg-Primary-0 mr-2">Follow</button>
         </div>
-
       </div>
     </div>
   )
