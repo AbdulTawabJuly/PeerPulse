@@ -1,5 +1,6 @@
 import Navbar from "../features/Navbar/Navbar"
 import TrendingContributers from "../features/virtualLibrary/components/TrendingContributers"
+import PopularResources from "../features/virtualLibrary/components/PopularResources"
 import Main from "../features/virtualLibrary/components/Main"
 
 function LibraryPage() {
