@@ -3,7 +3,7 @@ import Document from "./Document"
 
 const Main = () => {
   return (
-    <div className="bg-Main-0 rounded-lg text-sm" style={{ width: '', height: '60vh', fontWeight:'500' }}>
+    <div className="bg-Main-0 rounded-lg text-sm" style={{ width: '', height: '100%', fontWeight:'500' }}>
 
       <div className="flex justify-between p-4 items-center">
         <div className="flex gap-2">
