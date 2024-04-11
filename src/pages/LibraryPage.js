@@ -5,7 +5,7 @@ import Main from "../features/virtualLibrary/components/Main"
 
 function LibraryPage() {
   return (
-    <div className="bg-Primary-0" style={{ minHeight: "100vh" }}>
+    <div className="bg-Primary-0" style={{ height: "100vh" }}>
       <Navbar />
       <div className="grid grid-cols-7 gap-10 mt-8">
         <div className="col-span-1">
@@ -14,8 +14,9 @@ function LibraryPage() {
         <div className="col-span-4">
           <Main />
         </div>
-        <div className="col-span-2 mx-auto">
+        <div className="col-span-2 mx-auto flex flex-col justify-between">
           <TrendingContributers />
+          <PopularResources />
         </div>
       </div>
       
