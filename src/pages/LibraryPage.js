@@ -14,7 +14,7 @@ function LibraryPage() {
         <div className="col-span-4">
           <Main />
         </div>
-        <div className="col-span-2 mx-auto flex flex-col justify-between">
+        <div className="col-span-2 mx-auto flex flex-col justify-between gap-6">
           <TrendingContributers />
           <PopularResources />
         </div>
