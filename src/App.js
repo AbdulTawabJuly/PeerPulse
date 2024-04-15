@@ -22,6 +22,8 @@ import StripeCheckout from "./pages/StripeCheckout";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import LandingPage from "./pages/LandingPage";
 import LibraryPage from "./pages/LibraryPage";
+import Whiteboard from "./pages/Whiteboard";
+import Main from "./features/whiteboard/components/Main";
 
 
 const router = createBrowserRouter([
@@ -84,6 +86,10 @@ const router = createBrowserRouter([
   {
     path: "/library",
     element: <LibraryPage />
+  },
+  {
+    path : "/whiteboard",
+    element: <Whiteboard />
   }
 
 ]);
