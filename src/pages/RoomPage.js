@@ -522,8 +522,8 @@ function RoomPage() {
               </button>
             )}
             <div className="flex flex-row justify-around mt-2 lg:space-x-96 md:space-x-96 mb-2">
-              <div className="w-1/3 h-12  mb-0 bg-gray-900 p-6 rounded-full flex items-center">
-                <p className="lg:text-lg md:text-sm text-xs  font-bold text-white ">
+              <div className="w-1/3 h-12 mb-0 p-6 flex items-center">
+                <p className="lg:text-lg md:text-sm text-xs  font-bold ">
                   Room Name : {RoomJoined.name}
                 </p>
               </div>
