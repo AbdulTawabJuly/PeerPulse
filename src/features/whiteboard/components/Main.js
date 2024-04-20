@@ -1,4 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { BsFillPencilFill } from "react-icons/bs";
+import { FaEraser } from "react-icons/fa";
+import { FaSave } from "react-icons/fa";
+
+
 
 const Main = () => {
     const canvasRef = useRef(null);
@@ -71,10 +76,9 @@ const Main = () => {
                 style={{ width: '100%', height: '85vh', backgroundColor: 'white', margin: 'auto', display: 'block' }}
             />
             <div style={{width: '100%', display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px'}}>
-                <button className="btn btn-primary" onClick={() => handleToolChange('pencil')}>Pencil</button>
-                <button className="btn btn-primary" onClick={() => handleToolChange('eraser')}>Eraser</button>
-                <button className="btn btn-primary" onClick={() => handleToolChange('eraser')}>Eraser</button>
-                <button className="btn btn-primary" onClick={saveCanvasAsImage}>Save</button>
+                <button className="btn btn-primary p-2 rounded-full border-black border-2" onClick={() => handleToolChange('pencil')}><BsFillPencilFill size={20}/></button>
+                <button className="btn btn-primary p-2 rounded-full border-black border-2" onClick={() => handleToolChange('eraser')}><FaEraser size={20}/></button>
+                <button className="btn btn-primary p-2 rounded-full border-black border-2" onClick={saveCanvasAsImage}><FaSave size={20}/></button>
             </div>
         </>
     );
