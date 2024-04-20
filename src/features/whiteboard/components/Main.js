@@ -51,6 +51,15 @@ const Main = () => {
         }
     };
 
+    const saveCanvasAsImage = () => {
+        const canvas = canvasRef.current;
+        const imageURI = canvas.toDataURL("image/png"); // Creates a PNG image
+        const link = document.createElement('a');
+        link.download = 'canvas_image.png';
+        link.href = imageURI;
+        link.click();
+    };
+
     return (
         <>
             <canvas
@@ -59,12 +68,13 @@ const Main = () => {
                 onMouseUp={stopDrawing}
                 onMouseOut={stopDrawing}
                 onMouseMove={draw}
-                style={{ width: '85%', height: '85%', backgroundColor: 'white', margin: 'auto', marginTop: '2%' }}
+                style={{ width: '100%', height: '85vh', backgroundColor: 'white', margin: 'auto', display: 'block' }}
             />
             <div style={{width: '100%', display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px'}}>
                 <button className="btn btn-primary" onClick={() => handleToolChange('pencil')}>Pencil</button>
                 <button className="btn btn-primary" onClick={() => handleToolChange('eraser')}>Eraser</button>
-                <button className="btn btn-primary" onClick={() => alert('Save functionality not implemented yet')}>Save</button>
+                <button className="btn btn-primary" onClick={() => handleToolChange('eraser')}>Eraser</button>
+                <button className="btn btn-primary" onClick={saveCanvasAsImage}>Save</button>
             </div>
         </>
     );
