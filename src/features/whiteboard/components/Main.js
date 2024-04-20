@@ -1,10 +1,14 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { BsFillPencilFill } from "react-icons/bs";
+import { FaEraser } from "react-icons/fa";
+import { FaSave } from "react-icons/fa";
 
 const Main = () => {
     const canvasRef = useRef(null);
     const [isDrawing, setIsDrawing] = useState(false);
     const [color, setColor] = useState('#000000'); // Default to black for pencil
     const [lineWidth, setLineWidth] = useState(5); // Default line width
+    const [cursor, setCursor] = useState('crosshair'); // Default cursor for pencil
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -45,9 +49,11 @@ const Main = () => {
         if (tool === 'pencil') {
             setColor('#000000'); // Set color to black for pencil
             setLineWidth(5); // Can adjust according to desired thickness
+            setCursor('crosshair'); // Set cursor style for pencil
         } else if (tool === 'eraser') {
             setColor('white'); // Set color to white for eraser
             setLineWidth(10); // Typically a bigger line width for eraser
+            setCursor('cell'); // Set cursor style for eraser
         }
     };
 
@@ -68,13 +74,12 @@ const Main = () => {
                 onMouseUp={stopDrawing}
                 onMouseOut={stopDrawing}
                 onMouseMove={draw}
-                style={{ width: '100%', height: '85vh', backgroundColor: 'white', margin: 'auto', display: 'block' }}
+                style={{ width: '100%', height: '85vh', backgroundColor: 'white', margin: 'auto', display: 'block', cursor: cursor }}
             />
             <div style={{width: '100%', display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px'}}>
-                <button className="btn btn-primary" onClick={() => handleToolChange('pencil')}>Pencil</button>
-                <button className="btn btn-primary" onClick={() => handleToolChange('eraser')}>Eraser</button>
-                <button className="btn btn-primary" onClick={() => handleToolChange('eraser')}>Eraser</button>
-                <button className="btn btn-primary" onClick={saveCanvasAsImage}>Save</button>
+                <button className="btn btn-primary p-2 rounded-full border-black border-2" onClick={() => handleToolChange('pencil')}><BsFillPencilFill size={20}/></button>
+                <button className="btn btn-primary p-2 rounded-full border-black border-2" onClick={() => handleToolChange('eraser')}><FaEraser size={20}/></button>
+                <button className="btn btn-primary p-2 rounded-full border-black border-2" onClick={saveCanvasAsImage}><FaSave size={20}/></button>
             </div>
         </>
     );
