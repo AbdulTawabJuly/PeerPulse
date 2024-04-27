@@ -1,4 +1,5 @@
 import VideoBox from "../features/rooms/components/VideoBox";
+import {Link} from 'react-router-dom'
 import Navbar from "../features/Navbar/Navbar";
 import SideToggle from "../features/rooms/components/SideToggle";
 import { useEffect, useState } from "react";
@@ -655,6 +656,7 @@ function RoomPage() {
                   />
                 </svg>
               </button>
+              <Link className=" w-14 h-14 flex justify-center rounded-full bg-red-900 mr-4 hover:scale-105" to={`/whiteboard/${roomID.id}`}></Link>
             </div>
           </div>
         </>

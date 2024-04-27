@@ -2,6 +2,8 @@ import React, { useRef, useEffect, useState } from 'react';
 import { BsFillPencilFill } from "react-icons/bs";
 import { FaEraser } from "react-icons/fa";
 import { FaSave } from "react-icons/fa";
+import { useSocket } from '../../../context/socket';
+import { useParams } from 'react-router-dom';
 
 const Main = () => {
     const canvasRef = useRef(null);
@@ -10,6 +12,10 @@ const Main = () => {
     const [lineWidth, setLineWidth] = useState(5); // Default line width
     const [cursor, setCursor] = useState('crosshair'); // Default cursor for pencil
 
+    const roomID = useParams();
+    const { getSocket } = useSocket();
+    const socketRef = useRef(null);
+
     useEffect(() => {
         const canvas = canvasRef.current;
         canvas.width = canvas.offsetWidth;
@@ -17,7 +23,38 @@ const Main = () => {
         const context = canvas.getContext('2d');
         context.fillStyle = 'white';
         context.fillRect(0, 0, canvas.width, canvas.height); // Fill the canvas background as white initially
+
+        socketRef.current = getSocket();
+        socketRef.current?.on("drawing", (data) => {
+            if (!isDrawing) {
+                drawFromSocket(data);
+            }
+        });
+        socketRef.current?.on("startDrawing", (data) => {
+            const { offsetX, offsetY, lineWidth, color } = data;
+            const context = canvasRef.current.getContext('2d');
+            context.strokeStyle = color;
+            context.lineWidth = lineWidth;
+            context.beginPath();
+            context.moveTo(offsetX, offsetY);
+            setIsDrawing(true);
+        });
+
+        socketRef.current?.on("stopDrawing", () => {
+            const context = canvasRef.current.getContext('2d');
+            context.closePath();
+            setIsDrawing(false);
+        });
+
     }, []);
+
+    const drawFromSocket = ({ offsetX, offsetY, color, lineWidth }) => {
+        const context = canvasRef.current.getContext('2d');
+        context.strokeStyle = color;
+        context.lineWidth = lineWidth;
+        context.lineTo(offsetX, offsetY);
+        context.stroke();
+    };
 
     const startDrawing = ({ nativeEvent }) => {
         const { offsetX, offsetY } = nativeEvent;
@@ -27,6 +64,7 @@ const Main = () => {
         context.beginPath();
         context.moveTo(offsetX, offsetY);
         setIsDrawing(true);
+        socketRef.current?.emit("startDrawing", {offsetX, offsetY, color, lineWidth},roomID);
     };
 
     const draw = ({ nativeEvent }) => {
@@ -34,15 +72,19 @@ const Main = () => {
             return;
         }
         const { offsetX, offsetY } = nativeEvent;
-        const context = canvasRef.current.getContext('2d');
+        const context = canvasRef.current.getContext('2d')
+
         context.lineTo(offsetX, offsetY);
         context.stroke();
+
+        socketRef.current?.emit("drawing", { offsetX, offsetY, color, lineWidth }, roomID);
     };
 
     const stopDrawing = () => {
         const context = canvasRef.current.getContext('2d');
         context.closePath();
         setIsDrawing(false);
+        socketRef.current?.emit("stopDrawing", roomID);
     };
 
     const handleToolChange = (tool) => {
@@ -76,10 +118,10 @@ const Main = () => {
                 onMouseMove={draw}
                 style={{ width: '100%', height: '85vh', backgroundColor: 'white', margin: 'auto', display: 'block', cursor: cursor }}
             />
-            <div style={{width: '100%', display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px'}}>
-                <button className="btn btn-primary p-2 rounded-full border-black border-2" onClick={() => handleToolChange('pencil')}><BsFillPencilFill size={20}/></button>
-                <button className="btn btn-primary p-2 rounded-full border-black border-2" onClick={() => handleToolChange('eraser')}><FaEraser size={20}/></button>
-                <button className="btn btn-primary p-2 rounded-full border-black border-2" onClick={saveCanvasAsImage}><FaSave size={20}/></button>
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px' }}>
+                <button className="btn btn-primary p-2 rounded-full border-black border-2" onClick={() => handleToolChange('pencil')}><BsFillPencilFill size={20} /></button>
+                <button className="btn btn-primary p-2 rounded-full border-black border-2" onClick={() => handleToolChange('eraser')}><FaEraser size={20} /></button>
+                <button className="btn btn-primary p-2 rounded-full border-black border-2" onClick={saveCanvasAsImage}><FaSave size={20} /></button>
             </div>
         </>
     );
