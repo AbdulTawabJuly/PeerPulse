@@ -88,7 +88,7 @@ const router = createBrowserRouter([
     element: <LibraryPage />
   },
   {
-    path : "/whiteboard",
+    path : "/whiteboard/:roomID",
     element: <Whiteboard />
   }
 
