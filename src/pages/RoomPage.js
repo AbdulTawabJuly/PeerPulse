@@ -12,6 +12,7 @@ import { PacmanLoader } from "react-spinners";
 import { useSocket } from "../context/socket";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
+import { ImExit } from "react-icons/im";
 import { useBeforeUnload } from "react-router-dom";
 import {
   sendMessage,
@@ -656,7 +657,7 @@ function RoomPage() {
                   />
                 </svg>
               </button>
-              <Link className=" w-14 h-14 flex justify-center rounded-full bg-red-900 mr-4 hover:scale-105" to={`/whiteboard/${roomID.id}`}></Link>
+              <Link className="flex items-center rounded-lg bg-red-900 text-white hover:scale-105 px-4 ml-2" to={`/whiteboard/${roomID.id}`}>Whitebord</Link>
             </div>
           </div>
         </>
