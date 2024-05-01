@@ -109,6 +109,10 @@ const Main = () => {
         link.click();
     };
 
+    const leave = () => {
+        window.location.href =`/room/${roomID.roomID}`;
+    }
+
     return (
         <>
             <canvas
@@ -133,7 +137,7 @@ const Main = () => {
                     <button className="btn btn-primary p-2 rounded-full border-black border-2" onClick={saveCanvasAsImage}><FaSave size={20} /></button>
                 </div>
                 <div className='flex justify-end items-center' style={{marginRight:'10%'}}>
-                    <button className='border-2 border-black rounded-lg px-6 py-2'>Leave</button>
+                    <button className='border-2 border-black rounded-lg px-6 py-2' onClick={leave}>Leave</button>
                 </div>
             </div>
 
