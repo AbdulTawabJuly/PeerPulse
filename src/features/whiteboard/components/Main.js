@@ -4,6 +4,7 @@ import { FaEraser } from "react-icons/fa";
 import { FaSave } from "react-icons/fa";
 import { useSocket } from '../../../context/socket';
 import { useParams } from 'react-router-dom';
+import Viewer from './Viewer';
 
 const Main = () => {
     const canvasRef = useRef(null);
@@ -64,7 +65,7 @@ const Main = () => {
         context.beginPath();
         context.moveTo(offsetX, offsetY);
         setIsDrawing(true);
-        socketRef.current?.emit("startDrawing", {offsetX, offsetY, color, lineWidth},roomID);
+        socketRef.current?.emit("startDrawing", { offsetX, offsetY, color, lineWidth }, roomID);
     };
 
     const draw = ({ nativeEvent }) => {
@@ -118,11 +119,24 @@ const Main = () => {
                 onMouseMove={draw}
                 style={{ width: '100%', height: '85vh', backgroundColor: 'white', margin: 'auto', display: 'block', cursor: cursor }}
             />
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px' }}>
-                <button className="btn btn-primary p-2 rounded-full border-black border-2" onClick={() => handleToolChange('pencil')}><BsFillPencilFill size={20} /></button>
-                <button className="btn btn-primary p-2 rounded-full border-black border-2" onClick={() => handleToolChange('eraser')}><FaEraser size={20} /></button>
-                <button className="btn btn-primary p-2 rounded-full border-black border-2" onClick={saveCanvasAsImage}><FaSave size={20} /></button>
+            <div className='grid grid-cols-3 flex items-center' style={{height:'8vh'}}>
+                <div>
+                    <div className='flex gap-2' style={{marginLeft:'10%'}}>
+                        <Viewer />
+                        <Viewer />
+                        <Viewer />
+                    </div>
+                </div>
+                <div style={{display: 'flex', justifyContent: 'center', gap: '10px' }}>
+                    <button className="btn btn-primary p-2 rounded-full border-black border-2" onClick={() => handleToolChange('pencil')}><BsFillPencilFill size={20} /></button>
+                    <button className="btn btn-primary p-2 rounded-full border-black border-2" onClick={() => handleToolChange('eraser')}><FaEraser size={20} /></button>
+                    <button className="btn btn-primary p-2 rounded-full border-black border-2" onClick={saveCanvasAsImage}><FaSave size={20} /></button>
+                </div>
+                <div className='flex justify-end items-center' style={{marginRight:'10%'}}>
+                    <button className='border-2 border-black rounded-lg px-6 py-2'>Leave</button>
+                </div>
             </div>
+
         </>
     );
 };
