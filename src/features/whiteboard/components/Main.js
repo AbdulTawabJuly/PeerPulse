@@ -4,8 +4,9 @@ import { FaEraser } from "react-icons/fa";
 import { FaSave } from "react-icons/fa";
 import { useSocket } from '../../../context/socket';
 import { useParams } from 'react-router-dom';
-import { ImExit } from "react-icons/im";
 import Viewer from './Viewer';
+import { selectMembers } from '../whiteboardSlice';
+import {useSelector} from 'react-redux';
 
 const Main = () => {
     const canvasRef = useRef(null);
@@ -18,7 +19,10 @@ const Main = () => {
     const { getSocket } = useSocket();
     const socketRef = useRef(null);
 
+    const members = useSelector(selectMembers);
+
     useEffect(() => {
+        console.log("members: ",members)
         const canvas = canvasRef.current;
         canvas.width = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
@@ -138,7 +142,7 @@ const Main = () => {
                     <button className="btn btn-primary p-2 rounded-full border-black border-2" onClick={saveCanvasAsImage}><FaSave size={20} /></button>
                 </div>
                 <div className='flex justify-end items-center' style={{marginRight:'10%'}}>
-                    <button className='border-2 border-black rounded-lg px-6 py-2' onClick={leave}><ImExit /></button>
+                    <button className='border-2 border-black rounded-lg px-6 py-2' onClick={leave}>Leave</button>
                 </div>
             </div>
 
