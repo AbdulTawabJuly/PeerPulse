@@ -5,6 +5,7 @@ import friendReducer from "../features/friends/friendSlice"
 import storage from 'redux-persist/lib/storage'
 import {persistReducer} from 'redux-persist'
 import messagesReducer from "../features/chat/ChatSlice"
+import whiteboardReducer from "../features/whiteboard/whiteboardSlice"
 import gptReducer from "../features/GPT/GPTSlice"
 import videoReducer from "../features/VideoCall/videoCallSlice"
 import moderatorReducer from "../features/Moderator/ModeratorSlice"
@@ -23,6 +24,7 @@ const reducer = combineReducers({
   gpt: gptReducer,
   friend: friendReducer,
   moderator:moderatorReducer,
+  whiteboard:whiteboardReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, reducer);
