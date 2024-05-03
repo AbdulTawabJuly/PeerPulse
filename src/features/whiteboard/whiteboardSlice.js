@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 // Import your API functions for adding and removing members
-import { addMember, removeMember } from './whiteboardApi';
+import { addMember, removeMember, getMembers } from './whiteboardApi';
 
 const initialState = {
   members: [],
@@ -14,11 +14,11 @@ export const addMemberAsync = createAsyncThunk(
   'whiteboard/addMember',
   async (memberData) => {
     try {
-      // Call your API function to add a member
-      // const response = await addMember(memberData);
-      // For demonstration purposes, assume successful response with updated member list
-      const response = { data: memberData };
+
+      const response = await addMember(memberData);
+      console.log("response from addMemberAsync: ", response.data)
       return response.data;
+
     } catch (error) {
       throw error;
     }
@@ -27,13 +27,26 @@ export const addMemberAsync = createAsyncThunk(
 
 export const removeMemberAsync = createAsyncThunk(
   'whiteboard/removeMember',
-  async (memberId) => {
+  async (data) => {
     try {
-      // Call your API function to remove a member
-      // const response = await removeMember(memberId);
-      // For demonstration purposes, assume successful response with updated member list
-      const response = { data: memberId };
+  
+      const response = await removeMember(data);
       return response.data;
+
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+
+export const getMemberAsync = createAsyncThunk(
+  'whiteboard/getMember',
+  async (data) => {
+    try {
+
+      const response = await getMembers(data);
+      return response.data;
+
     } catch (error) {
       throw error;
     }
@@ -74,12 +87,24 @@ const whiteboardSlice = createSlice({
       .addCase(removeMemberAsync.fulfilled, (state, action) => {
         state.status = 'fulfilled';
         // Update members array by removing the specified member
-        state.members = state.members.filter(member => member.id !== action.payload);
+        //state.members = state.members.filter(member => member.id !== action.payload);
       })
       .addCase(removeMemberAsync.rejected, (state, action) => {
         state.status = 'error';
         state.error = action.error.message;
-      });
+      })
+      .addCase(getMemberAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(getMemberAsync.fulfilled, (state, action) => {
+        state.status = 'fulfilled';
+        state.members = action.payload;
+      })
+      .addCase(getMemberAsync.rejected, (state, action) => {
+        state.status = 'error';
+        state.error = action.error.message;
+      })
+
   },
 });
 

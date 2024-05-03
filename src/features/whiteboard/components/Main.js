@@ -5,8 +5,9 @@ import { FaSave } from "react-icons/fa";
 import { useSocket } from '../../../context/socket';
 import { useParams } from 'react-router-dom';
 import Viewer from './Viewer';
-import { selectMembers } from '../whiteboardSlice';
-import {useSelector} from 'react-redux';
+import { addMemberAsync,getMemberAsync,removeMemberAsync, selectMembers } from '../whiteboardSlice';
+import {useSelector, useDispatch} from 'react-redux';
+import { selectLoggedInUser } from '../../auth/authSlice';
 
 const Main = () => {
     const canvasRef = useRef(null);
@@ -20,9 +21,14 @@ const Main = () => {
     const socketRef = useRef(null);
 
     const members = useSelector(selectMembers);
+    const loggedInUser = useSelector(selectLoggedInUser);
+
+    const dispatch = useDispatch();
 
     useEffect(() => {
-        console.log("members: ",members)
+
+        socketRef.current?.emit("joined-whiteboard", roomID);
+
         const canvas = canvasRef.current;
         canvas.width = canvas.offsetWidth;
         canvas.height = canvas.offsetHeight;
@@ -51,6 +57,26 @@ const Main = () => {
             context.closePath();
             setIsDrawing(false);
         });
+        
+        const roomData = {
+            roomId: roomID.roomID
+        }
+
+        socketRef.current?.on("joined-whiteboard", (user) => {
+            dispatch(getMemberAsync(roomData))
+        });
+    
+        socketRef.current?.on("left-whiteboard", (user) => {
+            dispatch(getMemberAsync(roomData))
+        });
+
+        const memberData = {
+            roomId: roomID.roomID,
+            memberId: loggedInUser.user.id
+        }
+        dispatch(addMemberAsync(memberData))
+        // dispatch(getMemberAsync(roomData))
+
 
     }, []);
 
@@ -115,6 +141,8 @@ const Main = () => {
     };
 
     const leave = () => {
+        socketRef.current?.emit("left-whiteboard", roomID);
+        dispatch(removeMemberAsync({roomId: roomID.roomID, memberId: loggedInUser.user.id}));
         window.location.href =`/room/${roomID.roomID}`;
     }
 
@@ -131,9 +159,15 @@ const Main = () => {
             <div className='grid grid-cols-3 flex items-center' style={{height:'8vh'}}>
                 <div>
                     <div className='flex gap-2' style={{marginLeft:'10%'}}>
+                        {members && members.map((member) => {
+                            return (
+                                <Viewer member={member} />
+                            )
+                        }
+                        )}
+                        {/* <Viewer />
                         <Viewer />
-                        <Viewer />
-                        <Viewer />
+                        <Viewer /> */}
                     </div>
                 </div>
                 <div style={{display: 'flex', justifyContent: 'center', gap: '10px' }}>
