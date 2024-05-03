@@ -1,7 +1,7 @@
-function Viewer() {
+function Viewer(props) {
     return (
         <div className="p-3 rounded-full border-black border-2">
-             <p> AH </p>
+             <p>{props.member.initials}</p>
         </div>
     );
 }
