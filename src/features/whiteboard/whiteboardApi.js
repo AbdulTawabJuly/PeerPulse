@@ -4,9 +4,10 @@ export function addMember(data) {
   return new Promise(async (resolve, reject) => {
     try {
       const response = await axios.post(
-        'http://localhost:8080/api/whiteboard/addMember',
+        'http://localhost:8080/api/whiteboard/member',
         {
           memberId: data.memberId,
+          roomId: data.roomId
           // Include any other relevant data needed for adding a member
         }
       );
@@ -25,8 +26,13 @@ export function removeMember(data) {
   return new Promise(async (resolve, reject) => {
     try {
       const response = await axios.delete(
-        `http://localhost:8080/api/whiteboard/removeMember/${data.memberId}`
-      );
+        `http://localhost:8080/api/whiteboard/member`,
+        {
+          params: {
+            roomId: data.roomId,
+            memberId: data.memberId,
+        },
+        });
       if (response) {
         resolve(response);
       } else {

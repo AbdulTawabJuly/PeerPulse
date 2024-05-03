@@ -49,6 +49,7 @@ import {
   SetModerator,
 } from "../features/rooms/RoomSlice";
 import { MakeModerator,RemoveModerator } from "../features/Moderator/ModeratorSlice";
+import { addMemberAsync } from "../features/whiteboard/whiteboardSlice";
 
 import { selectLoggedInUser } from "../features/auth/authSlice";
 import { useDispatch } from "react-redux";
