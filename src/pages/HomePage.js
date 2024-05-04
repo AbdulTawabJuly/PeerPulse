@@ -48,7 +48,7 @@ function HomePage() {
   };
   return (
 
-    <div className=" min-h-screen bg-Auth-0">
+    <div className=" min-h-screen bg-Primary-0">
 
       <Navbar></Navbar>
 
@@ -74,15 +74,20 @@ function HomePage() {
                   />
                 </svg>
               </div>
-              <input
-                className="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg "
-                placeholder=" Search Rooms"
-                value={searchedItem}
-                onChange={(e) => setSearchedItem(e.target.value)}
-                type="search"
-                id="default-search"
-                required
-              ></input>
+              <div className="flex gap-4 pt-4">
+                <input
+                  className="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg "
+                  placeholder=" Search Rooms"
+                  value={searchedItem}
+                  onChange={(e) => setSearchedItem(e.target.value)}
+                  type="search"
+                  id="default-search"
+                  required
+                ></input>
+                <Link className="flex items-center bg-Secondary-0 text-white px-4 rounded-full text-sm" style={{ marginRight: '1%' }} to="/library">Resources</Link>
+              </div>
+
+
             </div>
           </div>
           {suggestedrooms && suggestedrooms.length > 0 &&
@@ -100,7 +105,6 @@ function HomePage() {
               searchedRooms &&
               <p className="border-b font-Raleway divide-x-2 w-24 h-10 mx-20 font-bold text-2xl border-AuthBtn-0 text-gray-800">Rooms</p>
             }
-            <Link className="flex items-center bg-Secondary-0 text-white px-3 py-2 rounded-full" style={{marginRight:'1%'}} to="/library">Resources</Link>
           </div>
 
           <div className="flex flex-wrap mt-6 mx-16 pb-20">

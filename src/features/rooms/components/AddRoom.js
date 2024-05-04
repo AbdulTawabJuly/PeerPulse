@@ -116,7 +116,7 @@ const Modal = () => {
     <div>
       <button
         onClick={toggleAddModal}
-        className="fixed bottom-10 right-10 block text-white bg-AuthBtn-0 focus:ring-4 focus:outline-none focus:ring-green-900 font-medium rounded-full text-sm p-4 text-center"
+        className="fixed bottom-10 right-10 block text-white bg-Secondary-0 focus:ring-4 focus:outline-none focus:ring-green-900 font-medium rounded-full text-sm p-4 text-center"
         type="button"
       >
         <svg
@@ -143,7 +143,7 @@ const Modal = () => {
           className="flex justify-end transition-all delay-1000 fixed bottom-8 right-14 z-50 mr-10 mb-10 overflow-x-auto overflow-y-auto"
         >
           <div className="relative md:w-1/2 lg:w-1/2 w-full max-w-full max-h-full">
-            <div className="relative rounded-lg shadow bg-AuthBtn-0">
+            <div className="relative rounded-lg shadow bg-Secondary-0">
               <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
                 <h3 className="text-xl font-semibold text-white">
                   Create Room
@@ -231,8 +231,8 @@ const Modal = () => {
                           key={interest}
                           className={
                             userinterests.includes(interest)
-                              ? "bg-AuthBtn-0 p-2 m-1 text-white border border-black rounded-lg text-[0.44rem] hover:cursor-pointer hover:opacity-70 inline bg-black"
-                              : "bg-AuthBtn-0 p-2 m-1 text-white border border-black rounded-lg text-[0.44rem] hover:cursor-pointer hover:opacity-70 inline"
+                              ? "bg-Secondary-0 p-2 m-1 text-white border border-black rounded-lg text-[0.44rem] hover:cursor-pointer hover:opacity-70 inline bg-black"
+                              : "bg-Secondary-0 p-2 m-1 text-white border border-black rounded-lg text-[0.44rem] hover:cursor-pointer hover:opacity-70 inline"
                           }
                           onClick={() => pushInterest(interest)}
                         >
@@ -265,7 +265,7 @@ const Modal = () => {
                         />
                         <button
                           type="button"
-                          className="h-5/6 border-4 border-AuthBtn-0 bg-AuthBtn-0 rounded-r-md hover:opacity-70"
+                          className="h-5/6 border-4 border-AuthBtn-0 bg-Secondary-0 rounded-r-md hover:opacity-70"
                           onClick={() => handleAddNewInterest()}
                         >
                           <svg
