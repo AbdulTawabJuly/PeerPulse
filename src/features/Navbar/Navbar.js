@@ -82,7 +82,6 @@ export default function Navbar() {
   };
 
   const handleBellClick = async() => {
-    console.log("handle bell click called");
     await fetchNotifications();
   }
 

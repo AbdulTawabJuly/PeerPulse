@@ -5,7 +5,7 @@ import { FaSave } from "react-icons/fa";
 import { useSocket } from '../../../context/socket';
 import { useParams } from 'react-router-dom';
 import Viewer from './Viewer';
-import { addMemberAsync,getMemberAsync,removeMemberAsync, selectMembers } from '../whiteboardSlice';
+import { addMemberAsync,getMemberAsync,removeMemberAsync, selectMembers, selectStatus } from '../whiteboardSlice';
 import {useSelector, useDispatch} from 'react-redux';
 import { selectLoggedInUser } from '../../auth/authSlice';
 
@@ -24,10 +24,9 @@ const Main = () => {
     const loggedInUser = useSelector(selectLoggedInUser);
 
     const dispatch = useDispatch();
+    const status = useSelector(selectStatus);
 
     useEffect(() => {
-
-        socketRef.current?.emit("joined-whiteboard", roomID);
 
         const canvas = canvasRef.current;
         canvas.width = canvas.offsetWidth;
@@ -42,6 +41,9 @@ const Main = () => {
                 drawFromSocket(data);
             }
         });
+
+        socketRef.current?.emit("joined-whiteboard", roomID);
+
         socketRef.current?.on("startDrawing", (data) => {
             const { offsetX, offsetY, lineWidth, color } = data;
             const context = canvasRef.current.getContext('2d');

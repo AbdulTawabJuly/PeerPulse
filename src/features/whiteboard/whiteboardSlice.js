@@ -16,7 +16,6 @@ export const addMemberAsync = createAsyncThunk(
     try {
 
       const response = await addMember(memberData);
-      console.log("response from addMemberAsync: ", response.data)
       return response.data;
 
     } catch (error) {
@@ -29,8 +28,9 @@ export const removeMemberAsync = createAsyncThunk(
   'whiteboard/removeMember',
   async (data) => {
     try {
-  
+      console.log("in remove member async thunk ...........................................................")
       const response = await removeMember(data);
+      console.log("response.data: ", response.data)
       return response.data;
 
     } catch (error) {
@@ -87,7 +87,7 @@ const whiteboardSlice = createSlice({
       .addCase(removeMemberAsync.fulfilled, (state, action) => {
         state.status = 'fulfilled';
         // Update members array by removing the specified member
-        //state.members = state.members.filter(member => member.id !== action.payload);
+        state.members = state.members.filter(member => member.userId !== action.payload.userId);
       })
       .addCase(removeMemberAsync.rejected, (state, action) => {
         state.status = 'error';
