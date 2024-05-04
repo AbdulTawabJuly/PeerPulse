@@ -83,7 +83,6 @@ export function CreateRoom(RoomDetails) {
       if (response) {
         resolve(response.data);
       } else {
-        console.log(response.error);
         reject(response.error);
       }
     } catch (error) {

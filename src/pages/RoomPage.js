@@ -157,7 +157,7 @@ function RoomPage() {
         user.audioTrack.play();
       }
     } catch (error) {
-      console.log(error);
+      console.log("error");
     }
   };
   const handleUserUnpublished = () => {};
@@ -181,7 +181,6 @@ function RoomPage() {
       if (RoomJoined.moderators.includes(user.user.id)) {
         dispatch(SetModerator(true));
       }
-      console.log(RoomJoined.members);
       let Token;
       try{
       Token=RoomJoined.members.find(member=>member._id===user.user.id).AgoraToken;
@@ -282,11 +281,9 @@ function RoomPage() {
           user: user,
         };
         dispatch(sendMessage(newMsg));
-        console.log("user left message dispatched in client");
       });
 
       newSocket.on("recieve-message", (message) => {
-        console.log("in recieve message of fe");
         const newMsg = {
           type: "recieved",
           user: message.user,
@@ -447,7 +444,7 @@ function RoomPage() {
     if (status === "fulfilled") {
       const newSocket = getSocket();
       newSocket.emit("leave-room", user.user.email, roomID.id);
-      console.log("leave room emitted");
+
       destroySocket();
       const RoomDetail = {
         id: roomID,
