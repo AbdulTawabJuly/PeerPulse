@@ -15,7 +15,7 @@ const Main = () => {
           <button className="text-Secondary-0 bg-Primary-0 px-4 py-1 rounded-full">New</button>
         </div>
         <div className="mr-4">
-          <Link><h1>Next</h1></Link>
+          <Link to="/upload-document"><h1>Upload</h1></Link>
         </div>
 
       </div>

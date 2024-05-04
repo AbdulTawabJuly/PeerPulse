@@ -20,7 +20,7 @@ const getUpdatedRoom = async (room) => {
       console.log("room not found");
     }
   } catch (error) {
-    console.log(error);
+    console.log("error");
   }
 };
 

@@ -33,7 +33,6 @@ function Message(msg) {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => {
-                  console.log("Link clicked!");
                   // Uncomment the next line if you want to prevent the default behavior for testing
                   // e.preventDefault();
                 }}
@@ -66,7 +65,7 @@ function Message(msg) {
 
   else if (msg.type === 'recieved') {
     if (msg.file === 'true') {
-      console.log("msg.file found")
+
       return (
         <div className='flex items-start p-3'>
           <img className='rounded-full w-8 h-8' src='../profile.png' alt='prof-img' />

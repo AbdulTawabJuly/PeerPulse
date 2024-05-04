@@ -24,6 +24,7 @@ import LandingPage from "./pages/LandingPage";
 import LibraryPage from "./pages/LibraryPage";
 import Whiteboard from "./pages/Whiteboard";
 import Main from "./features/whiteboard/components/Main";
+import DocumentPage from "./pages/DocumentPage";
 
 
 const router = createBrowserRouter([
@@ -90,6 +91,10 @@ const router = createBrowserRouter([
   {
     path : "/whiteboard/:roomID",
     element: <Whiteboard />
+  },
+  {
+    path : "/document/upload",
+    element: <DocumentPage />
   }
 
 ]);
