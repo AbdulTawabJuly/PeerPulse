@@ -13,7 +13,7 @@ function JoinPrivateRoom(){
  <div>
       <button
         onClick={toggleLockModal}
-        className="fixed bottom-20 mb-8  right-10 block text-white bg-AuthBtn-0 focus:ring-4 focus:outline-none focus:ring-green-900 font-medium rounded-full text-sm p-5 text-center"
+        className="fixed bottom-20 mb-8  right-10 block text-white bg-Secondary-0 focus:ring-4 focus:outline-none focus:ring-green-900 font-medium rounded-full text-sm p-5 text-center"
         type="button"
       >
        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-lock" viewBox="0 0 16 16"> <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zM5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/> </svg>
@@ -27,7 +27,7 @@ function JoinPrivateRoom(){
           className="transition-all delay-1000 fixed bottom-20 right-14 mr-10 mb-20 z-50 overflow-x-hidden p-0 mr-0 overflow-y-auto"
         >
           <div className="relative w-full max-w-lg max-h-md">
-            <div className="relative rounded-lg shadow bg-AuthBtn-0">
+            <div className="relative rounded-lg shadow bg-Secondary-0">
               <div className="flex items-start justify-between p-4 border-b rounded-t border-white">
                 <h3 className="text-xl font-semibold text-white">
                   Join Private Room
