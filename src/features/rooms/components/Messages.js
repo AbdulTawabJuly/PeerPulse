@@ -27,7 +27,6 @@ function Messages() {
   const dispatch = useDispatch();
 
   const handleClick = async () => {
-    console.log("file: ", file);
     const newSocket = getSocket();
     if (file) {
       const formData = new FormData();
