@@ -53,7 +53,7 @@ function RoomCard({ RoomDetails }) {
     <button onClick={() => (isPaid ? null : joinRoom())}>
       <div
         className={`m-2 w-64 h-36 flex flex-col ${
-          isPaid ? " bg-red-300" : "bg-blue-200"
+          isPaid ? " bg-Main-0" : "bg-Main-0"
         } justify-between shadow-lg p-3 rounded-xl hover:scale-105 hover:shadow-xl hover:cursor-pointer" id="card`}
       >
         <div className="flex justify-around items-center">

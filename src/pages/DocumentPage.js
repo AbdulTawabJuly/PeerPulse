@@ -1,5 +1,7 @@
 import Navbar from '../features/Navbar/Navbar';
 import { useState } from 'react';
+import {selectLoggedInUser} from '../features/auth/authSlice';
+import {useSelector} from 'react-redux';
 
 function DocumentPage() {
 
@@ -8,6 +10,8 @@ function DocumentPage() {
         const selectedFile = e.target.files[0];
         setFile(selectedFile);
     }
+
+    const user = useSelector(selectLoggedInUser);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -22,6 +26,23 @@ function DocumentPage() {
                         method: 'POST',
                         body: formData,
                     });
+
+                    const response2 = await fetch('http://localhost:8080/api/document/uploadDocument', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            originalname: file.name,
+                            createdBy: user.user.id
+                        })
+                    });
+                    const result = await response2.json();
+                    console.log(result)
+
+                    
+                    const result2 = await response2.json();
+
                 }
                 catch (err) {
                     console.log(err)
@@ -38,9 +59,6 @@ function DocumentPage() {
             <div style={{ height: '90vh' }}>
                 <div className='flex justify-center items-center h-full'>
                     <form onSubmit={handleSubmit} className="w-1/2">
-                        <div className='p-4'>
-                            <input type="text" placeholder="Enter file name" className='px-4 py-2 rounded-lg w-full' />
-                        </div>
                         <div className='p-4'>
                             <input type="file" id="actual-btn" onChange={handleFileChange} accept=".pdf,.doc,.docx" hidden />
                             <label htmlFor="actual-btn" className='bg-indigo-500 text-white p-4 rounded-lg cursor-pointer block text-center w-full'>Choose File</label>
