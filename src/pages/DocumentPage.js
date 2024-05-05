@@ -2,6 +2,7 @@ import Navbar from '../features/Navbar/Navbar';
 import { useState } from 'react';
 import {selectLoggedInUser} from '../features/auth/authSlice';
 import {useSelector} from 'react-redux';
+import {Link} from 'react-router-dom';
 
 function DocumentPage() {
 
@@ -59,6 +60,7 @@ function DocumentPage() {
             <div style={{ height: '90vh' }}>
                 <div className='flex justify-center items-center h-full'>
                     <form onSubmit={handleSubmit} className="w-1/2">
+                    <Link to="/library" className="p-8">Back</Link>
                         <div className='p-4'>
                             <input type="file" id="actual-btn" onChange={handleFileChange} accept=".pdf,.doc,.docx" hidden />
                             <label htmlFor="actual-btn" className='bg-indigo-500 text-white p-4 rounded-lg cursor-pointer block text-center w-full'>Choose File</label>
